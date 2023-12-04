@@ -172,6 +172,8 @@ def addSoundNotifications():
     WTSoundsStuff('wt_leftTrackHit').addSoundNotification()
     WTSoundsStuff('wt_rightTrackHit').addSoundNotification()
     WTSoundsStuff('wt_wheelHit').addSoundNotification()
+    WTSoundsStuff('wt_battleWon', chance='20').addSoundNotification()
+    WTSoundsStuff('wt_battleLose', chance='20').addSoundNotification()
 
 # PLACEHOLDER: Получаем дистанции и угол до захваченной цели и переводим в смену свитчей в Wwise
 # def wtGetDistanceAndAngle(self, target, magnetic, *args, **kwargs):
@@ -219,9 +221,9 @@ def onGunAutoReloadTimeSet(self, state, stunned):
 # PLACEHOLDER: Реализация вызова музыки победы/поражения в конце боя (при появлении надписи "ПОБЕДА" или "ПОРАЖЕНИЕ")
 def wtWinLoseMusic(winnerTeam, *args, **kwargs):
     if winnerTeam == BigWorld.player().team:
-        print 'win'
+        BigWorld.player().soundNotifications.play('wt_battleWon')
     else:
-        print 'lose'
+        BigWorld.player().soundNotifications.play('wt_battleLose')
 
 def onGUISpaceEntered(spaceID, *args, **kwargs):
     if spaceID != GuiGlobalSpaceID.LOBBY:

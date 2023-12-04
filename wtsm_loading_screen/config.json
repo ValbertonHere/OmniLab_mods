@@ -1,0 +1,27 @@
+{
+    "enabled": true,
+    "sequences": [
+        {
+            "name": "wtsm_stuff",
+            "enabled": true,
+            "start": "1970-01-01T00:00:00",
+            "finish": "3000-01-01T00:00:01",
+            "priority": 1,
+            "order": "random",
+            "slides": [
+                {
+                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/WT_WoTA/loadingScreenTest/wtsm_indev.png",
+                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/WT_WoTA/loadingScreenTest/indev_message.xml"
+                },
+                {
+                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/WT_WoTA/loadingScreenTest/wt_images/10.jpg",
+                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/WT_WoTA/loadingScreenTest/update.xml"
+                },
+                {
+                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/WT_WoTA/loadingScreenTest/wt_images/5.jpg",
+                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/WT_WoTA/loadingScreenTest/voiceover_features.xml"
+                }
+            ]
+        }
+    ]
+}

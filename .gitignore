@@ -2,3 +2,7 @@
 mods_for_wot_not_published/*
 sources/*
 sources-as3/*
+
+
+sound_notifications.xml
+wt_voiceover_fix.json
