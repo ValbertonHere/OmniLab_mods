@@ -1,9 +1,11 @@
 # Помощник для УГВ.
 
 # Импорты модулей
+import SoundGroups
 import BigWorld
-import WWISE
 import nations
+import WWISE
+
 from gui import InputHandler
 from gui import SystemMessages
 from Avatar import PlayerAvatar
@@ -22,7 +24,7 @@ from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import AmmoPlugin
 class WTSM_CONSTS():
 
     IN_DEV = True
-    BUILD = '1223/1'
+    BUILD = '1223/2'
     VERSION = 'Release 9'
     UPD_NAME = 'Точка кипения'
     DIST_VALUES = [300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200, 1300]
@@ -91,21 +93,17 @@ class WTSoundsStuff():
         if state in (VEHICLE_VIEW_STATE.OBSERVED_BY_ENEMY, VEHICLE_VIEW_STATE.DEVICES, VEHICLE_VIEW_STATE.HEALTH):
             global cb_active
 
-            if state == VEHICLE_VIEW_STATE.DEVICES:
-                BigWorld.player().soundNotifications.play('wt_weveBeenHit')
-                if value[0] in ('leftTrack0', 'leftTrack1'):
+            if state == VEHICLE_VIEW_STATE.DEVICES and value[1] != 'normal':
+                if value[0].startswith('wheel'):
+                    BigWorld.player().soundNotifications.play('wt_wheelHit')
+                elif value[0] in ('leftTrack0', 'leftTrack1'):
                     BigWorld.player().soundNotifications.play('wt_leftTrackHit')
                 elif value[0] in ('rightTrack0', 'rightTrack1'):
                     BigWorld.player().soundNotifications.play('wt_rightTrackHit')
-                elif value[0].startswith('wheel'):
-                    BigWorld.player().soundNotifications.play('wt_wheelHit')
 
             if state == VEHICLE_VIEW_STATE.REPAIRING:
                 if value[0].startswith('wheel') and value[1] == 'normal':
                     BigWorld.player().soundNotifications.play('wt_wheelRepaired')
-
-            if state == VEHICLE_VIEW_STATE.HEALTH:
-                BigWorld.player().soundNotifications.play('wt_weveBeenHit')
 
             if cb_active:
                 return
@@ -127,9 +125,14 @@ class WTSoundsStuff():
     @staticmethod
     def setBattleStatusSwitch():
         global cb_active
+
         if 100 * BigWorld.player().vehicle.health / BigWorld.player().vehicle.maxHealth > 35:
             WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['battle_status'], 'exploring')
             cb_active = False
+
+    @staticmethod
+    def playBattleMusic():
+        SoundGroups.g_instance.playSound2D('wt_battle_music')
 
     @staticmethod
     def UPDVehState_init():
@@ -172,8 +175,8 @@ def addSoundNotifications():
     WTSoundsStuff('wt_leftTrackHit').addSoundNotification()
     WTSoundsStuff('wt_rightTrackHit').addSoundNotification()
     WTSoundsStuff('wt_wheelHit').addSoundNotification()
-    WTSoundsStuff('wt_battleWon', chance='20').addSoundNotification()
-    WTSoundsStuff('wt_battleLose', chance='20').addSoundNotification()
+    WTSoundsStuff('wt_battleWon').addSoundNotification()
+    WTSoundsStuff('wt_battleLose').addSoundNotification()
 
 # PLACEHOLDER: Получаем дистанции и угол до захваченной цели и переводим в смену свитчей в Wwise
 # def wtGetDistanceAndAngle(self, target, magnetic, *args, **kwargs):
@@ -221,8 +224,10 @@ def onGunAutoReloadTimeSet(self, state, stunned):
 # PLACEHOLDER: Реализация вызова музыки победы/поражения в конце боя (при появлении надписи "ПОБЕДА" или "ПОРАЖЕНИЕ")
 def wtWinLoseMusic(winnerTeam, *args, **kwargs):
     if winnerTeam == BigWorld.player().team:
+        SoundGroups.g_instance.playSound2D('wt_win_music')
         BigWorld.player().soundNotifications.play('wt_battleWon')
     else:
+        SoundGroups.g_instance.playSound2D('wt_lose_music')
         BigWorld.player().soundNotifications.play('wt_battleLose')
 
 def onGUISpaceEntered(spaceID, *args, **kwargs):
@@ -274,6 +279,7 @@ g_playerEvents.onAvatarReady += addSoundNotifications
 g_playerEvents.onAvatarReady += WTSoundsStuff.setVehicleNation
 g_playerEvents.onAvatarReady += WTSoundsStuff.setBattleStatusSwitch
 g_playerEvents.onAvatarReady += WTSoundsStuff.UPDVehState_init
+g_playerEvents.onAvatarReady += WTSoundsStuff.playBattleMusic
 ServicesLocator.appLoader.onGUISpaceEntered += onGUISpaceEntered
 InputHandler.g_instance.onKeyDown += WTSoundsStuff.isLMBDown
 
