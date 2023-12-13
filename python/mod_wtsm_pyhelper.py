@@ -16,7 +16,7 @@ from gui.shared.personality import ServicesLocator
 from skeletons.gui.app_loader import GuiGlobalSpaceID
 from gui.shared.utils.key_mapping import getBigworldNameFromKey
 from gui.IngameSoundNotifications import ComplexSoundNotifications
-from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
+from gui.battle_control.battle_constants import VEHICLE_GUI_ITEMS, VEHICLE_VIEW_STATE
 from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import AmmoPlugin
 
 
@@ -29,6 +29,13 @@ class WTSM_CONSTS():
     UPD_NAME = 'Точка кипения'
     DIST_VALUES = [300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200, 1300]
     A2H = {0: '12h', 30: '1h', 60: '2h', 90: '3h', 120: '4h', 150: '5h', 180: '6h', 210: '7h', 240: '8h', 270: '9h', 300: '10h', 330: '11h', 360: '12h'}
+
+    VEH_STATES = [
+        VEHICLE_VIEW_STATE.OBSERVED_BY_ENEMY,
+        VEHICLE_VIEW_STATE.DEVICES,
+        VEHICLE_VIEW_STATE.HEALTH,
+        VEHICLE_VIEW_STATE.REPAIRING
+    ]
 
     RTPCS = [
         'RTPC_WT_WoTA_shot_sideChain',
@@ -90,20 +97,29 @@ class WTSoundsStuff():
 
     @staticmethod
     def updateVehicleState(state, value):
-        if state in (VEHICLE_VIEW_STATE.OBSERVED_BY_ENEMY, VEHICLE_VIEW_STATE.DEVICES, VEHICLE_VIEW_STATE.HEALTH):
-            global cb_active
+        if state in WTSM_CONSTS.VEH_STATES:
+            global cb_active, isLTrackDestroyed, isRTrackDestroyed
 
             if state == VEHICLE_VIEW_STATE.DEVICES and value[1] != 'normal':
                 if value[0].startswith('wheel'):
                     BigWorld.player().soundNotifications.play('wt_wheelHit')
-                elif value[0] in ('leftTrack0', 'leftTrack1'):
+                elif value[0] in ('leftTrack0', 'leftTrack1') and not isLTrackDestroyed:
                     BigWorld.player().soundNotifications.play('wt_leftTrackHit')
-                elif value[0] in ('rightTrack0', 'rightTrack1'):
+                elif value[0] in ('rightTrack0', 'rightTrack1') and not isRTrackDestroyed:
                     BigWorld.player().soundNotifications.play('wt_rightTrackHit')
+            elif state == VEHICLE_VIEW_STATE.DEVICES and value[1] == 'normal':
+                if value[0].startswith('wheel'):
+                    BigWorld.player().soundNotifications.play('wt_wheelRepaired')
+                elif value[0] in ('leftTrack0', 'leftTrack1'):
+                    isLTrackDestroyed = False
+                elif value[0] in ('rightTrack0', 'rightTrack1'):
+                    isRTrackDestroyed = False
 
             if state == VEHICLE_VIEW_STATE.REPAIRING:
-                if value[0].startswith('wheel') and value[1] == 'normal':
-                    BigWorld.player().soundNotifications.play('wt_wheelRepaired')
+                if value[0] in ('leftTrack0', 'leftTrack1'):
+                    isLTrackDestroyed = True
+                elif value[0] in ('rightTrack0', 'rightTrack1'):
+                    isRTrackDestroyed = True
 
             if cb_active:
                 return
@@ -167,16 +183,17 @@ def inDevLog(message):
 
 # Добавление дополнительных звуковых уведомлений
 def addSoundNotifications():
-    WTSoundsStuff('wt_shootVoice', lifetime='1.2').addSoundNotification()
-    WTSoundsStuff('wt_artWarning', predelay='0.5', lifetime='2').addSoundNotification()
-    WTSoundsStuff('wt_battleState').addSoundNotification()
-    WTSoundsStuff('wt_gunReloaded', chance='5', lifetime='1').addSoundNotification()
-    WTSoundsStuff('wt_weveBeenHit', chance='15', lifetime='1').addSoundNotification()
-    WTSoundsStuff('wt_leftTrackHit').addSoundNotification()
-    WTSoundsStuff('wt_rightTrackHit').addSoundNotification()
-    WTSoundsStuff('wt_wheelHit').addSoundNotification()
     WTSoundsStuff('wt_battleWon').addSoundNotification()
     WTSoundsStuff('wt_battleLose').addSoundNotification()
+    WTSoundsStuff('wt_battleState').addSoundNotification()
+    WTSoundsStuff('wt_leftTrackHit').addSoundNotification()
+    WTSoundsStuff('wt_rightTrackHit').addSoundNotification()
+    WTSoundsStuff('wt_wheelHit', lifetime='0.5').addSoundNotification()
+    WTSoundsStuff('wt_shootVoice', lifetime='1.2').addSoundNotification()
+    WTSoundsStuff('wt_wheelRepaired', lifetime='0.5').addSoundNotification()
+    WTSoundsStuff('wt_gunReloaded', chance='5', lifetime='1').addSoundNotification()
+    WTSoundsStuff('wt_weveBeenHit', chance='15', lifetime='1').addSoundNotification()
+    WTSoundsStuff('wt_artWarning', predelay='0.5', lifetime='2').addSoundNotification()
 
 # PLACEHOLDER: Получаем дистанции и угол до захваченной цели и переводим в смену свитчей в Wwise
 # def wtGetDistanceAndAngle(self, target, magnetic, *args, **kwargs):
@@ -244,6 +261,8 @@ def onGUISpaceEntered(spaceID, *args, **kwargs):
         welcomeMessageSeen = True
 
 welcomeMessageSeen = False
+isLTrackDestroyed = False
+isRTrackDestroyed = False
 cb_active = False
 
 print '[OMNILAB: WTSM] INIT START!'
