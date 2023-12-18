@@ -1,0 +1,152 @@
+{
+    "sound_notifications": {
+        "ally_killed_by_player": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"ammo_bay_damaged": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"commander_killed": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"crew_deactivated": {
+			"predelay": 0,
+			"interrupt": 0,
+			"queueClearAtStart": 0
+		},
+		"driver_killed": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"enemy_hp_damaged_by_explosion_at_direct_hit_by_player": {
+			"interrupt": 0
+		},
+		"enemy_hp_damaged_by_projectile_and_chassis_damaged_by_player": {
+			"interrupt": 0
+		},
+		"enemy_hp_damaged_by_projectile_and_gun_damaged_by_player": {
+			"interrupt": 0
+		},
+		"enemy_hp_damaged_by_projectile_by_player": {
+			"interrupt": 0
+		},
+		"enemy_killed_by_player": {
+			"interrupt": 0
+		},
+		"enemy_killed": {
+			"interrupt": 0
+		},
+		"enemy_no_hp_damage_at_attempt_and_chassis_damaged_by_player": {
+			"interrupt": 0
+		},
+		"enemy_no_hp_damage_at_attempt_and_gun_damaged_by_player": {
+			"interrupt": 0
+		},
+		"enemy_no_hp_damage_at_attempt_by_player": {
+			"interrupt": 0
+		},
+		"enemy_no_hp_damage_at_no_attempt_and_chassis_damaged_by_player": {
+			"interrupt": 0
+		},
+		"enemy_no_hp_damage_at_no_attempt_and_gun_damaged_by_player": {
+			"interrupt": 0
+		},
+		"enemy_no_hp_damage_at_no_attempt_by_player": {
+			"interrupt": 0
+		},
+		"enemy_no_piercing_by_player": {
+			"interrupt": 0
+		},
+		"enemy_ricochet_by_player": {
+			"interrupt": 0
+		},
+		"engine_damaged": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"engine_destroyed": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"fire_started": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"fire_stopped": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"fuel_tank_damaged": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"gun_damaged": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"gun_destroyed": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"gunner_killed": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"loader_killed": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"radio_damaged": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"radioman_killed": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"start_battle": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"surveying_devices_damaged": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"surveying_devices_destroyed": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"surveying_devices_functional": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"target_captured": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"vehicle_destroyed": {
+			"predelay": 0,
+			"queueClearAtStart": 0,
+			"interrupt": 0
+		},
+		"track_damaged": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"track_functional": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"track_functional_can_move": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"track_destroyed": {
+			"predelay": 0,
+			"interrupt": 0
+		}
+    }
+}

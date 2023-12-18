@@ -1,0 +1,116 @@
+{
+    "gun_reload_effects": {
+        "reload12_25": {
+            "type": "SimpleReload",
+            "duration": "233.0",
+            "sound": "gun_rld_12_25mm",
+			"intuition_overrides": {
+				"sound": "gun_rld_intuition_12_25mm"
+			}
+        },
+        "reload20_45": {
+            "type": "SimpleReload",
+            "duration": "233.0",
+            "sound": "gun_rld_20_45mm",
+			"intuition_overrides": {
+				"sound": "gun_rld_intuition_20_45mm"
+			}
+        },
+        "reload50_75": {
+            "type": "SimpleReload",
+            "duration": "233.0",
+            "sound": "gun_rld_50_75mm",
+			"intuition_overrides": {
+				"sound": "gun_rld_intuition_50_75mm"
+			}
+        },
+        "reload85_107": {
+            "type": "SimpleReload",
+            "duration": "233.0",
+            "sound": "gun_rld_85_107mm",
+			"intuition_overrides": {
+				"sound": "gun_rld_intuition_85_107mm"
+			}
+        },
+        "reload115_152": {
+            "type": "SimpleReload",
+            "duration": "233.0",
+            "sound": "gun_rld_115_152mm",
+			"intuition_overrides": {
+				"sound": "gun_rld_intuition_115_152mm"
+			}
+        },
+        "reload155_170": {
+            "type": "SimpleReload",
+            "duration": "233.0",
+            "sound": "gun_rld_155_170mm",
+			"intuition_overrides": {
+				"sound": "gun_rld_intuition_155_170mm"
+			}
+        },
+		"autoloader_reload85_107": {
+			"type": "AutoReload",
+			"duration": "233.0",
+			"clipShellLoadDuration": "233.0",
+			"almostCompleteDuration": "233.0"
+		},
+		"reload_automat_reloading_155_170": {
+			"type": "BarrelReload",
+			"shellDuration": "233",
+            "duration": "233.0",
+			"intuition_overrides": {
+				"duration": "233.0"
+			}
+		},
+		"reload_automat_reloading_115_152": {
+			"type": "BarrelReload",
+			"shellDuration": "2330",
+            "duration": "233.0",
+			"intuition_overrides": {
+				"duration": "233.0"
+			}
+		},
+		"reload_automat_reloading_85_107": {
+			"type": "BarrelReload",
+			"shellDuration": "233",
+            "duration": "233.0",
+			"intuition_overrides": {
+				"duration": "233.0"
+			}
+		},
+		"reload_automat_reloading_50_75": {
+			"type": "BarrelReload",
+			"shellDuration": "233",
+            "duration": "233.0",
+			"intuition_overrides": {
+				"duration": "233.0"
+			}
+		},
+		"reload_automat_reloading_20_45": {
+			"type": "BarrelReload",
+			"shellDuration": "233",
+            "duration": "233.0",
+			"intuition_overrides": {
+				"duration": "233.0"
+			}
+		},
+		"reload_automat_reloading_12_25": {
+			"type": "BarrelReload",
+			"shellDuration": "233",
+            "duration": "233.0",
+			"intuition_overrides": {
+				"duration": "233.0"
+			}
+		},
+		"dualgun_reload85_107": {
+			"type": "DualGunReload",
+			"runTimeDelta": "233.0",
+			"runTimeDeltaAmmoLow": "233.0"
+		},
+		"dualgun_reload115_152": {
+			"type": "DualGunReload",
+			"runTimeDelta": "233.0",
+			"runTimeDeltaAmmoLow": "233.0"
+		}
+    }
+}

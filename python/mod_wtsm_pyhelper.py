@@ -9,15 +9,14 @@ import WWISE
 from gui import InputHandler
 from gui import SystemMessages
 from Avatar import PlayerAvatar
-from constants import ARENA_PERIOD
 from PlayerEvents import g_playerEvents
 from CurrentVehicle import g_currentVehicle
 from gui.shared.personality import ServicesLocator
 from skeletons.gui.app_loader import GuiGlobalSpaceID
 from gui.shared.utils.key_mapping import getBigworldNameFromKey
 from gui.IngameSoundNotifications import ComplexSoundNotifications
-from gui.battle_control.battle_constants import VEHICLE_GUI_ITEMS, VEHICLE_VIEW_STATE
 from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import AmmoPlugin
+from gui.battle_control.battle_constants import VEHICLE_GUI_ITEMS, VEHICLE_VIEW_STATE
 
 
 # Класс констант мода
@@ -238,7 +237,7 @@ def onGunAutoReloadTimeSet(self, state, stunned):
         WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['shell_loaded'], shellKind)
         BigWorld.player().soundNotifications.play('wt_gunReloaded')
 
-# PLACEHOLDER: Реализация вызова музыки победы/поражения в конце боя (при появлении надписи "ПОБЕДА" или "ПОРАЖЕНИЕ")
+# Реализация вызова музыки победы/поражения в конце боя (при появлении надписи "ПОБЕДА" или "ПОРАЖЕНИЕ")
 def wtWinLoseMusic(winnerTeam, *args, **kwargs):
     if winnerTeam == BigWorld.player().team:
         SoundGroups.g_instance.playSound2D('wt_win_music')
@@ -250,9 +249,10 @@ def wtWinLoseMusic(winnerTeam, *args, **kwargs):
 def onGUISpaceEntered(spaceID, *args, **kwargs):
     if spaceID != GuiGlobalSpaceID.LOBBY:
         return
-
-    g_currentVehicle.onChanged += WTSoundsStuff.setVehicleNation
+    
     global welcomeMessageSeen
+    
+    g_currentVehicle.onChanged += WTSoundsStuff.setVehicleNation
     if not welcomeMessageSeen:
         SystemMessages.pushMessage('Вспомогательный скрипт загружен.<br>Необходимые параметры были применены.<br><br>Build %s' % WTSM_CONSTS.BUILD,
             SystemMessages.SM_TYPE.InformationHeader,

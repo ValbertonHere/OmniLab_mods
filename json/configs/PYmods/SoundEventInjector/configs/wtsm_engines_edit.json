@@ -1,0 +1,94 @@
+{
+    "engines": {
+        "france": {
+			"Panhard_12H_6000_X": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"Panhard_12H_6000_63": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"Panhard_12H_6000_54": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"Peugeot_PRV_V6_F1": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"Peugeot_PRV_V6_F2": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"Peugeot_PRV_V6_F3": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"Hotchkiss_V6_mle_48": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"Hotchkiss_V6_mle_49": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"Hotchkiss_V6_mle_50": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"Panhard_I_S_K_4F_II_bis": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"Somua_V4": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			}
+		},
+		"usa": {
+			"Wright_Continental_R-975C4L": {
+				"wwsoundPC": "eng_cadillac_series_42_pc",
+				"wwsoundNPC": "eng_cadillac_series_42_npc"
+			},
+			"Twin_Cadillac_series_44T4L": {
+				"wwsoundPC": "eng_cadillac_series_42_pc",
+				"wwsoundNPC": "eng_cadillac_series_42_npc"
+			},
+			"Continental_AOS-895-3A": {
+				"wwsoundPC": "eng_cadillac_series_42_pc",
+				"wwsoundNPC": "eng_cadillac_series_42_npc"
+			},
+			"Continental_AOSI-895-5A": {
+				"wwsoundPC": "eng_cadillac_series_42_pc",
+				"wwsoundNPC": "eng_cadillac_series_42_npc"
+			}
+		},
+		"china": {
+			"Detroit_Diesel_8V71T": {
+				"wwsoundPC": "eng_cadillac_series_42_pc",
+				"wwsoundNPC": "eng_cadillac_series_42_npc"
+			}
+		},
+		"germany": {
+			"Continental_AOS-895-3": {
+				"wwsoundPC": "eng_cadillac_series_42_pc",
+				"wwsoundNPC": "eng_cadillac_series_42_npc"
+			}
+		},
+		"sweden": {
+			"Motoraggregat_1S": {
+				"wwsoundPC": "eng_ContinentalR_STRV_pc",
+				"wwsoundNPC": "eng_ContinentalR_STRV_npc"
+			},
+			"Motoraggregat_3": {
+				"wwsoundPC": "eng_ContinentalR_STRV_pc",
+				"wwsoundNPC": "eng_ContinentalR_STRV_npc"
+			},
+			"Motoraggregat_3_FL": {
+				"wwsoundPC": "eng_ContinentalR_STRV_pc",
+				"wwsoundNPC": "eng_ContinentalR_STRV_npc"
+			}
+		}
+    }
+}
