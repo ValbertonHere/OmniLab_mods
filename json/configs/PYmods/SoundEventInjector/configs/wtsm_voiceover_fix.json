@@ -12,11 +12,6 @@
 			"predelay": 0,
 			"interrupt": 0
 		},
-		"crew_deactivated": {
-			"predelay": 0,
-			"interrupt": 0,
-			"queueClearAtStart": 0
-		},
 		"driver_killed": {
 			"predelay": 0,
 			"interrupt": 0

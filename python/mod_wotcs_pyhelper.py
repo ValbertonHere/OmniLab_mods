@@ -7,7 +7,7 @@ def onGunReloadTimeSet(self, _, state, skipAutoLoader):
     isInPostmortem = self.sessionProvider.shared.vehicleState.isInPostmortem
     timeLast = state.getActualValue()
     timeLeft = state.getTimeLeft()
-    if timeLeft == 0.0 and not isAutoReload and not isInPostmortem and (timeLast != -1):
+    if timeLeft == 0.0 and not isInPostmortem and (timeLast != -1):
         SoundGroups.g_instance.playSound2D('reloaded_old')
 
 def onGunAutoReloadTimeSet(self, state, stunned):
@@ -16,7 +16,7 @@ def onGunAutoReloadTimeSet(self, state, stunned):
     isInPostmortem = self.sessionProvider.shared.vehicleState.isInPostmortem
     timeLast = state.getActualValue()
     timeLeft = state.getTimeLeft()
-    if timeLeft == 0.0 and not isAutoReload and not isInPostmortem and (timeLast != -1):
+    if timeLeft == 0.0 and not isInPostmortem and (timeLast != -1):
         SoundGroups.g_instance.playSound2D('reloaded_old')
 
 h_onGunReloadTimeSet = AmmoPlugin._AmmoPlugin__onGunReloadTimeSet

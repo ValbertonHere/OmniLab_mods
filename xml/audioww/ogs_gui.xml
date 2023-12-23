@@ -1,5 +1,6 @@
 <root>
 	<events>
+		<!--GUI buttons & battle sounds-->
 		<event>
 			<name>arrow</name>
 			<mod>arrow_</mod>
@@ -73,13 +74,64 @@
 			<mod>sight_convergence_</mod>
 		</event>
 		<event>
+			<name>expl_enemy_NPC</name>
+			<mod>null</mod>
+		</event>
+		<event>
+			<name>ui_target_locked</name>
+			<mod>null</mod>
+		</event>
+		<event>
+			<name>ui_target_lost</name>
+			<mod>null</mod>
+		</event>
+		<event>
+			<name>ui_target_unlocked</name>
+			<mod>null</mod>
+		</event>
+		<!--InBattleCommunication - PC-->
+		<event>
+			<name>ibc_pc_ping_action</name>
+			<mod>ibc_pc_ping_attention_</mod>
+		</event>
+		<event>
 			<name>ibc_pc_ping_attention</name>
 			<mod>ibc_pc_ping_attention_</mod>
+		</event>
+		<event>
+			<name>ibc_pc_ping_cancel</name>
+			<mod>null</mod>
+		</event>
+		<event>
+			<name>ibc_pc_ping_highlight</name>
+			<mod>ibc_pc_ping_attention_</mod>
+		</event>
+		<event>
+			<name>ibc_pc_ping_reply</name>
+			<mod>ibc_pc_ping_attention_</mod>
+		</event>
+		<event>
+			<name>ibc_pc_ping_request</name>
+			<mod>ibc_pc_ping_attention_</mod>
+		</event>
+		<!--InBattleCommunication - NPC-->
+		<event>
+			<name>ibc_npc_ping_action</name>
+			<mod>ibc_npc_ping_attention_</mod>
 		</event>
 		<event>
 			<name>ibc_npc_ping_attention</name>
 			<mod>ibc_npc_ping_attention_</mod>
 		</event>
+		<event>
+			<name>ibc_npc_ping_reply</name>
+			<mod>ibc_npc_ping_attention_</mod>
+		</event>
+		<event>
+			<name>ibc_npc_ping_request</name>
+			<mod>ibc_npc_ping_attention_</mod>
+		</event>
+		<!--InBattleCommunication - Voiceover-->
 		<event>
 			<name>ibc_vo_npc_reply_affirmative</name>
 			<mod>null</mod>
@@ -134,51 +186,6 @@
 		</event>
 		<event>
 			<name>ibc_vo_pc_request_stop</name>
-			<mod>null</mod>
-		</event>
-		<event>
-			<name>expl_enemy_NPC</name>
-			<mod>null</mod>
-		</event>
-		<event>
-			<name>ui_target_locked</name>
-			<mod>null</mod>
-		</event>
-		<event>
-			<name>ui_target_lost</name>
-			<mod>null</mod>
-		</event>
-		<event>
-			<name>ui_target_unlocked</name>
-			<mod>null</mod>
-		</event>
-		<event>
-			<name>be_pre_replenishment</name>
-			<mod>null</mod>
-		<event>
-			<name>be_replenishment_full</name>
-			<mod>null</mod>
-		<event>
-			<name>ammo_bay_damaged</name>
-			<mod>null</mod>
-		<event>
-			<name>fuel_tank_damaged</name>
-			<mod>null</mod>
-		<event>
-			<name>crew_member_contusion</name>
-			<mod>null</mod>
-		<event>
-			<name>radio_damaged</name>
-			<mod>null</mod>
-		<event>
-			<name>surveying_devices_destroyed</name>
-			<mod>null</mod>
-		<event>
-			<name>ev_hullock_off</name>
-			<mod>null</mod>
-		</event>
-		<event>
-			<name>ev_hullock_on</name>
 			<mod>null</mod>
 		</event>
 	</events>
