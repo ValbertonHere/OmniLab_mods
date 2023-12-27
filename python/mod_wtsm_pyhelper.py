@@ -6,6 +6,7 @@ import BigWorld
 import nations
 import WWISE
 
+from random import randint
 from gui import InputHandler
 from gui import SystemMessages
 from Avatar import PlayerAvatar
@@ -18,12 +19,11 @@ from gui.IngameSoundNotifications import ComplexSoundNotifications
 from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import AmmoPlugin
 from gui.battle_control.battle_constants import VEHICLE_GUI_ITEMS, VEHICLE_VIEW_STATE
 
-
 # Класс констант мода
 class WTSM_CONSTS():
 
     IN_DEV = True
-    BUILD = '1223/2'
+    BUILD = '1223/4'
     VERSION = 'Release 9'
     UPD_NAME = 'Точка кипения'
     DIST_VALUES = [300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200, 1300]
@@ -49,19 +49,22 @@ class WTSM_CONSTS():
         'target_distance': 'SWITCH_target_distance',
         'target_hours': 'SWITCH_target_radial_hours',
         'battle_status': 'SWITCH_battle_status',
-        'shell_loaded': 'SWITCH_shell_loaded'
+        'shell_loaded': 'SWITCH_shell_loaded',
+        'shell_prepared': 'SWITCH_shell_prepared',
+        'team_correlation': 'SWITCH_team_correlation'
     }
 
 
 # Класс реализации дополнительных голосовых и звуковых уведомлений в очередь основных и прочего
 class WTSoundsStuff():
 
-    def __init__(self, name, chance='100', priority='50', predelay='0', lifetime='5'):
+    def __init__(self, name, fxEvent='null', chance='100', priority='50', predelay='0', lifetime='5'):
         self.name = name
         self.chance = chance
         self.predelay = predelay
         self.priority = priority
         self.lifetime = lifetime
+        self.fxEvent = fxEvent
 
     def addSoundNotification(self):
         wt_event = {
@@ -71,6 +74,7 @@ class WTSoundsStuff():
             'priority': self.priority,
             'lifetime': self.lifetime,
             'infEvent': 'vo_' + self.name,
+            'fxEvent': self.fxEvent,
             'queue': '1',
             'chance': '100',
             'interrupt': '0',
@@ -93,7 +97,8 @@ class WTSoundsStuff():
                 playerNation = vehicle.nationName
 
         WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['nation'], playerNation)
-
+    
+    # Функция расширенного управления озвучкой модулей на основе функции updateVehicleState в ctrl.onVehicleStateUpdated
     @staticmethod
     def updateVehicleState(state, value):
         if state in WTSM_CONSTS.VEH_STATES:
@@ -128,7 +133,43 @@ class WTSoundsStuff():
             cb_active = True
 
     @staticmethod
-    def isLMBDown(event):
+    def teamCorrelationVO():
+        global alive_allies, aiive_enemies, tcvo_callback
+
+        alive_allies = 0
+        aiive_enemies = 0
+        timer = randint(60, 300)
+        player_name = BigWorld.player().team
+        arena_vehicles = BigWorld.player().arena.vehicles
+        
+        for vehicle in arena_vehicles:
+            if arena_vehicles[vehicle]['isAlive'] == 1 and arena_vehicles[vehicle]['team'] == player_name:
+                alive_allies += 1
+            elif arena_vehicles[vehicle]['isAlive'] == 1 and arena_vehicles[vehicle]['team'] != player_name:
+                aiive_enemies += 1
+        
+        inDevLog('Alive allies: %s, alive enemies: %s' % (alive_allies, aiive_enemies))
+
+        if alive_allies > aiive_enemies and aiive_enemies <= 3:
+            BigWorld.player().soundNotifications.play('wt_allyDominating')
+        elif  alive_allies < aiive_enemies and alive_allies <= 3:
+            BigWorld.player().soundNotifications.play('wt_enemyDominating')
+        elif alive_allies < aiive_enemies:
+            BigWorld.player().soundNotifications.play('wt_enemyWinning')
+        elif alive_allies > aiive_enemies:
+            BigWorld.player().soundNotifications.play('wt_allyWinning')
+        
+        tcvo_callback = BigWorld.callback(timer, WTSoundsStuff.teamCorrelationVO)
+        inDevLog('TeamCorrelationVO callback set to %s seconds. CallbackID is %s' % (timer, tcvo_callback))
+
+    @staticmethod
+    def shellChangeVO(shellID):
+        nextShellKind = BigWorld.player().guiSessionProvider.shared.ammo.getGunSettings().getShellDescriptor(shellID).kind
+        WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['shell_prepared'], nextShellKind)
+        BigWorld.player().soundNotifications.play('wt_prepareShell')
+
+    @staticmethod
+    def lmbDownEvent(event):
         if isinstance(BigWorld.player(), PlayerAvatar):
             key = getBigworldNameFromKey(event.key)
             if key == 'KEY_MOUSE0':
@@ -141,18 +182,26 @@ class WTSoundsStuff():
     def setBattleStatusSwitch():
         global cb_active
 
-        if 100 * BigWorld.player().vehicle.health / BigWorld.player().vehicle.maxHealth > 35:
-            WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['battle_status'], 'exploring')
-            cb_active = False
+        if isinstance(BigWorld.player(), PlayerAvatar):
+            if 100 * BigWorld.player().vehicle.health / BigWorld.player().vehicle.maxHealth > 35:
+                WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['battle_status'], 'exploring')
+                cb_active = False
 
+    @staticmethod
+    def playHangarMusic():
+        SoundGroups.g_instance.playSound2D('wt_hangar_music')
+    
     @staticmethod
     def playBattleMusic():
         SoundGroups.g_instance.playSound2D('wt_battle_music')
 
+
     @staticmethod
-    def UPDVehState_init():
+    def updVehState_init():
         ctrl = BigWorld.player().guiSessionProvider.shared.vehicleState
         ctrl.onVehicleStateUpdated += WTSoundsStuff.updateVehicleState
+        BigWorld.player().guiSessionProvider.shared.ammo.onNextShellChanged += WTSoundsStuff.shellChangeVO
+
 
     # @staticmethod
     # def getHoursFromAngle(angle):
@@ -185,14 +234,19 @@ def addSoundNotifications():
     WTSoundsStuff('wt_battleWon').addSoundNotification()
     WTSoundsStuff('wt_battleLose').addSoundNotification()
     WTSoundsStuff('wt_battleState').addSoundNotification()
+    WTSoundsStuff('wt_allyWinning').addSoundNotification()
+    WTSoundsStuff('wt_enemyWinning').addSoundNotification()
     WTSoundsStuff('wt_leftTrackHit').addSoundNotification()
     WTSoundsStuff('wt_rightTrackHit').addSoundNotification()
+    WTSoundsStuff('wt_allyDominating').addSoundNotification()
+    WTSoundsStuff('wt_enemyDominating').addSoundNotification()
     WTSoundsStuff('wt_wheelHit', lifetime='0.5').addSoundNotification()
     WTSoundsStuff('wt_shootVoice', lifetime='1.2').addSoundNotification()
     WTSoundsStuff('wt_wheelRepaired', lifetime='0.5').addSoundNotification()
     WTSoundsStuff('wt_gunReloaded', chance='5', lifetime='1').addSoundNotification()
-    WTSoundsStuff('wt_weveBeenHit', chance='15', lifetime='1').addSoundNotification()
+    WTSoundsStuff('wt_weveBeenHit', chance='10', lifetime='1').addSoundNotification()
     WTSoundsStuff('wt_artWarning', predelay='0.5', lifetime='2').addSoundNotification()
+    WTSoundsStuff('wt_prepareShell', fxEvent='load_shell_fx', lifetime='1').addSoundNotification()
 
 # PLACEHOLDER: Получаем дистанции и угол до захваченной цели и переводим в смену свитчей в Wwise
 # def wtGetDistanceAndAngle(self, target, magnetic, *args, **kwargs):
@@ -211,11 +265,11 @@ def addSoundNotifications():
 
 # Реализация предупреждения огня арты на игрока
 def wtVOArtWarning(self, distToTarget, shooterPosition):
-    hookSPGnoti(self, distToTarget, shooterPosition)
+    h_notifyEnemySPGShotSound(self, distToTarget, shooterPosition)
     if isinstance(BigWorld.player(), PlayerAvatar):
         BigWorld.player().soundNotifications.play('wt_artWarning')
 
-def onGunReloadTimeSet(self, _, state, skipAutoLoader):
+def wtVOGunReloaded(self, _, state, skipAutoLoader):
     h_onGunReloadTimeSet(self, _, state, skipAutoLoader)
     isAutoReload = self._AmmoPlugin__guiSettings.hasAutoReload
     isInPostmortem = self.sessionProvider.shared.vehicleState.isInPostmortem
@@ -226,7 +280,7 @@ def onGunReloadTimeSet(self, _, state, skipAutoLoader):
         WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['shell_loaded'], shellKind)
         BigWorld.player().soundNotifications.play('wt_gunReloaded')
 
-def onGunAutoReloadTimeSet(self, state, stunned):
+def wtVOGunReloaded_auto(self, state, stunned):
     h_onGunAutoReloadTimeSet(self, state, stunned)
     isAutoReload = self._AmmoPlugin__guiSettings.hasAutoReload
     isInPostmortem = self.sessionProvider.shared.vehicleState.isInPostmortem
@@ -238,7 +292,7 @@ def onGunAutoReloadTimeSet(self, state, stunned):
         BigWorld.player().soundNotifications.play('wt_gunReloaded')
 
 # Реализация вызова музыки победы/поражения в конце боя (при появлении надписи "ПОБЕДА" или "ПОРАЖЕНИЕ")
-def wtWinLoseMusic(winnerTeam, *args, **kwargs):
+def wtBattleResult(winnerTeam, *args, **kwargs):
     if winnerTeam == BigWorld.player().team:
         SoundGroups.g_instance.playSound2D('wt_win_music')
         BigWorld.player().soundNotifications.play('wt_battleWon')
@@ -251,7 +305,7 @@ def onGUISpaceEntered(spaceID, *args, **kwargs):
         return
     
     global welcomeMessageSeen
-    
+
     g_currentVehicle.onChanged += WTSoundsStuff.setVehicleNation
     if not welcomeMessageSeen:
         SystemMessages.pushMessage('Вспомогательный скрипт загружен.<br>Необходимые параметры были применены.<br><br>Build %s' % WTSM_CONSTS.BUILD,
@@ -259,11 +313,22 @@ def onGUISpaceEntered(spaceID, *args, **kwargs):
             priority=True,
             messageData={'header': 'Унесённый громом войны<br>%s - "%s"' % (WTSM_CONSTS.VERSION, WTSM_CONSTS.UPD_NAME)})
         welcomeMessageSeen = True
+    
+    try:
+        BigWorld.cancelCallback(tcvo_callback)
+    except:
+        inDevLog('No Callback found')
 
-welcomeMessageSeen = False
+ally_frags = 0
+enemy_frags = 0
+ally_vehicles = 0
+enemy_vehicles = 0
+cb_active = False
+tcvo_callback = None
 isLTrackDestroyed = False
 isRTrackDestroyed = False
-cb_active = False
+welcomeMessageSeen = False
+
 
 print '[OMNILAB: WTSM] INIT START!'
 
@@ -278,32 +343,34 @@ inDevLog('Reset RTPCs - End')
 # Хуки функций
 inDevLog('Hook functions - Start')
 
-hookSPGnoti = ComplexSoundNotifications.notifyEnemySPGShotSound
+h_notifyEnemySPGShotSound = ComplexSoundNotifications.notifyEnemySPGShotSound
 ComplexSoundNotifications.notifyEnemySPGShotSound = wtVOArtWarning
 
 h_onGunReloadTimeSet = AmmoPlugin._AmmoPlugin__onGunReloadTimeSet
-AmmoPlugin._AmmoPlugin__onGunReloadTimeSet = onGunReloadTimeSet
+AmmoPlugin._AmmoPlugin__onGunReloadTimeSet = wtVOGunReloaded
 
 h_onGunAutoReloadTimeSet = AmmoPlugin._AmmoPlugin__onGunAutoReloadTimeSet
-AmmoPlugin._AmmoPlugin__onGunAutoReloadTimeSet = onGunAutoReloadTimeSet
+AmmoPlugin._AmmoPlugin__onGunAutoReloadTimeSet = wtVOGunReloaded_auto
 
 inDevLog('Hook functions - End')
 
 # Привязка к ивентам клиента
 inDevLog('Add to game events - Start')
 
-g_playerEvents.onRoundFinished += wtWinLoseMusic
+g_playerEvents.onRoundFinished += wtBattleResult
 g_playerEvents.onAvatarObserverVehicleChanged += WTSoundsStuff.setVehicleNation
 g_playerEvents.onAvatarReady += addSoundNotifications
 g_playerEvents.onAvatarReady += WTSoundsStuff.setVehicleNation
 g_playerEvents.onAvatarReady += WTSoundsStuff.setBattleStatusSwitch
-g_playerEvents.onAvatarReady += WTSoundsStuff.UPDVehState_init
+g_playerEvents.onAvatarReady += WTSoundsStuff.updVehState_init
+g_playerEvents.onAvatarReady += WTSoundsStuff.teamCorrelationVO
 g_playerEvents.onAvatarReady += WTSoundsStuff.playBattleMusic
 ServicesLocator.appLoader.onGUISpaceEntered += onGUISpaceEntered
-InputHandler.g_instance.onKeyDown += WTSoundsStuff.isLMBDown
+InputHandler.g_instance.onKeyDown += WTSoundsStuff.lmbDownEvent
 
 inDevLog('Add to game events - End')
 
+print '[OMNILAB: WTSM] INIT END!'
 
 print '----------OMNILAB RESEARCH & DEVELOPMENT-----------'
 print 'War Thunder Sound Mod for World of Tanks/Mir Tankov: %s (Build %s). Python Helper executed!' % (WTSM_CONSTS.VERSION, WTSM_CONSTS.BUILD)
