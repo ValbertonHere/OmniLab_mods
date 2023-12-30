@@ -22,6 +22,10 @@
                     "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/XMLs/voiceover_features.xml"
                 },
                 {
+                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/wt_images/wtsm_vo_spgshot.jpg",
+                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/XMLs/vo_spgshot.xml"
+                },
+                {
                     "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/wt_images/34.jpg",
                     "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/XMLs/pyhelper.xml"
                 }
