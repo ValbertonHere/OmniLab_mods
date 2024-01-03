@@ -3,7 +3,6 @@
 # Импорты модулей
 import SoundGroups
 import BigWorld
-import ResMgr
 import nations
 import WWISE
 
@@ -19,13 +18,12 @@ from skeletons.gui.app_loader import GuiGlobalSpaceID
 from gui.shared.utils.key_mapping import getBigworldNameFromKey
 from gui.IngameSoundNotifications import ComplexSoundNotifications
 from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import AmmoPlugin
-from gui.battle_control.battle_constants import VEHICLE_GUI_ITEMS, VEHICLE_VIEW_STATE
 
 # Класс констант мода
 class WTSM_CONSTS():
 
     IN_DEV = True
-    BUILD = '1223/4'
+    BUILD = '0124/3'
     VERSION = 'Release 9'
     UPD_NAME = 'Точка кипения'
     DIST_VALUES = [300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200, 1300]
