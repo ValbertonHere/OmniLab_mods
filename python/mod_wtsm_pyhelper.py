@@ -27,7 +27,7 @@ class WTSM_CONSTS():
     IN_DEV = True
     BUILD = '0124/3'
     VERSION = 'Release 9'
-    UPD_NAME = 'Точка кипения'
+    UPD_NAME = 'Эпицентр'
     DIST_VALUES = [300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200, 1300]
     A2H = {0: '12h', 30: '1h', 60: '2h', 90: '3h', 120: '4h', 150: '5h', 180: '6h', 210: '7h', 240: '8h', 270: '9h', 300: '10h', 330: '11h', 360: '12h'}
 
@@ -55,31 +55,23 @@ class WTSM_CONSTS():
         'battle_status': 'SWITCH_battle_status',
         'shell_loaded': 'SWITCH_shell_loaded',
         'shell_prepared': 'SWITCH_shell_prepared',
-        'team_correlation': 'SWITCH_team_correlation'
+        'team_correlation': 'SWITCH_team_correlation',
+        'engine_event': 'SWITCH_engine_event'
     }
-
-
 
 # Класс реализации дополнительных голосовых и звуковых уведомлений в очередь основных и прочего
 class WTSoundsStuff():
-    
-    def __init__(self, name, fxEvent='null', chance='100', priority='50', predelay='0', lifetime='5'):
-        self.name = name
-        self.chance = chance
-        self.predelay = predelay
-        self.priority = priority
-        self.lifetime = lifetime
-        self.fxEvent = fxEvent
 
-    def addSoundNotification(self):
+    @staticmethod
+    def addEvent(name, fxEvent='null', chance='100', priority='50', predelay='0', lifetime='5'):
         wt_event = {
-            'name': self.name,
-            'infChance': self.chance,
-            'predelay': self.predelay,
-            'priority': self.priority,
-            'lifetime': self.lifetime,
-            'infEvent': 'vo_' + self.name,
-            'fxEvent': self.fxEvent,
+            'name': name,
+            'fxEvent': fxEvent,
+            'infChance': chance,
+            'predelay': predelay,
+            'priority': priority,
+            'lifetime': lifetime,
+            'infEvent': 'vo_%s' % name,
             'queue': '1',
             'chance': '100',
             'interrupt': '0',
@@ -92,6 +84,8 @@ class WTSoundsStuff():
     @staticmethod
     def setVehicleNation():
         if isinstance(BigWorld.player(), PlayerAvatar):
+            eng_event = BigWorld.player().vehicle.typeDescriptor.engine.sounds.getEvents()[0].split('eng_')[-1].split('_pc')[0]
+            WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['engine_event'], eng_event)
             for nationName, nationID in nations.INDICES.items():
                 if nationID == BigWorld.player().vehicle.typeDescriptor.type.id[0]:
                     playerNation = nationName
@@ -105,26 +99,28 @@ class WTSoundsStuff():
 
     @staticmethod
     def onHealthChanged(attackedID, *args, **kwargs):
-        global cb_active
+        global combat_callbacks
 
-        if cb_active:
-            return
-        
         if attackedID == BigWorld.player():
             BigWorld.player().soundNotifications.play('wt_weveBeenHit')
             WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['battle_status'], 'combat')
-            BigWorld.callback(30, WTSoundsStuff.setBattleStatusSwitch)
-            cb_active = True
+            WTSoundsStuff.clearAllCallbacks()
+            combat_callbacks.append(BigWorld.callback(30, WTSoundsStuff.setBattleStatusSwitch))
  
     @staticmethod
     def teamCorrelationVO():
-        global alive_allies, aiive_enemies, tcvo_callback
+        global tcvo_callbacks, tcvo_first
 
         alive_allies = 0
         aiive_enemies = 0
-        timer = randint(60, 300)
+        cooldown = randint(60, 300)
         player_name = BigWorld.player().team
         arena_vehicles = BigWorld.player().arena.vehicles
+
+        if tcvo_first:
+            tcvo_first = False
+            tcvo_callbacks.append(BigWorld.callback(cooldown, WTSoundsStuff.teamCorrelationVO))
+            return
         
         for vehicle in arena_vehicles:
             if arena_vehicles[vehicle]['isAlive'] == 1 and arena_vehicles[vehicle]['team'] == player_name:
@@ -143,18 +139,23 @@ class WTSoundsStuff():
         elif alive_allies > aiive_enemies:
             BigWorld.player().soundNotifications.play('wt_allyWinning')
         
-        tcvo_callback = BigWorld.callback(timer, WTSoundsStuff.teamCorrelationVO)
-        inDevLog('TeamCorrelationVO callback set to %s seconds. CallbackID is %s' % (timer, tcvo_callback))
+        tcvo_callbacks.append(BigWorld.callback(cooldown, WTSoundsStuff.teamCorrelationVO))
 
     @staticmethod
     def shellChangeVO(shellID):
+        global shell_change_first
+
+        if shell_change_first:
+            shell_change_first = False
+            return
+        
         nextShellKind = BigWorld.player().guiSessionProvider.shared.ammo.getGunSettings().getShellDescriptor(shellID).kind
         WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['shell_prepared'], nextShellKind)
         BigWorld.player().soundNotifications.play('wt_prepareShell')
-
+        
     @staticmethod
     def lmbDownEvent(event):
-        if isinstance(BigWorld.player(), PlayerAvatar):
+        if isinstance(BigWorld.player(), PlayerAvatar) and BigWorld.player().arena.period == ARENA_PERIOD.BATTLE:
             key = getBigworldNameFromKey(event.key)
             if key == 'KEY_MOUSE0':
                 reloadTimeLeft = BigWorld.player().guiSessionProvider.shared.ammo.getGunReloadingState().getTimeLeft()
@@ -164,17 +165,86 @@ class WTSoundsStuff():
 
     @staticmethod
     def setBattleStatusSwitch():
-        global cb_active
-
         if isinstance(BigWorld.player(), PlayerAvatar):
             if 100 * BigWorld.player().vehicle.health / BigWorld.player().vehicle.maxHealth > 35:
                 WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['battle_status'], 'exploring')
-                cb_active = False
+                WTSoundsStuff.clearAllCallbacks()
     
     @staticmethod
-    def playBattleMusic():
-        BigWorld.player().guiSessionProvider.shared.ammo.onNextShellChanged += WTSoundsStuff.shellChangeVO
+    def clearAllCallbacks(tcvo=False):
+        global combat_callbacks, tcvo_callbacks
+
+        for cb in combat_callbacks:
+            try:
+                combat_callbacks.remove(cb)
+                BigWorld.cancelCallback(cb)
+            except: inDevLog('No Callbacks found. First time, huh?')
+            else: inDevLog('Callback removed - %s' % cb)
+        
+        if tcvo:
+            for cb in tcvo_callbacks:
+                try:
+                    tcvo_callbacks.remove(cb)
+                    BigWorld.cancelCallback(cb)
+                except: inDevLog('No Callbacks found. First time, huh?')
+                else: inDevLog('Callback removed - %s' % cb)
+
+    @staticmethod
+    def onGUISpaceEntered(spaceID, *args, **kwargs):
+        if spaceID != GuiGlobalSpaceID.LOBBY:
+            return
+        
+        global welcomeMessageSeen, shell_change_first, tcvo_first
+
+        g_currentVehicle.onChanged += WTSoundsStuff.setVehicleNation
+        
+        if not welcomeMessageSeen:
+            SystemMessages.pushMessage('Вспомогательный скрипт загружен.<br>Необходимые параметры были применены.<br><br>Build %s' % WTSM_CONSTS.BUILD,
+                SystemMessages.SM_TYPE.InformationHeader,
+                priority=True,
+                messageData={'header': 'Унесённый громом войны<br>%s - "%s"' % (WTSM_CONSTS.VERSION, WTSM_CONSTS.UPD_NAME)})
+            welcomeMessageSeen = True
+        
+        shell_change_first = True
+        tcvo_first = True
+
+        SoundGroups.g_instance.playSound2D('mt_hangar_music_stop')
+        SoundGroups.g_instance.playSound2D('wt_hangar_music')
+        WTSoundsStuff.clearAllCallbacks(True)
+
+    @staticmethod
+    def afterArenaLoad():
+        WTSoundsStuff.addEvent('wt_battleWon')
+        WTSoundsStuff.addEvent('wt_battleLose')
+        WTSoundsStuff.addEvent('wt_allyWinning')
+        WTSoundsStuff.addEvent('wt_enemyWinning')
+        WTSoundsStuff.addEvent('wt_leftTrackHit')
+        WTSoundsStuff.addEvent('wt_rightTrackHit')
+        WTSoundsStuff.addEvent('wt_allyDominating')
+        WTSoundsStuff.addEvent('wt_enemyDominating')
+        WTSoundsStuff.addEvent('wt_wheelHit', lifetime='0.5')
+        WTSoundsStuff.addEvent('wt_shootVoice', lifetime='0.2')
+        WTSoundsStuff.addEvent('wt_wheelRepaired', lifetime='0.5')
+        WTSoundsStuff.addEvent('wt_gunReloaded', chance='5', lifetime='0')
+        WTSoundsStuff.addEvent('wt_weveBeenHit', chance='10', lifetime='0')
+        WTSoundsStuff.addEvent('wt_artWarning', predelay='0.5', lifetime='1.5')
+        WTSoundsStuff.addEvent('wt_prepareShell', fxEvent='load_shell_fx', lifetime='0')
+
+        WTSoundsStuff.teamCorrelationVO()
         SoundGroups.g_instance.playSound2D('wt_battle_music')
+        BigWorld.player().arena.onVehicleHealthChanged += WTSoundsStuff.onHealthChanged
+        BigWorld.player().guiSessionProvider.shared.ammo.onNextShellChanged += WTSoundsStuff.shellChangeVO
+
+    @staticmethod
+    def onBattleFinished(winnerTeam, *args, **kwargs):
+        WTSoundsStuff.clearAllCallbacks(True)
+
+        if winnerTeam == BigWorld.player().team:
+            SoundGroups.g_instance.playSound2D('wt_win_music')
+            BigWorld.player().soundNotifications.play('wt_battleWon')
+        else:
+            SoundGroups.g_instance.playSound2D('wt_lose_music')
+            BigWorld.player().soundNotifications.play('wt_battleLose')
 
     @staticmethod
     def setRTPC(name, value):
@@ -201,19 +271,16 @@ def inDevLog(message):
 @overrideMethod(PlayerAvatar, 'onObservedByEnemy')
 def onObservedByEnemy(base, self, vehicleID):
     base(self, vehicleID)
-    global cb_active
-    
-    if cb_active:
-        return
+    global combat_callbacks
     
     WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['battle_status'], 'combat')
-    BigWorld.callback(30, WTSoundsStuff.setBattleStatusSwitch)
-    cb_active = True
+    WTSoundsStuff.clearAllCallbacks()
+    combat_callbacks.append(BigWorld.callback(30, WTSoundsStuff.setBattleStatusSwitch))
 
 @overrideMethod(PlayerAvatar, '__showDamageIconAndPlaySound')
 def devicesVO(base, self, damageCode, extra, *args, **kwargs):
     base(self, damageCode, extra, *args, **kwargs)
-    global cb_active
+    global combat_callbacks
 
     if damageCode not in ('DEVICE_REPAIRED', 'DEVICE_REPAIRED_TO_CRITICAL'):
         BigWorld.player().soundNotifications.play('wt_weveBeenHit')
@@ -227,12 +294,10 @@ def devicesVO(base, self, damageCode, extra, *args, **kwargs):
     
     if damageCode == 'DEVICE_REPAIRED' and extra.name[:-len('Health')].startswith('wheel'):
         BigWorld.player().soundNotifications.play('wt_wheelRepaired')
-    if cb_active:
-        return
     
     WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['battle_status'], 'combat')
-    BigWorld.callback(30, WTSoundsStuff.setBattleStatusSwitch)
-    cb_active = True
+    WTSoundsStuff.clearAllCallbacks()
+    combat_callbacks.append(BigWorld.callback(30, WTSoundsStuff.setBattleStatusSwitch))
 
 # Реализация предупреждения огня арты на игрока
 @overrideMethod(ComplexSoundNotifications, 'notifyEnemySPGShotSound')
@@ -265,67 +330,11 @@ def wtVOGunReloaded_auto(base, self, state, stunned):
         WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['shell_loaded'], shellKind)
         BigWorld.player().soundNotifications.play('wt_gunReloaded')
 
-# Реализация вызова музыки победы/поражения в конце боя (при появлении надписи "ПОБЕДА" или "ПОРАЖЕНИЕ")
-def wtBattleResult(winnerTeam, *args, **kwargs):
-    if winnerTeam == BigWorld.player().team:
-        SoundGroups.g_instance.playSound2D('wt_win_music')
-        BigWorld.player().soundNotifications.play('wt_battleWon')
-    else:
-        SoundGroups.g_instance.playSound2D('wt_lose_music')
-        BigWorld.player().soundNotifications.play('wt_battleLose')
-
-def onGUISpaceEntered(spaceID, *args, **kwargs):
-    if spaceID != GuiGlobalSpaceID.LOBBY:
-        return
-    
-    global welcomeMessageSeen
-
-    g_currentVehicle.onChanged += WTSoundsStuff.setVehicleNation
-    if not welcomeMessageSeen:
-        SystemMessages.pushMessage('Вспомогательный скрипт загружен.<br>Необходимые параметры были применены.<br><br>Build %s' % WTSM_CONSTS.BUILD,
-            SystemMessages.SM_TYPE.InformationHeader,
-            priority=True,
-            messageData={'header': 'Унесённый громом войны<br>%s - "%s"' % (WTSM_CONSTS.VERSION, WTSM_CONSTS.UPD_NAME)})
-        welcomeMessageSeen = True
-    
-    try:
-        BigWorld.cancelCallback(tcvo_callback)
-    except:
-        inDevLog('No Callback found')
-    
-    SoundGroups.g_instance.playSound2D('mt_hangar_music_stop')
-    SoundGroups.g_instance.playSound2D('wt_hangar_music')
-
-# Добавление дополнительных звуковых уведомлений
-def addSoundNotifications():
-    WTSoundsStuff('wt_battleWon').addSoundNotification()
-    WTSoundsStuff('wt_battleLose').addSoundNotification()
-    WTSoundsStuff('wt_battleState').addSoundNotification()
-    WTSoundsStuff('wt_allyWinning').addSoundNotification()
-    WTSoundsStuff('wt_enemyWinning').addSoundNotification()
-    WTSoundsStuff('wt_leftTrackHit').addSoundNotification()
-    WTSoundsStuff('wt_rightTrackHit').addSoundNotification()
-    WTSoundsStuff('wt_allyDominating').addSoundNotification()
-    WTSoundsStuff('wt_enemyDominating').addSoundNotification()
-    WTSoundsStuff('wt_wheelHit', lifetime='0.5').addSoundNotification()
-    WTSoundsStuff('wt_shootVoice', lifetime='1.2').addSoundNotification()
-    WTSoundsStuff('wt_wheelRepaired', lifetime='0.5').addSoundNotification()
-    WTSoundsStuff('wt_gunReloaded', chance='5', lifetime='0').addSoundNotification()
-    WTSoundsStuff('wt_weveBeenHit', chance='10', lifetime='0').addSoundNotification()
-    WTSoundsStuff('wt_artWarning', predelay='0.5', lifetime='2').addSoundNotification()
-    WTSoundsStuff('wt_prepareShell', fxEvent='load_shell_fx', lifetime='0').addSoundNotification()
-
-
-ally_frags = 0
-enemy_frags = 0
-ally_vehicles = 0
-enemy_vehicles = 0
-cb_active = False
-tcvo_callback = None
-isLTrackDestroyed = False
-isRTrackDestroyed = False
+tcvo_first = True
+tcvo_callbacks = []
+combat_callbacks = []
+shell_change_first = True
 welcomeMessageSeen = False
-
 
 print '[OMNILAB: WTSM] INIT START!'
 
@@ -340,15 +349,13 @@ inDevLog('Reset RTPCs - End')
 # Привязка к ивентам клиента
 inDevLog('Add to game events - Start')
 
-g_playerEvents.onRoundFinished += wtBattleResult
-g_playerEvents.onAvatarObserverVehicleChanged += WTSoundsStuff.setVehicleNation
-g_playerEvents.onAvatarReady += addSoundNotifications
+g_playerEvents.onAvatarReady += WTSoundsStuff.afterArenaLoad
 g_playerEvents.onAvatarReady += WTSoundsStuff.setVehicleNation
-g_playerEvents.onAvatarReady += WTSoundsStuff.setBattleStatusSwitch
-g_playerEvents.onAvatarReady += WTSoundsStuff.teamCorrelationVO
-g_playerEvents.onAvatarReady += WTSoundsStuff.playBattleMusic
-ServicesLocator.appLoader.onGUISpaceEntered += onGUISpaceEntered
+g_playerEvents.onRoundFinished += WTSoundsStuff.onBattleFinished
+g_playerEvents.onAvatarObserverVehicleChanged += WTSoundsStuff.setVehicleNation
+
 InputHandler.g_instance.onKeyDown += WTSoundsStuff.lmbDownEvent
+ServicesLocator.appLoader.onGUISpaceEntered += WTSoundsStuff.onGUISpaceEntered
 
 inDevLog('Add to game events - End')
 
@@ -362,7 +369,7 @@ print '----------OMNILAB RESEARCH & DEVELOPMENT-----------'
 if WTSM_CONSTS.IN_DEV:
     import GUI
 
-    t_gui = GUI.Text('War Thunder Sound Mod\ninDev 9\n\nBuild 0124/3')
+    t_gui = GUI.Text('War Thunder Sound Mod\ninDev 9\n\n%s' % WTSM_CONSTS.BUILD)
     t_gui.multiline = True
     t_gui.position = (-0.982, -0.91, 0)
     t_gui.font = 'system_medium.font'
