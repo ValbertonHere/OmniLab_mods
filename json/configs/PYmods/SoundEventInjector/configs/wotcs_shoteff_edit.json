@@ -83,7 +83,10 @@
 			"_105mm_D_1504_EBR": {
 				"effects": "shot_mainext"
 			},
-			"_105mm_v_105mm_D1504_4_1z_38N_auto": {
+			"_105mm_vz_38N_auto": {
+				"effects": "shot_mainext"
+			},
+			"_105mm_D1504_4_1": {
 				"effects": "shot_mainext"
 			},
 			"_105mm_D_1504_EBR_2": {
