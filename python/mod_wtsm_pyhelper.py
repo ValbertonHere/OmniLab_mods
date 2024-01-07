@@ -8,6 +8,7 @@ import WWISE
 
 from OpenModsCore import overrideMethod
 
+from Math import Matrix
 from random import randint
 from gui import InputHandler
 from gui import SystemMessages
@@ -15,6 +16,7 @@ from Avatar import PlayerAvatar
 from constants import ARENA_PERIOD
 from PlayerEvents import g_playerEvents
 from CurrentVehicle import g_currentVehicle
+from gui.battle_control import avatar_getter
 from gui.shared.personality import ServicesLocator
 from skeletons.gui.app_loader import GuiGlobalSpaceID
 from gui.shared.utils.key_mapping import getBigworldNameFromKey
@@ -28,7 +30,7 @@ class WTSM_CONSTS():
     BUILD = '0124/3'
     VERSION = 'Release 9'
     UPD_NAME = 'Эпицентр'
-    DIST_VALUES = [300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200, 1300]
+    DIST_VALUES = [300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200]
     A2H = {0: '12h', 30: '1h', 60: '2h', 90: '3h', 120: '4h', 150: '5h', 180: '6h', 210: '7h', 240: '8h', 270: '9h', 300: '10h', 330: '11h', 360: '12h'}
 
     DEVICE_CRIT_CODES = {
@@ -100,7 +102,7 @@ class WTSoundsStuff():
     @staticmethod
     def onHealthChanged(attackedID, *args, **kwargs):
         global combat_callbacks
-
+        
         if attackedID == BigWorld.player():
             BigWorld.player().soundNotifications.play('wt_weveBeenHit')
             WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['battle_status'], 'combat')
@@ -205,12 +207,13 @@ class WTSoundsStuff():
                 messageData={'header': 'Унесённый громом войны<br>%s - "%s"' % (WTSM_CONSTS.VERSION, WTSM_CONSTS.UPD_NAME)})
             welcomeMessageSeen = True
         
-        shell_change_first = True
         tcvo_first = True
+        shell_change_first = True
 
-        SoundGroups.g_instance.playSound2D('mt_hangar_music_stop')
-        SoundGroups.g_instance.playSound2D('wt_hangar_music')
         WTSoundsStuff.clearAllCallbacks(True)
+        SoundGroups.g_instance.playSound2D('wt_hangar_music')
+        SoundGroups.g_instance.playSound2D('mt_hangar_music_stop')
+        WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['battle_status'], 'exploring')
 
     @staticmethod
     def afterArenaLoad():
@@ -225,6 +228,8 @@ class WTSoundsStuff():
         WTSoundsStuff.addEvent('wt_wheelHit', lifetime='0.5')
         WTSoundsStuff.addEvent('wt_shootVoice', lifetime='0.2')
         WTSoundsStuff.addEvent('wt_wheelRepaired', lifetime='0.5')
+        WTSoundsStuff.addEvent('wt_targetLockedFar', lifetime='1')
+        WTSoundsStuff.addEvent('wt_targetLockedNear', lifetime='1')
         WTSoundsStuff.addEvent('wt_gunReloaded', chance='5', lifetime='0')
         WTSoundsStuff.addEvent('wt_weveBeenHit', chance='10', lifetime='0')
         WTSoundsStuff.addEvent('wt_artWarning', predelay='0.5', lifetime='1.5')
@@ -247,6 +252,20 @@ class WTSoundsStuff():
             BigWorld.player().soundNotifications.play('wt_battleLose')
 
     @staticmethod
+    def getHoursFromAngle(target):
+        tgPos = target.position
+        playerPos = BigWorld.player().getOwnVehiclePosition()
+        playerMatrix = Matrix(BigWorld.player().getOwnVehicleMatrix())
+        pointDir = tgPos - playerPos
+        pointDir.normalise()
+        yawAngleRad = pointDir.yaw - playerMatrix.yaw
+        yawAngleDeg = yawAngleRad * 180/3.14
+        if yawAngleDeg < 0:
+            yawAngleDeg = 360 - abs(yawAngleDeg)
+
+        return WTSM_CONSTS.A2H[min(sorted(WTSM_CONSTS.A2H.keys()), key=lambda x: abs(x-yawAngleDeg))]
+
+    @staticmethod
     def setRTPC(name, value):
         WWISE.WW_setRTCPGlobal(name, value)
         inDevLog('Value of %s has been set to %s.' % (name, value))
@@ -261,7 +280,7 @@ class WTSoundsStuff():
         WWISE.WW_setSwitch(group, '%s_%s' % (group, switch))
         inDevLog('Value of %s has been set to %s.' % (group, switch))
 
-    
+
 # Вывод всяких сообщений в python.log для отладки
 def inDevLog(message):
     if WTSM_CONSTS.IN_DEV:
@@ -330,6 +349,22 @@ def wtVOGunReloaded_auto(base, self, state, stunned):
         WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['shell_loaded'], shellKind)
         BigWorld.player().soundNotifications.play('wt_gunReloaded')
 
+@overrideMethod(PlayerAvatar, 'autoAim')
+def wtAutoAim(base, self, target=None, magnetic=False):
+  base(self, target, magnetic)
+
+  if target is not None and target.isAlive() and target.publicInfo['team'] != self.team:
+    dist = avatar_getter.getDistanceToTarget(target)
+    corr_angle = WTSoundsStuff.getHoursFromAngle(target)
+    WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['target_hours'], corr_angle)
+
+    if dist < WTSM_CONSTS.DIST_VALUES[0]:
+        BigWorld.player().soundNotifications.play('wt_targetLockedNear')
+    else:
+        corr_dist = min(WTSM_CONSTS.DIST_VALUES, key=lambda x: abs(x-dist))
+        WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['target_distance'], corr_dist)
+        BigWorld.player().soundNotifications.play('wt_targetLockedFar')
+
 tcvo_first = True
 tcvo_callbacks = []
 combat_callbacks = []
@@ -375,26 +410,3 @@ if WTSM_CONSTS.IN_DEV:
     t_gui.font = 'system_medium.font'
     t_gui.horizontalAnchor = GUI.Text.eHAnchor.LEFT
     GUI.addRoot(t_gui)
-
-# ----------------------------------------------------------------------------------------------------------------------------------------------
-
-# Неиспользуемые функции, которые сейчас доделать не представляется возможным.
-
-# PLACEHOLDER: Получаем дистанции и угол до захваченной цели и переводим в смену свитчей в Wwise
-# def wtGetDistanceAndAngle(self, target, magnetic, *args, **kwargs):
-    # h_autoAim(self, target, magnetic)
-    # if target is not None:
-        # dist = avatar_getter.getDistanceToTarget(target)
-        # if dist < WTSM_CONSTS.DIST_VALUES[0]:
-            # corr_dist = 'near'
-        # else:
-            # corr_dist = min(WTSM_CONSTS.DIST_VALUES, key=lambda x: abs(x-dist))
-
-        # angle = 'placeholder'
-
-        # WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['target_distance'], corr_dist)
-        # WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['target_hours'], WTSoundsStuff.getHoursFromAngle(angle))
-
-# @staticmethod
-# def getHoursFromAngle(angle):
-#     return WTSM_CONSTS.A2H[min(sorted(WTSM_CONSTS.A2H.keys()), key=lambda x: abs(x-angle))]
