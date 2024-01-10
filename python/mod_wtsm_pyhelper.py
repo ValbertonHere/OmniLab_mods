@@ -9,10 +9,10 @@ import WWISE
 from OpenModsCore import overrideMethod
 
 from Math import Matrix
-from random import randint
 from gui import InputHandler
 from gui import SystemMessages
 from Avatar import PlayerAvatar
+from random import randint, choice
 from constants import ARENA_PERIOD
 from PlayerEvents import g_playerEvents
 from CurrentVehicle import g_currentVehicle
@@ -58,7 +58,51 @@ class WTSM_CONSTS():
         'shell_loaded': 'SWITCH_shell_loaded',
         'shell_prepared': 'SWITCH_shell_prepared',
         'team_correlation': 'SWITCH_team_correlation',
-        'engine_event': 'SWITCH_engine_event'
+        'engine_event': 'SWITCH_engine_event',
+        'crew_voice': 'SWITCH_crew_voice'
+    }
+
+    CREW_VOICELINES = {
+        'vo_ammo_bay_damaged': 'loader',
+        'vo_commander_killed': ('driver', 'gunner', 'loader'),
+        'vo_driver_killed': ('gunner', 'loader'),
+        'vo_enemy_hp_damaged_by_explosion_at_direct_hit_by_player': 'driver',
+        'vo_enemy_hp_damaged_by_projectile_and_chassis_damaged_by_player': 'driver',
+        'vo_enemy_hp_damaged_by_projectile_and_gun_damaged_by_player': 'driver',
+        'vo_enemy_hp_damaged_by_projectile_by_player': 'driver',
+        'vo_enemy_killed_by_player': 'driver',
+        'vo_engine_damaged': 'driver',
+        'vo_engine_destroyed': 'driver',
+        'vo_engine_functional': 'driver',
+        'vo_fire_started': ('driver', 'gunner', 'loader'),
+        'vo_fire_stopped': ('driver', 'gunner', 'loader'),
+        'vo_fuel_tank_damaged': 'driver',
+        'vo_gun_damaged': 'gunner',
+        'vo_gun_destroyed': 'gunner',
+        'vo_gun_functional': 'gunner',
+        'vo_gunner_killed': ('driver', 'loader'),
+        'vo_loader_killed': ('driver', 'gunner'),
+        'vo_radio_damaged': 'driver',
+        'vo_radioman_killed': 'gunner',
+        'vo_track_destroyed': 'driver',
+        'vo_track_functional': 'driver',
+        'vo_track_functional_can_move': 'driver',
+        'vo_turret_rotator_damaged': 'gunner',
+        'vo_turret_rotator_destroyed': 'gunner',
+        'vo_turret_rotator_functional': 'gunner',
+        'vo_wt_artWarning': 'chief_m',
+        'vo_wt_battleLose': 'chief_m',
+        'vo_wt_battleWon': 'chief_m',
+        'vo_wt_gunReloaded': 'loader',
+        'vo_wt_leftTrackHit': 'driver',
+        'vo_wt_prepareShell': 'commander',
+        'vo_wt_rightTrackHit': 'driver',
+        'vo_wt_shootVoice': ('commander', 'loader'),
+        'vo_wt_targetLockedFar': 'commander',
+        'vo_wt_targetLockedNear': 'commander',
+        'vo_wt_weveBeenHit': ('driver', 'gunner', 'loader'),
+        'vo_wt_wheelHit': 'driver',
+        'vo_wt_wheelRepaired': 'driver'
     }
 
 # Класс реализации дополнительных голосовых и звуковых уведомлений в очередь основных и прочего
@@ -234,16 +278,17 @@ class WTSoundsStuff():
         WTSoundsStuff.addEvent('wt_weveBeenHit', chance='10', lifetime='0')
         WTSoundsStuff.addEvent('wt_artWarning', predelay='0.5', lifetime='1.5')
         WTSoundsStuff.addEvent('wt_prepareShell', fxEvent='load_shell_fx', lifetime='0')
-
+        
         WTSoundsStuff.teamCorrelationVO()
         SoundGroups.g_instance.playSound2D('wt_battle_music')
+
         BigWorld.player().arena.onVehicleHealthChanged += WTSoundsStuff.onHealthChanged
         BigWorld.player().guiSessionProvider.shared.ammo.onNextShellChanged += WTSoundsStuff.shellChangeVO
 
     @staticmethod
     def onBattleFinished(winnerTeam, *args, **kwargs):
         WTSoundsStuff.clearAllCallbacks(True)
-
+        SoundGroups.g_instance.playSound2D('wt_battle_end')
         if winnerTeam == BigWorld.player().team:
             SoundGroups.g_instance.playSound2D('wt_win_music')
             BigWorld.player().soundNotifications.play('wt_battleWon')
@@ -264,6 +309,11 @@ class WTSoundsStuff():
             yawAngleDeg = 360 - abs(yawAngleDeg)
 
         return WTSM_CONSTS.A2H[min(sorted(WTSM_CONSTS.A2H.keys()), key=lambda x: abs(x-yawAngleDeg))]
+
+    @staticmethod
+    def onCrewVoiceEnded(*args, **kwargs):
+        SoundGroups.g_instance.playSound2D('wt_static_stop')
+        SoundGroups.g_instance.playSound2D('wt_end_click')
 
     @staticmethod
     def setRTPC(name, value):
@@ -353,7 +403,7 @@ def wtVOGunReloaded_auto(base, self, state, stunned):
 def wtAutoAim(base, self, target=None, magnetic=False):
   base(self, target, magnetic)
 
-  if target is not None and target.isAlive() and target.publicInfo['team'] != self.team:
+  if target is not None and target.isAlive() and target.publicInfo['team'] != self.team and self._PlayerAvatar__autoAimVehID == target.id:
     dist = avatar_getter.getDistanceToTarget(target)
     corr_angle = WTSoundsStuff.getHoursFromAngle(target)
     WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['target_hours'], corr_angle)
@@ -364,6 +414,22 @@ def wtAutoAim(base, self, target=None, magnetic=False):
         corr_dist = min(WTSM_CONSTS.DIST_VALUES, key=lambda x: abs(x-dist))
         WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['target_distance'], corr_dist)
         BigWorld.player().soundNotifications.play('wt_targetLockedFar')
+
+@overrideMethod(SoundGroups.g_instance, 'WWgetSound')
+def wtVoiceCallback(base, eventName, objectName, matrix, local=(0.0, 0.0, 0.0)):
+    global sound
+    if eventName in WTSM_CONSTS.CREW_VOICELINES:
+        if type(WTSM_CONSTS.CREW_VOICELINES[eventName]) == tuple:
+            crew_voice = choice(WTSM_CONSTS.CREW_VOICELINES[eventName])
+        else:
+            crew_voice = WTSM_CONSTS.CREW_VOICELINES[eventName]
+        WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['crew_voice'], crew_voice)
+        sound = WWISE.WW_getSound(eventName, objectName, matrix, local)
+        sound.setCallback(WTSoundsStuff.onCrewVoiceEnded)
+        sound.play()
+        return base('wt_static', objectName, matrix, local)
+    else:
+        return base(eventName, objectName, matrix, local)
 
 tcvo_first = True
 tcvo_callbacks = []
