@@ -242,7 +242,9 @@ class WTSoundsStuff():
 
     @staticmethod
     def onBattleStart(period, *args, **kwargs):
-        if period == ARENA_PERIOD.BATTLE:
+        global battle_started
+        if period == ARENA_PERIOD.BATTLE and not battle_started:
+            battle_started = True
             BigWorld.player().soundNotifications.play('wt_chief_battle_start')
             BigWorld.player().soundNotifications.play('wt_comm_battle_start')
             BigWorld.player().soundNotifications.play('wt_driver_ready')
@@ -276,6 +278,8 @@ class WTSoundsStuff():
 
     @staticmethod
     def afterArenaLoad():
+        global battle_started
+
         WTSoundsStuff.addEvent('wt_battle_won')
         WTSoundsStuff.addEvent('wt_battle_lose')
         WTSoundsStuff.addEvent('wt_ally_winning')
@@ -294,14 +298,15 @@ class WTSoundsStuff():
         WTSoundsStuff.addEvent('wt_art_warning', predelay='0.5', lifetime='1.5')
         WTSoundsStuff.addEvent('wt_driver_ready', priority='1000', lifetime='10')
         WTSoundsStuff.addEvent('wt_gunner_ready', priority='1000', lifetime='10')
-        WTSoundsStuff.addEvent('wt_loader_ready', priority='1000', lifetime='10')
         WTSoundsStuff.addEvent('wt_comm_battle_start', priority='1000', lifetime='10')
         WTSoundsStuff.addEvent('wt_chief_battle_start', priority='1000', lifetime='10')
         WTSoundsStuff.addEvent('wt_prepare_shell', fxEvent='load_shell_fx', lifetime='0')
+        WTSoundsStuff.addEvent('wt_loader_ready', priority='1000', lifetime='10', chance='15')
         
         WTSoundsStuff.teamCorrelationVO()
         SoundGroups.g_instance.playSound2D('wt_battle_music')
 
+        battle_started = False
         BigWorld.player().arena.onVehicleHealthChanged += WTSoundsStuff.onHealthChanged
         BigWorld.player().guiSessionProvider.shared.ammo.onNextShellChanged += WTSoundsStuff.shellChangeVO
 
