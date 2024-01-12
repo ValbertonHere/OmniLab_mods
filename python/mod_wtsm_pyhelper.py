@@ -27,7 +27,7 @@ from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import AmmoPlugin
 class WTSM_CONSTS():
 
     IN_DEV = True
-    BUILD = '0124/3'
+    BUILD = '0124/6'
     VERSION = 'Release 9'
     UPD_NAME = 'Эпицентр'
     DIST_VALUES = [300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200]
@@ -90,19 +90,24 @@ class WTSM_CONSTS():
         'vo_turret_rotator_damaged': 'gunner',
         'vo_turret_rotator_destroyed': 'gunner',
         'vo_turret_rotator_functional': 'gunner',
-        'vo_wt_artWarning': 'chief_m',
-        'vo_wt_battleLose': 'chief_m',
-        'vo_wt_battleWon': 'chief_m',
-        'vo_wt_gunReloaded': 'loader',
-        'vo_wt_leftTrackHit': 'driver',
-        'vo_wt_prepareShell': 'commander',
-        'vo_wt_rightTrackHit': 'driver',
-        'vo_wt_shootVoice': ('commander', 'loader'),
-        'vo_wt_targetLockedFar': 'commander',
-        'vo_wt_targetLockedNear': 'commander',
-        'vo_wt_weveBeenHit': ('driver', 'gunner', 'loader'),
-        'vo_wt_wheelHit': 'driver',
-        'vo_wt_wheelRepaired': 'driver'
+        'vo_wt_art_warning': 'chief_m',
+        'vo_wt_battle_lose': 'chief_m',
+        'vo_wt_battle_won': 'chief_m',
+        'vo_wt_gun_reloaded': 'loader',
+        'vo_wt_left_track_hit': 'driver',
+        'vo_wt_prepare_shell': 'commander',
+        'vo_wt_right_track_hit': 'driver',
+        'vo_wt_shoot_voice': ('commander', 'loader'),
+        'vo_wt_target_locked_far': 'commander',
+        'vo_wt_target_locked_near': 'commander',
+        'vo_wt_weve_been_hit': ('driver', 'gunner', 'loader'),
+        'vo_wt_wheel_hit': 'driver',
+        'vo_wt_wheel_repaired': 'driver',
+        'vo_wt_chief_battle_start': 'chief_m',
+        'vo_wt_comm_battle_start': 'commander',
+        'vo_wt_driver_ready': 'driver',
+        'vo_wt_gunner_ready': 'gunner',
+        'vo_wt_loader_ready': 'loader'
     }
 
 # Класс реализации дополнительных голосовых и звуковых уведомлений в очередь основных и прочего
@@ -148,7 +153,7 @@ class WTSoundsStuff():
         global combat_callbacks
         
         if attackedID == BigWorld.player():
-            BigWorld.player().soundNotifications.play('wt_weveBeenHit')
+            BigWorld.player().soundNotifications.play('wt_weve_been_hit')
             WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['battle_status'], 'combat')
             WTSoundsStuff.clearAllCallbacks()
             combat_callbacks.append(BigWorld.callback(30, WTSoundsStuff.setBattleStatusSwitch))
@@ -177,13 +182,13 @@ class WTSoundsStuff():
         inDevLog('Alive allies: %s, alive enemies: %s' % (alive_allies, aiive_enemies))
 
         if alive_allies > aiive_enemies and aiive_enemies <= 3:
-            BigWorld.player().soundNotifications.play('wt_allyDominating')
+            BigWorld.player().soundNotifications.play('wt_ally_dominating')
         elif  alive_allies < aiive_enemies and alive_allies <= 3:
-            BigWorld.player().soundNotifications.play('wt_enemyDominating')
+            BigWorld.player().soundNotifications.play('wt_enemy_dominating')
         elif alive_allies < aiive_enemies:
-            BigWorld.player().soundNotifications.play('wt_enemyWinning')
+            BigWorld.player().soundNotifications.play('wt_enemy_winning')
         elif alive_allies > aiive_enemies:
-            BigWorld.player().soundNotifications.play('wt_allyWinning')
+            BigWorld.player().soundNotifications.play('wt_ally_winning')
         
         tcvo_callbacks.append(BigWorld.callback(cooldown, WTSoundsStuff.teamCorrelationVO))
 
@@ -197,7 +202,7 @@ class WTSoundsStuff():
         
         nextShellKind = BigWorld.player().guiSessionProvider.shared.ammo.getGunSettings().getShellDescriptor(shellID).kind
         WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['shell_prepared'], nextShellKind)
-        BigWorld.player().soundNotifications.play('wt_prepareShell')
+        BigWorld.player().soundNotifications.play('wt_prepare_shell')
         
     @staticmethod
     def lmbDownEvent(event):
@@ -206,8 +211,8 @@ class WTSoundsStuff():
             if key == 'KEY_MOUSE0':
                 reloadTimeLeft = BigWorld.player().guiSessionProvider.shared.ammo.getGunReloadingState().getTimeLeft()
                 isReloading = BigWorld.player().guiSessionProvider.shared.ammo.getGunReloadingState().isReloading()
-                if isReloading and reloadTimeLeft <= 1.0 and not BigWorld.player().soundNotifications.isPlaying('wt_shootVoice'):
-                    BigWorld.player().soundNotifications.play('wt_shootVoice')
+                if isReloading and reloadTimeLeft <= 1.0 and not BigWorld.player().soundNotifications.isPlaying('wt_shoot_voice'):
+                    BigWorld.player().soundNotifications.play('wt_shoot_voice')
 
     @staticmethod
     def setBattleStatusSwitch():
@@ -236,6 +241,16 @@ class WTSoundsStuff():
                 else: inDevLog('Callback removed - %s' % cb)
 
     @staticmethod
+    def onBattleStart(period, *args, **kwargs):
+        if period == ARENA_PERIOD.BATTLE:
+            BigWorld.player().soundNotifications.play('wt_chief_battle_start')
+            BigWorld.player().soundNotifications.play('wt_comm_battle_start')
+            BigWorld.player().soundNotifications.play('wt_driver_ready')
+            BigWorld.player().soundNotifications.play('wt_gunner_ready')
+            BigWorld.player().soundNotifications.play('wt_loader_ready')
+
+
+    @staticmethod
     def onGUISpaceEntered(spaceID, *args, **kwargs):
         if spaceID != GuiGlobalSpaceID.LOBBY:
             return
@@ -261,23 +276,28 @@ class WTSoundsStuff():
 
     @staticmethod
     def afterArenaLoad():
-        WTSoundsStuff.addEvent('wt_battleWon')
-        WTSoundsStuff.addEvent('wt_battleLose')
-        WTSoundsStuff.addEvent('wt_allyWinning')
-        WTSoundsStuff.addEvent('wt_enemyWinning')
-        WTSoundsStuff.addEvent('wt_leftTrackHit')
-        WTSoundsStuff.addEvent('wt_rightTrackHit')
-        WTSoundsStuff.addEvent('wt_allyDominating')
-        WTSoundsStuff.addEvent('wt_enemyDominating')
-        WTSoundsStuff.addEvent('wt_wheelHit', lifetime='0.5')
-        WTSoundsStuff.addEvent('wt_shootVoice', lifetime='0.2')
-        WTSoundsStuff.addEvent('wt_wheelRepaired', lifetime='0.5')
-        WTSoundsStuff.addEvent('wt_targetLockedFar', lifetime='1')
-        WTSoundsStuff.addEvent('wt_targetLockedNear', lifetime='1')
-        WTSoundsStuff.addEvent('wt_gunReloaded', chance='5', lifetime='0')
-        WTSoundsStuff.addEvent('wt_weveBeenHit', chance='10', lifetime='0')
-        WTSoundsStuff.addEvent('wt_artWarning', predelay='0.5', lifetime='1.5')
-        WTSoundsStuff.addEvent('wt_prepareShell', fxEvent='load_shell_fx', lifetime='0')
+        WTSoundsStuff.addEvent('wt_battle_won')
+        WTSoundsStuff.addEvent('wt_battle_lose')
+        WTSoundsStuff.addEvent('wt_ally_winning')
+        WTSoundsStuff.addEvent('wt_enemy_winning')
+        WTSoundsStuff.addEvent('wt_left_track_hit')
+        WTSoundsStuff.addEvent('wt_right_track_hit')
+        WTSoundsStuff.addEvent('wt_ally_dominating')
+        WTSoundsStuff.addEvent('wt_enemy_dominating')
+        WTSoundsStuff.addEvent('wt_wheel_hit', lifetime='0.5')
+        WTSoundsStuff.addEvent('wt_shoot_voice', lifetime='0.2')
+        WTSoundsStuff.addEvent('wt_wheel_repaired', lifetime='0.5')
+        WTSoundsStuff.addEvent('wt_target_locked_far', lifetime='1')
+        WTSoundsStuff.addEvent('wt_target_locked_near', lifetime='1')
+        WTSoundsStuff.addEvent('wt_gun_reloaded', chance='5', lifetime='0')
+        WTSoundsStuff.addEvent('wt_weve_been_hit', chance='10', lifetime='0')
+        WTSoundsStuff.addEvent('wt_art_warning', predelay='0.5', lifetime='1.5')
+        WTSoundsStuff.addEvent('wt_driver_ready', priority='1000', lifetime='10')
+        WTSoundsStuff.addEvent('wt_gunner_ready', priority='1000', lifetime='10')
+        WTSoundsStuff.addEvent('wt_loader_ready', priority='1000', lifetime='10')
+        WTSoundsStuff.addEvent('wt_comm_battle_start', priority='1000', lifetime='10')
+        WTSoundsStuff.addEvent('wt_chief_battle_start', priority='1000', lifetime='10')
+        WTSoundsStuff.addEvent('wt_prepare_shell', fxEvent='load_shell_fx', lifetime='0')
         
         WTSoundsStuff.teamCorrelationVO()
         SoundGroups.g_instance.playSound2D('wt_battle_music')
@@ -291,10 +311,10 @@ class WTSoundsStuff():
         SoundGroups.g_instance.playSound2D('wt_battle_end')
         if winnerTeam == BigWorld.player().team:
             SoundGroups.g_instance.playSound2D('wt_win_music')
-            BigWorld.player().soundNotifications.play('wt_battleWon')
+            BigWorld.player().soundNotifications.play('wt_battle_won')
         else:
             SoundGroups.g_instance.playSound2D('wt_lose_music')
-            BigWorld.player().soundNotifications.play('wt_battleLose')
+            BigWorld.player().soundNotifications.play('wt_battle_lose')
 
     @staticmethod
     def getHoursFromAngle(target):
@@ -352,17 +372,17 @@ def devicesVO(base, self, damageCode, extra, *args, **kwargs):
     global combat_callbacks
 
     if damageCode not in ('DEVICE_REPAIRED', 'DEVICE_REPAIRED_TO_CRITICAL'):
-        BigWorld.player().soundNotifications.play('wt_weveBeenHit')
+        BigWorld.player().soundNotifications.play('wt_weve_been_hit')
     if damageCode in WTSM_CONSTS.DEVICE_CRIT_CODES:
         if extra.name[:-len('Health')] in ('leftTrack0', 'leftTrack1'):
-            BigWorld.player().soundNotifications.play('wt_leftTrackHit')
+            BigWorld.player().soundNotifications.play('wt_left_track_hit')
         elif extra.name[:-len('Health')] in ('rightTrack0', 'rightTrack1'):
-            BigWorld.player().soundNotifications.play('wt_rightTrackHit')
+            BigWorld.player().soundNotifications.play('wt_right_track_hit')
         elif extra.name[:-len('Health')].startswith('wheel'):
-            BigWorld.player().soundNotifications.play('wt_wheelHit')
+            BigWorld.player().soundNotifications.play('wt_wheel_hit')
     
     if damageCode == 'DEVICE_REPAIRED' and extra.name[:-len('Health')].startswith('wheel'):
-        BigWorld.player().soundNotifications.play('wt_wheelRepaired')
+        BigWorld.player().soundNotifications.play('wt_wheel_repaired')
     
     WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['battle_status'], 'combat')
     WTSoundsStuff.clearAllCallbacks()
@@ -373,7 +393,7 @@ def devicesVO(base, self, damageCode, extra, *args, **kwargs):
 def wtVOArtWarning(base, self, distToTarget, shooterPosition):
     base(self, distToTarget, shooterPosition)
     if isinstance(BigWorld.player(), PlayerAvatar):
-        BigWorld.player().soundNotifications.play('wt_artWarning')
+        BigWorld.player().soundNotifications.play('wt_art_warning')
 
 @overrideMethod(AmmoPlugin, '__onGunReloadTimeSet')
 def wtVOGunReloaded(base, self, _, state, skipAutoLoader):
@@ -385,7 +405,7 @@ def wtVOGunReloaded(base, self, _, state, skipAutoLoader):
     if timeLeft == 0.0 and not isAutoReload and not isInPostmortem and (timeLast != -1):
         shellKind = BigWorld.player().vehicle.typeDescriptor.getShot().shell.kind
         WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['shell_loaded'], shellKind)
-        BigWorld.player().soundNotifications.play('wt_gunReloaded')
+        BigWorld.player().soundNotifications.play('wt_gun_reloaded')
 
 @overrideMethod(AmmoPlugin, '__onGunAutoReloadTimeSet')
 def wtVOGunReloaded_auto(base, self, state, stunned):
@@ -397,7 +417,7 @@ def wtVOGunReloaded_auto(base, self, state, stunned):
     if timeLeft == 0.0 and not isAutoReload and not isInPostmortem and (timeLast != -1):
         shellKind = BigWorld.player().vehicle.typeDescriptor.getShot().shell.kind
         WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['shell_loaded'], shellKind)
-        BigWorld.player().soundNotifications.play('wt_gunReloaded')
+        BigWorld.player().soundNotifications.play('wt_gun_reloaded')
 
 @overrideMethod(PlayerAvatar, 'autoAim')
 def wtAutoAim(base, self, target=None, magnetic=False):
@@ -409,11 +429,11 @@ def wtAutoAim(base, self, target=None, magnetic=False):
     WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['target_hours'], corr_angle)
 
     if dist < WTSM_CONSTS.DIST_VALUES[0]:
-        BigWorld.player().soundNotifications.play('wt_targetLockedNear')
+        BigWorld.player().soundNotifications.play('wt_target_locked_near')
     else:
         corr_dist = min(WTSM_CONSTS.DIST_VALUES, key=lambda x: abs(x-dist))
         WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['target_distance'], corr_dist)
-        BigWorld.player().soundNotifications.play('wt_targetLockedFar')
+        BigWorld.player().soundNotifications.play('wt_target_locked_far')
 
 @overrideMethod(SoundGroups.g_instance, 'WWgetSound')
 def wtVoiceCallback(base, eventName, objectName, matrix, local=(0.0, 0.0, 0.0)):
@@ -453,6 +473,7 @@ inDevLog('Add to game events - Start')
 g_playerEvents.onAvatarReady += WTSoundsStuff.afterArenaLoad
 g_playerEvents.onAvatarReady += WTSoundsStuff.setVehicleNation
 g_playerEvents.onRoundFinished += WTSoundsStuff.onBattleFinished
+g_playerEvents.onArenaPeriodChange += WTSoundsStuff.onBattleStart
 g_playerEvents.onAvatarObserverVehicleChanged += WTSoundsStuff.setVehicleNation
 
 InputHandler.g_instance.onKeyDown += WTSoundsStuff.lmbDownEvent
