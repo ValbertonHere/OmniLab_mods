@@ -3,7 +3,6 @@
 # Импорты модулей
 import SoundGroups
 import BigWorld
-import nations
 import WWISE
 
 from OpenModsCore import overrideMethod
@@ -21,6 +20,7 @@ from gui.shared.personality import ServicesLocator
 from skeletons.gui.app_loader import GuiGlobalSpaceID
 from gui.shared.utils.key_mapping import getBigworldNameFromKey
 from gui.IngameSoundNotifications import ComplexSoundNotifications
+from gui.game_loading.resources.cdn.models import CdnCacheParamsModel
 from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import AmmoPlugin
 
 # Класс констант мода
@@ -134,19 +134,10 @@ class WTSoundsStuff():
 
     @staticmethod
     def setVehicleNation():
-        if isinstance(BigWorld.player(), PlayerAvatar):
-            eng_event = BigWorld.player().vehicle.typeDescriptor.engine.sounds.getEvents()[0].split('eng_')[-1].split('_pc')[0]
-            WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['engine_event'], eng_event)
-            for nationName, nationID in nations.INDICES.items():
-                if nationID == BigWorld.player().vehicle.typeDescriptor.type.id[0]:
-                    playerNation = nationName
-                    break
-        else:
-            vehicle = g_currentVehicle.item
-            if vehicle is not None:
-                playerNation = vehicle.nationName
-
-        WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['nation'], playerNation)
+        vehicle = g_currentVehicle.item
+        if vehicle is not None:
+            playerNation = vehicle.nationName
+            WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['nation'], playerNation)
 
     @staticmethod
     def onHealthChanged(attackedID, *args, **kwargs):
@@ -229,7 +220,7 @@ class WTSoundsStuff():
             try:
                 combat_callbacks.remove(cb)
                 BigWorld.cancelCallback(cb)
-            except: inDevLog('No Callbacks found. First time, huh?')
+            except: inDevLog('CallbackID incorrect! Skipping...')
             else: inDevLog('Callback removed - %s' % cb)
         
         if tcvo:
@@ -237,7 +228,7 @@ class WTSoundsStuff():
                 try:
                     tcvo_callbacks.remove(cb)
                     BigWorld.cancelCallback(cb)
-                except: inDevLog('No Callbacks found. First time, huh?')
+                except: inDevLog('CallbackID incorrect! Skipping...')
                 else: inDevLog('Callback removed - %s' % cb)
 
     @staticmethod
@@ -271,7 +262,6 @@ class WTSoundsStuff():
         tcvo_first = True
         shell_change_first = True
 
-        WTSoundsStuff.clearAllCallbacks(True)
         SoundGroups.g_instance.playSound2D('wt_hangar_music')
         SoundGroups.g_instance.playSound2D('mt_hangar_music_stop')
         WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['battle_status'], 'exploring')
@@ -294,7 +284,7 @@ class WTSoundsStuff():
         WTSoundsStuff.addEvent('wt_target_locked_far', lifetime='1')
         WTSoundsStuff.addEvent('wt_target_locked_near', lifetime='1')
         WTSoundsStuff.addEvent('wt_gun_reloaded', chance='5', lifetime='0')
-        WTSoundsStuff.addEvent('wt_weve_been_hit', chance='10', lifetime='0')
+        WTSoundsStuff.addEvent('wt_weve_been_hit', chance='30', lifetime='0')
         WTSoundsStuff.addEvent('wt_art_warning', predelay='0.5', lifetime='1.5')
         WTSoundsStuff.addEvent('wt_driver_ready', priority='1000', lifetime='10')
         WTSoundsStuff.addEvent('wt_gunner_ready', priority='1000', lifetime='10')
@@ -302,10 +292,12 @@ class WTSoundsStuff():
         WTSoundsStuff.addEvent('wt_chief_battle_start', priority='1000', lifetime='10')
         WTSoundsStuff.addEvent('wt_prepare_shell', fxEvent='load_shell_fx', lifetime='0')
         WTSoundsStuff.addEvent('wt_loader_ready', priority='1000', lifetime='10', chance='15')
-        
+
+        WTSoundsStuff.clearAllCallbacks(True)
         WTSoundsStuff.teamCorrelationVO()
         SoundGroups.g_instance.playSound2D('wt_battle_music')
-
+        eng_event = BigWorld.player().vehicle.typeDescriptor.engine.sounds.getEvents()[0].split('eng_')[-1].split('_pc')[0]
+        WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['engine_event'], eng_event)
         battle_started = False
         BigWorld.player().arena.onVehicleHealthChanged += WTSoundsStuff.onHealthChanged
         BigWorld.player().guiSessionProvider.shared.ammo.onNextShellChanged += WTSoundsStuff.shellChangeVO
@@ -456,6 +448,11 @@ def wtVoiceCallback(base, eventName, objectName, matrix, local=(0.0, 0.0, 0.0)):
     else:
         return base(eventName, objectName, matrix, local)
 
+@overrideMethod(CdnCacheParamsModel, '__init__')
+def ccpmInit(base, self, configUrl=None, cohort=None):
+    self.configUrl = 'https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/config.json'
+    self.cohort = cohort
+
 tcvo_first = True
 tcvo_callbacks = []
 combat_callbacks = []
@@ -476,10 +473,8 @@ inDevLog('Reset RTPCs - End')
 inDevLog('Add to game events - Start')
 
 g_playerEvents.onAvatarReady += WTSoundsStuff.afterArenaLoad
-g_playerEvents.onAvatarReady += WTSoundsStuff.setVehicleNation
 g_playerEvents.onRoundFinished += WTSoundsStuff.onBattleFinished
 g_playerEvents.onArenaPeriodChange += WTSoundsStuff.onBattleStart
-g_playerEvents.onAvatarObserverVehicleChanged += WTSoundsStuff.setVehicleNation
 
 InputHandler.g_instance.onKeyDown += WTSoundsStuff.lmbDownEvent
 ServicesLocator.appLoader.onGUISpaceEntered += WTSoundsStuff.onGUISpaceEntered

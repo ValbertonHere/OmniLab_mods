@@ -3,7 +3,6 @@ from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import AmmoPlugin
 
 def onGunReloadTimeSet(self, _, state, skipAutoLoader):
     h_onGunReloadTimeSet(self, _, state, skipAutoLoader)
-    isAutoReload = self._AmmoPlugin__guiSettings.hasAutoReload
     isInPostmortem = self.sessionProvider.shared.vehicleState.isInPostmortem
     timeLast = state.getActualValue()
     timeLeft = state.getTimeLeft()
@@ -12,7 +11,6 @@ def onGunReloadTimeSet(self, _, state, skipAutoLoader):
 
 def onGunAutoReloadTimeSet(self, state, stunned):
     h_onGunAutoReloadTimeSet(self, state, stunned)
-    isAutoReload = self._AmmoPlugin__guiSettings.hasAutoReload
     isInPostmortem = self.sessionProvider.shared.vehicleState.isInPostmortem
     timeLast = state.getActualValue()
     timeLeft = state.getTimeLeft()
