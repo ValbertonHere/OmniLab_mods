@@ -26,7 +26,7 @@ from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import AmmoPlugin
 # Класс констант мода
 class WTSM_CONSTS():
 
-    IN_DEV = True
+    IN_DEV = False
     BUILD = '0124/6'
     VERSION = 'Release 9'
     UPD_NAME = 'Эпицентр'
@@ -262,8 +262,14 @@ class WTSoundsStuff():
         tcvo_first = True
         shell_change_first = True
 
-        SoundGroups.g_instance.playSound2D('wt_hangar_music')
         SoundGroups.g_instance.playSound2D('mt_hangar_music_stop')
+        for word in ('ny', 'newyear', 'new_year'):
+            if word in BigWorld.player().hangarSpace.spacePath:
+                SoundGroups.g_instance.playSound2D('wt_hangar_music_ny')
+                break
+            else:
+                SoundGroups.g_instance.playSound2D('wt_hangar_music')
+        
         WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['battle_status'], 'exploring')
 
     @staticmethod
@@ -484,7 +490,7 @@ inDevLog('Add to game events - End')
 print '[OMNILAB: WTSM] INIT END!'
 
 print '----------OMNILAB RESEARCH & DEVELOPMENT-----------'
-print 'War Thunder Sound Mod for World of Tanks/Mir Tankov: %s (Build %s). Python Helper executed!' % (WTSM_CONSTS.VERSION, WTSM_CONSTS.BUILD)
+print 'War Thunder Sound Mod for Mir Tankov: %s (Build %s). Python Helper executed!' % (WTSM_CONSTS.VERSION, WTSM_CONSTS.BUILD)
 print 'Copyright (C) 2023 OmniLab R&D.'
 print '----------OMNILAB RESEARCH & DEVELOPMENT-----------'
 

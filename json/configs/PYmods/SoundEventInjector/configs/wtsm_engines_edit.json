@@ -64,6 +64,52 @@
 				"wwsoundNPC": "eng_cadillac_series_42_npc"
 			}
 		},
+		"uk": {
+			"AEC_197": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"AEC_195": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"GMC_270_x2": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"GMC_302_x2": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"Rolls_Royce_B80P": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"Daimler_DQ450": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"Rolls_Royce_B80": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"Rolls_Royce_B81": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"Rolls_Royce_K60": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"Rolls_Royce_K60_Mk2": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			},
+			"LandRover_Meteorite_V8": {
+				"wwsoundPC": "eng_Skoda_Prague_pc",
+				"wwsoundNPC": "eng_Skoda_Prague_npc"
+			}
+		},
 		"china": {
 			"Detroit_Diesel_8V71T": {
 				"wwsoundPC": "eng_cadillac_series_42_pc",
