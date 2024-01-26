@@ -20,7 +20,7 @@ from gui.shared.personality import ServicesLocator
 from skeletons.gui.app_loader import GuiGlobalSpaceID
 from gui.shared.utils.key_mapping import getBigworldNameFromKey
 from gui.IngameSoundNotifications import ComplexSoundNotifications
-from gui.game_loading.resources.cdn.models import CdnCacheParamsModel
+from gui.game_loading.resources.cdn.cache import GameLoadingCdnCache
 from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import AmmoPlugin
 
 # Класс констант мода
@@ -454,10 +454,9 @@ def wtVoiceCallback(base, eventName, objectName, matrix, local=(0.0, 0.0, 0.0)):
     else:
         return base(eventName, objectName, matrix, local)
 
-@overrideMethod(CdnCacheParamsModel, '__init__')
-def ccpmInit(base, self, configUrl=None, cohort=None):
-    self.configUrl = 'https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/config.json'
-    self.cohort = cohort
+@overrideMethod(GameLoadingCdnCache, '__init__')
+def ccpmInit(base, self, defaults, externalConfigUrl=None, cohort=None):
+    base(self, defaults, 'https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/config.json', cohort)
 
 tcvo_first = True
 tcvo_callbacks = []
