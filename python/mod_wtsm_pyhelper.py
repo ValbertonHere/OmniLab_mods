@@ -27,7 +27,7 @@ from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import AmmoPlugin
 class WTSM_CONSTS():
 
     IN_DEV = False
-    BUILD = '0124/6'
+    BUILD = '0124/7'
     VERSION = 'Release 9'
     UPD_NAME = 'Эпицентр'
     DIST_VALUES = [300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200]
@@ -142,8 +142,8 @@ class WTSoundsStuff():
     @staticmethod
     def onHealthChanged(attackedID, *args, **kwargs):
         global combat_callbacks
-        
-        if attackedID == BigWorld.player():
+
+        if attackedID == BigWorld.player().playerVehicleID:
             BigWorld.player().soundNotifications.play('wt_weve_been_hit')
             WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['battle_status'], 'combat')
             WTSoundsStuff.clearAllCallbacks()
@@ -377,12 +377,12 @@ def devicesVO(base, self, damageCode, extra, *args, **kwargs):
     if damageCode not in ('DEVICE_REPAIRED', 'DEVICE_REPAIRED_TO_CRITICAL'):
         BigWorld.player().soundNotifications.play('wt_weve_been_hit')
     if damageCode in WTSM_CONSTS.DEVICE_CRIT_CODES:
-        if extra.name[:-len('Health')] in ('leftTrack0', 'leftTrack1'):
+        if extra.name[:-len('Health')].startswith('wheel'):
+            BigWorld.player().soundNotifications.play('wt_wheel_hit')
+        elif extra.name[:-len('Health')] in ('leftTrack0', 'leftTrack1'):
             BigWorld.player().soundNotifications.play('wt_left_track_hit')
         elif extra.name[:-len('Health')] in ('rightTrack0', 'rightTrack1'):
             BigWorld.player().soundNotifications.play('wt_right_track_hit')
-        elif extra.name[:-len('Health')].startswith('wheel'):
-            BigWorld.player().soundNotifications.play('wt_wheel_hit')
     
     if damageCode == 'DEVICE_REPAIRED' and extra.name[:-len('Health')].startswith('wheel'):
         BigWorld.player().soundNotifications.play('wt_wheel_repaired')
@@ -456,7 +456,7 @@ def wtVoiceCallback(base, eventName, objectName, matrix, local=(0.0, 0.0, 0.0)):
 
 @overrideMethod(GameLoadingCdnCache, '__init__')
 def ccpmInit(base, self, defaults, externalConfigUrl=None, cohort=None):
-    base(self, defaults, 'https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/config.json', cohort)
+    base(self, defaults, 'https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/config.json', cohort)
 
 tcvo_first = True
 tcvo_callbacks = []
@@ -490,7 +490,7 @@ print '[OMNILAB: WTSM] INIT END!'
 
 print '----------OMNILAB RESEARCH & DEVELOPMENT-----------'
 print 'War Thunder Sound Mod for Mir Tankov: %s (Build %s). Python Helper executed!' % (WTSM_CONSTS.VERSION, WTSM_CONSTS.BUILD)
-print 'Copyright (C) 2023 OmniLab R&D.'
+print 'Copyright (C) 2024 OmniLab R&D.'
 print '----------OMNILAB RESEARCH & DEVELOPMENT-----------'
 
 if WTSM_CONSTS.IN_DEV:

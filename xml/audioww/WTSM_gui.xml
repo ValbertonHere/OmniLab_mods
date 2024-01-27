@@ -1,56 +1,56 @@
 <root>
 	<events>
 		<event>
-			<name> battle_equipment_251 </name>
-			<mod> battle_equipment_smallfire </mod>
+			<name>battle_equipment_251</name>
+			<mod>battle_equipment_smallfire</mod>
 		</event>
 		<event>
-			<name> battle_equipment_507 </name>
-			<mod> battle_equipment_bigfire </mod>
+			<name>battle_equipment_507</name>
+			<mod>battle_equipment_bigfire</mod>
 		</event>
 		<event>
-			<name> cancelcloseno </name>
-			<mod> cancelcloseno_01 </mod>
+			<name>cancelcloseno</name>
+			<mod>cancelcloseno_01</mod>
 		</event>
 		<event>
-			<name> minimize </name>
-			<mod> minimize_01 </mod>
+			<name>minimize</name>
+			<mod>minimize_01</mod>
 		</event>
 		<event>
-			<name> play </name>
-			<mod> play_01 </mod>
+			<name>play</name>
+			<mod>play_01</mod>
 		</event>
 		<event>
-			<name> tabb </name>
-			<mod> tabb_01 </mod>
+			<name>tabb</name>
+			<mod>tabb_01</mod>
 		</event>
 		<event>
-			<name> tank_selection </name>
-			<mod> tank_selection_01 </mod>
+			<name>tank_selection</name>
+			<mod>tank_selection_01</mod>
 		</event>
 		<event>
-			<name> yes1 </name>
-			<mod> yes1_01 </mod>
+			<name>yes1</name>
+			<mod>yes1_01</mod>
 		</event>
 		<event>
-			<name> end_battle_capture_base </name>
-			<mod> end_battle_capture_base_01 </mod>
+			<name>end_battle_capture_base</name>
+			<mod>end_battle_capture_base_01</mod>
 		</event>
 		<event>
-			<name> end_battle_last_kill </name>
-			<mod> end_battle_last_kill_01 </mod>
+			<name>end_battle_last_kill</name>
+			<mod>end_battle_last_kill_01</mod>
 		</event>
 		<event>
-			<name> time_over </name>
-			<mod> time_over_01 </mod>
+			<name>time_over</name>
+			<mod>time_over_01</mod>
 		</event>
 		<event>
-			<name> pm_progress_condition_status </name>
-			<mod> pm_progress_condition_status_01 </mod>
+			<name>pm_progress_condition_status</name>
+			<mod>pm_progress_condition_status_01</mod>
 		</event>
 		<event>
-			<name> pm_progress_condition_status_done </name>
-			<mod> pm_progress_condition_status_done_01 </mod>
+			<name>pm_progress_condition_status_done</name>
+			<mod>pm_progress_condition_status_done_01</mod>
 		</event>
 	</events>
 </root>

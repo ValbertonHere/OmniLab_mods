@@ -2,7 +2,7 @@
     "enabled": true,
     "sequences": [
         {
-            "name": "wtsm_stuff1",
+            "name": "wtsm_stuff",
             "enabled": true,
             "start": "1970-01-01T00:00:00",
             "finish": "3000-01-01T00:00:01",
@@ -10,40 +10,44 @@
             "order": "random",
             "slides": [
                 {
-                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/wt_images/34.jpg",
-                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/XMLs/pyhelper.xml"
+                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/wt_images/34.jpg",
+                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/XMLs/pyhelper.xml"
                 },
                 {
-                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/wt_images/10.jpg",
-                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/XMLs/update.xml"
+                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/wt_images/10.jpg",
+                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/XMLs/update.xml"
                 },
                 {
-                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/wt_images/5.jpg",
-                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/XMLs/voiceover_features.xml"
+                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/wt_images/5.jpg",
+                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/XMLs/voiceover_features.xml"
                 },
                 {
-                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/wt_images/wtsm_vo_spgshot.png",
-                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/XMLs/vo_spgshot.xml"
+                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/wt_images/wtsm_vo_spgshot.png",
+                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/XMLs/vo_spgshot.xml"
                 },
                 {
-                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/wt_images/wtsm_vo_nextShell.jpg",
-                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/XMLs/vo_nextShell.xml"
+                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/wt_images/wtsm_vo_nextShell.jpg",
+                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/XMLs/vo_nextShell.xml"
                 },
                 {
-                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/wt_images/wtsm_vo_teamCorr.jpg",
-                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/XMLs/vo_teamCorr.xml"
+                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/wt_images/wtsm_vo_teamCorr.jpg",
+                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/XMLs/vo_teamCorr.xml"
                 },
                 {
-                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/wt_images/wtsm_vo_win.jpg",
-                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/XMLs/vo_win.xml"
+                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/wt_images/wtsm_vo_win.jpg",
+                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/XMLs/vo_win.xml"
                 },
                 {
-                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/wt_images/wtsm_vo_targetLock.jpg",
-                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/XMLs/vo_targetLock.xml"
+                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/wt_images/wtsm_vo_weveBeenHit.jpg",
+                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/XMLs/vo_weveBeenHit.xml"
                 },
                 {
-                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/wt_images/wtsm_indev.png",
-                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/develop/wtsm_loading_screen/XMLs/indev_message.xml"
+                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/wt_images/wtsm_vo_targetLock.jpg",
+                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/XMLs/vo_targetLock.xml"
+                },
+                {
+                    "image": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/wt_images/wotclassics.png",
+                    "localization": "https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/XMLs/wotclassics.xml"
                 }
             ]
         }
