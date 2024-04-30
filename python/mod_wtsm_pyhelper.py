@@ -27,7 +27,7 @@ from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import AmmoPlugin
 class WTSM_CONSTS():
 
     IN_DEV = False
-    BUILD = '0124/7'
+    BUILD = '0224/1'
     VERSION = 'Release 9'
     UPD_NAME = 'Эпицентр'
     DIST_VALUES = [300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200]
@@ -263,12 +263,7 @@ class WTSoundsStuff():
         shell_change_first = True
 
         SoundGroups.g_instance.playSound2D('mt_hangar_music_stop')
-        for word in ('ny', 'newyear', 'new_year'):
-            if word in BigWorld.player().hangarSpace.spacePath:
-                SoundGroups.g_instance.playSound2D('wt_hangar_music_ny')
-                break
-            else:
-                SoundGroups.g_instance.playSound2D('wt_hangar_music')
+        SoundGroups.g_instance.playSound2D('wt_hangar_music')
         
         WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['battle_status'], 'exploring')
 
@@ -361,8 +356,8 @@ def inDevLog(message):
     else: pass
 
 @overrideMethod(PlayerAvatar, 'onObservedByEnemy')
-def onObservedByEnemy(base, self, vehicleID):
-    base(self, vehicleID)
+def onObservedByEnemy(base, self, vehicleID, isObserved):
+    base(self, vehicleID, isObserved)
     global combat_callbacks
     
     WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['battle_status'], 'combat')

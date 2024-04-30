@@ -12,7 +12,19 @@
 			"predelay": 0,
 			"interrupt": 0
 		},
+		"crew_deactivated": {
+			"predelay": 0,
+			"interrupt": 0
+		},
 		"driver_killed": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"enemy_fire_started_by_player": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"enemy_hp_damaged_by_near_explosion_by_player": {
 			"predelay": 0,
 			"interrupt": 0
 		},
@@ -32,8 +44,13 @@
 			"predelay": 0,
 			"interrupt": 0
 		},
+		"enemy_killed": {
+			"chance": 0,
+			"infChance": 0
+		},
 		"enemy_killed_by_ally": {
-			"chance>": 0
+			"chance": 0,
+			"infChance": 0
 		},
 		"enemy_killed_by_player": {
 			"predelay": 0,
@@ -63,6 +80,10 @@
 			"predelay": 0,
 			"interrupt": 0
 		},
+		"enemy_no_hp_damage_by_near_explosion_by_player": {
+			"predelay": 0,
+			"interrupt": 0
+		},
 		"enemy_no_piercing_by_player": {
 			"predelay": 0,
 			"interrupt": 0
@@ -76,6 +97,10 @@
 			"interrupt": 0
 		},
 		"engine_destroyed": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"engine_functional": {
 			"predelay": 0,
 			"interrupt": 0
 		},
@@ -99,6 +124,10 @@
 			"predelay": 0,
 			"interrupt": 0
 		},
+		"gun_functional": {
+			"predelay": 0,
+			"interrupt": 0
+		},
 		"gunner_killed": {
 			"predelay": 0,
 			"interrupt": 0
@@ -112,6 +141,10 @@
 			"interrupt": 0
 		},
 		"radioman_killed": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"respawn": {
 			"predelay": 0,
 			"interrupt": 0
 		},
@@ -135,13 +168,45 @@
 			"predelay": 0,
 			"interrupt": 0
 		},
-		"vehicle_destroyed": {
+		"target_lost": {
 			"predelay": 0,
-			"queueClearAtStart": 0,
+			"interrupt": 0
+		},
+		"target_unlocked": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"track_damaged": {
+			"predelay": 0,
 			"interrupt": 0
 		},
 		"track_destroyed": {
 			"predelay": 0,
+			"interrupt": 0
+		},
+		"track_functional": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"track_functional_can_move": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"turret_rotator_damaged": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"turret_rotator_destroyed": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"turret_rotator_functional": {
+			"predelay": 0,
+			"interrupt": 0
+		},
+		"vehicle_destroyed": {
+			"predelay": 0,
+			"queueClearAtStart": 0,
 			"interrupt": 0
 		}
     }
