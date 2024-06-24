@@ -27,7 +27,7 @@ from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import AmmoPlugin
 class WTSM_CONSTS():
 
     IN_DEV = False
-    BUILD = '0224/1'
+    BUILD = '0624/1'
     VERSION = 'Release 9'
     UPD_NAME = 'Эпицентр'
     DIST_VALUES = [300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200]
@@ -282,10 +282,10 @@ class WTSoundsStuff():
         WTSoundsStuff.addEvent('wt_wheel_hit', lifetime='0.5')
         WTSoundsStuff.addEvent('wt_shoot_voice', lifetime='0.2')
         WTSoundsStuff.addEvent('wt_wheel_repaired', lifetime='0.5')
-        WTSoundsStuff.addEvent('wt_target_locked_far', lifetime='1')
-        WTSoundsStuff.addEvent('wt_target_locked_near', lifetime='1')
-        WTSoundsStuff.addEvent('wt_gun_reloaded', chance='5', lifetime='0')
-        WTSoundsStuff.addEvent('wt_weve_been_hit', chance='30', lifetime='0')
+        WTSoundsStuff.addEvent('wt_target_locked_far', lifetime='3')
+        WTSoundsStuff.addEvent('wt_target_locked_near', lifetime='3')
+        WTSoundsStuff.addEvent('wt_gun_reloaded', chance='30', lifetime='1')
+        WTSoundsStuff.addEvent('wt_weve_been_hit', chance='30', lifetime='1')
         WTSoundsStuff.addEvent('wt_art_warning', predelay='0.5', lifetime='1.5')
         WTSoundsStuff.addEvent('wt_driver_ready', priority='1000', lifetime='10')
         WTSoundsStuff.addEvent('wt_gunner_ready', priority='1000', lifetime='10')
