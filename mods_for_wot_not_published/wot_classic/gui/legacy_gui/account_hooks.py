@@ -44,6 +44,7 @@ from skeletons.gui.app_loader import IAppLoader
 
 from .views.legacy_ammopanel import GameControllers, setOnlyBattleAbilities, upgradeModule, installModule, setAutoRearm, onManageBattleAbilitiesClicked, getListOverlayData
 from .views.legacy_ammopanel import _extendByArtefactData, _extendByBattleAbilityData, _extendByBattleBoosterData, _extendByOptionalDeviceData
+from .views import getGUIConfig
 from .utils import override
 
 __all__ = ()
@@ -355,7 +356,7 @@ def Hangar__populate(base, self):
     
     appLoader = dependency.instance(IAppLoader)
     app = appLoader.getApp()
-
+    app.graphicsOptimizationManager.switchOptimizationEnabled(False)
     app.loadView(SFViewLoadParams('LegacyHangarUI'))
 
 @override(Hangar, '_Hangar__onTeaserReceived')
@@ -418,112 +419,113 @@ if CURRENT_REALM != 'RU':
 LEGACY LOBBYHEADER OVERRIDES
 """
 
-LEGACY_HEADER_TABS = (LobbyHeader.TABS.HANGAR, LobbyHeader.TABS.STORE, LobbyHeader.TABS.PROFILE, LobbyHeader.TABS.TECHTREE, LobbyHeader.TABS.BARRACKS, LobbyHeader.TABS.BROWSER, 
-                      LobbyHeader.TABS.RESEARCH, LobbyHeader.TABS.PERSONAL_MISSIONS, LobbyHeader.TABS.PERSONAL_MISSIONS_PAGE)
+if getGUIConfig()['isLegacyLobbyHeaderEnabled']:
 
-@override(LobbyHeader, '_populate')
-def LobbyHeader_populate(base, self):
-    base(self)
-    appLoader = dependency.instance(IAppLoader)
-    app = appLoader.getApp()
-    app.graphicsOptimizationManager.switchOptimizationEnabled(False)
-    app.loadView(SFViewLoadParams('LegacyLobbyHeaderUI'))
+    LEGACY_HEADER_TABS = (LobbyHeader.TABS.HANGAR, LobbyHeader.TABS.STORE, LobbyHeader.TABS.PROFILE, LobbyHeader.TABS.TECHTREE, LobbyHeader.TABS.BARRACKS, LobbyHeader.TABS.BROWSER, 
+                        LobbyHeader.TABS.RESEARCH, LobbyHeader.TABS.PERSONAL_MISSIONS, LobbyHeader.TABS.PERSONAL_MISSIONS_PAGE)
 
-@override(BattleTypeSelectPopover, 'as_updateS')
-def BattleTypeSelectPopover_as_updateS(base, self, items, extraItems, isShowDemonstrator, demonstratorEnabled):
-    squad = _SquadItem(text_styles.middleTitle(backport.text(_R_BATTLE_TYPES.simpleSquad())), PREBATTLE_ACTION_NAME.SQUAD, 0)
-    items.insert(1, squad.getVO())
-    base(self, items, extraItems, isShowDemonstrator, demonstratorEnabled)
+    @override(LobbyHeader, '_populate')
+    def LobbyHeader_populate(base, self):
+        base(self)
+        appLoader = dependency.instance(IAppLoader)
+        app = appLoader.getApp()
+        app.loadView(SFViewLoadParams('LegacyLobbyHeaderUI'))
 
-@override(BattleTypeSelectPopover, '_BattleTypeSelectPopover__selectFight')
-@adisp_process
-def BattleTypeSelectPopover__selectFight(base, self, actionName):
-    if actionName == 'squad':
-        prbDispatcher = g_prbLoader.getDispatcher()
-        yield prbDispatcher.doSelectAction(PrbAction(PREBATTLE_ACTION_NAME.SQUAD))
-    else:
-        base(self, actionName)
+    @override(BattleTypeSelectPopover, 'as_updateS')
+    def BattleTypeSelectPopover_as_updateS(base, self, items, extraItems, isShowDemonstrator, demonstratorEnabled):
+        squad = _SquadItem(text_styles.middleTitle(backport.text(_R_BATTLE_TYPES.simpleSquad())), PREBATTLE_ACTION_NAME.SQUAD, 0)
+        items.insert(1, squad.getVO())
+        base(self, items, extraItems, isShowDemonstrator, demonstratorEnabled)
 
-@override(LobbyHeader, '_LobbyHeader__setCounter')
-def LobbyHeader__setCounter(base, self, alias, counter=None):
-    if alias in LEGACY_HEADER_TABS:
-        base(self, alias, counter)
-    else: pass
+    @override(BattleTypeSelectPopover, '_BattleTypeSelectPopover__selectFight')
+    @adisp_process
+    def BattleTypeSelectPopover__selectFight(base, self, actionName):
+        if actionName == 'squad':
+            prbDispatcher = g_prbLoader.getDispatcher()
+            yield prbDispatcher.doSelectAction(PrbAction(PREBATTLE_ACTION_NAME.SQUAD))
+        else:
+            base(self, actionName)
 
-@override(LobbyHeader, '_LobbyHeader__hideCounter')
-def LobbyHeader__hideCounter(base, self, alias):
-    if alias in LEGACY_HEADER_TABS:
-        base(self, alias)
-    else: pass
+    @override(LobbyHeader, '_LobbyHeader__setCounter')
+    def LobbyHeader__setCounter(base, self, alias, counter=None):
+        if alias in LEGACY_HEADER_TABS:
+            base(self, alias, counter)
+        else: pass
 
-@override(LobbyHeader, '_getHangarMenuItemDataProvider')
-def LobbyHeader_getHangarMenuItemDataProvider(base, self):
-    tabDataProvider = [
-     {'label': MENU.HEADERBUTTONS_HANGAR, 
-        'value': self.TABS.HANGAR, 
-        'textColor': 16764006,
-        'textColorOver': 16768409, 
-        'tooltip': TOOLTIPS.HEADER_BUTTONS_HANGAR},
-     {'label': MENU.HEADERBUTTONS_STORAGE, 
-        'value': self.TABS.STORAGE, 
-        'tooltip': TOOLTIPS.HEADER_BUTTONS_STORAGE},
-     {'label': MENU.HEADERBUTTONS_SHOP, 
-        'value': self.TABS.STORE, 
-        'tooltip': TOOLTIPS.HEADER_BUTTONS_SHOP},
-     self._getPersonalMissionSelectorTabData()]
-    tabDataProvider.append({'label': MENU.HEADERBUTTONS_PROFILE, 
-       'value': self.TABS.PROFILE, 
-       'tooltip': TOOLTIPS.HEADER_BUTTONS_PROFILE})
-    techTreeData = {'label': MENU.HEADERBUTTONS_TECHTREE, 
-       'value': self.TABS.TECHTREE, 
-       'tooltip': TOOLTIPS.HEADER_BUTTONS_TECHTREE, 
-       'isTooltipSpecial': False, 
-       'subValues': [
-                   self.TABS.RESEARCH]}
-    if self.techTreeEventsListener.actions:
-        techTreeData['tooltip'] = TOOLTIPS_CONSTANTS.TECHTREE_DISCOUNT_INFO
-        techTreeData['isTooltipSpecial'] = True
-        if self.techTreeEventsListener.getNations(unviewed=True):
-            techTreeData['actionIcon'] = backport.image(R.images.gui.maps.icons.library.discountIndicator())
-    tabDataProvider.extend([techTreeData])
-    tabDataProvider.extend([
-     {'label': MENU.HEADERBUTTONS_BARRACKS, 
-        'value': self.TABS.BARRACKS, 
-        'tooltip': TOOLTIPS.HEADER_BUTTONS_BARRACKS}])
-    tournamentsData = self._getTournamentsSelectorData()
-    tournamentsData = None
-    if tournamentsData is not None:
-        tabDataProvider.append(tournamentsData)
-    if CURRENT_REALM == 'RU':
-        override = self._tutorialLoader.gui.lastHangarMenuButtonsOverride
-        if override is not None:
-            tabDataProvider[:] = filter(lambda item: item['value'] in override, tabDataProvider)
-    return tabDataProvider
+    @override(LobbyHeader, '_LobbyHeader__hideCounter')
+    def LobbyHeader__hideCounter(base, self, alias):
+        if alias in LEGACY_HEADER_TABS:
+            base(self, alias)
+        else: pass
 
-@override(DailyQuestWidget, '_DailyQuestWidget__show')
-def DailyQuestWidget__show(base, self):
-    base(self)
-    self._DailyQuestWidget__hide()
+    @override(LobbyHeader, '_getHangarMenuItemDataProvider')
+    def LobbyHeader_getHangarMenuItemDataProvider(base, self):
+        tabDataProvider = [
+        {'label': MENU.HEADERBUTTONS_HANGAR, 
+            'value': self.TABS.HANGAR, 
+            'textColor': 16764006,
+            'textColorOver': 16768409, 
+            'tooltip': TOOLTIPS.HEADER_BUTTONS_HANGAR},
+        {'label': MENU.HEADERBUTTONS_STORAGE, 
+            'value': self.TABS.STORAGE, 
+            'tooltip': TOOLTIPS.HEADER_BUTTONS_STORAGE},
+        {'label': MENU.HEADERBUTTONS_SHOP, 
+            'value': self.TABS.STORE, 
+            'tooltip': TOOLTIPS.HEADER_BUTTONS_SHOP},
+        self._getPersonalMissionSelectorTabData()]
+        tabDataProvider.append({'label': MENU.HEADERBUTTONS_PROFILE, 
+        'value': self.TABS.PROFILE, 
+        'tooltip': TOOLTIPS.HEADER_BUTTONS_PROFILE})
+        techTreeData = {'label': MENU.HEADERBUTTONS_TECHTREE, 
+        'value': self.TABS.TECHTREE, 
+        'tooltip': TOOLTIPS.HEADER_BUTTONS_TECHTREE, 
+        'isTooltipSpecial': False, 
+        'subValues': [
+                    self.TABS.RESEARCH]}
+        if self.techTreeEventsListener.actions:
+            techTreeData['tooltip'] = TOOLTIPS_CONSTANTS.TECHTREE_DISCOUNT_INFO
+            techTreeData['isTooltipSpecial'] = True
+            if self.techTreeEventsListener.getNations(unviewed=True):
+                techTreeData['actionIcon'] = backport.image(R.images.gui.maps.icons.library.discountIndicator())
+        tabDataProvider.extend([techTreeData])
+        tabDataProvider.extend([
+        {'label': MENU.HEADERBUTTONS_BARRACKS, 
+            'value': self.TABS.BARRACKS, 
+            'tooltip': TOOLTIPS.HEADER_BUTTONS_BARRACKS}])
+        tournamentsData = self._getTournamentsSelectorData()
+        tournamentsData = None
+        if tournamentsData is not None:
+            tabDataProvider.append(tournamentsData)
+        if CURRENT_REALM == 'RU':
+            override = self._tutorialLoader.gui.lastHangarMenuButtonsOverride
+            if override is not None:
+                tabDataProvider[:] = filter(lambda item: item['value'] in override, tabDataProvider)
+        return tabDataProvider
 
-@override(CachedBlur, 'enable')
-def CachedBlur_enable(base, self):
-    self._switchEnabled(False)
+    @override(DailyQuestWidget, '_DailyQuestWidget__show')
+    def DailyQuestWidget__show(base, self):
+        base(self)
+        self._DailyQuestWidget__hide()
 
-@override(LobbyHeader, 'as_updateOnlineCounterS')
-def LobbyHeader_as_updateOnlineCounterS(base, self, clusterStats, regionStats, tooltip, isAvailable):
-    clusterUsers, regionUsers, _ = self.serverStats.getStats()
-    clusterUsers = '%s / %s' % (clusterUsers, regionUsers)
-    base(self, clusterUsers, '', None, isAvailable)
+    @override(CachedBlur, 'enable')
+    def CachedBlur_enable(base, self):
+        self._switchEnabled(False)
 
-@override(LobbyHeader, '_populateButtons')
-def LobbyHeader_populateButtons(base, self):
-    if CURRENT_REALM == 'RU' and hasattr(self, '_tutorialLoader'):
-        if self._tutorialLoader.gui.lastHeaderMenuButtonsOverride is not None:
-            self._LobbyHeader__onOverrideHeaderMenuButtons()
+    @override(LobbyHeader, 'as_updateOnlineCounterS')
+    def LobbyHeader_as_updateOnlineCounterS(base, self, clusterStats, regionStats, tooltip, isAvailable):
+        clusterUsers, regionUsers, _ = self.serverStats.getStats()
+        clusterUsers = '%s / %s' % (clusterUsers, regionUsers)
+        base(self, clusterUsers, '', None, isAvailable)
+
+    @override(LobbyHeader, '_populateButtons')
+    def LobbyHeader_populateButtons(base, self):
+        if CURRENT_REALM == 'RU' and hasattr(self, '_tutorialLoader'):
+            if self._tutorialLoader.gui.lastHeaderMenuButtonsOverride is not None:
+                self._LobbyHeader__onOverrideHeaderMenuButtons()
+                return
+        else:
+            buttonsToExclude = []
+            for i in self.BUTTONS.ALL():
+                buttonsToExclude.append(i)
+            self.as_setHeaderButtonsS(self._getAvailableButtons(buttonsToExclude))
             return
-    else:
-        buttonsToExclude = []
-        for i in self.BUTTONS.ALL():
-            buttonsToExclude.append(i)
-        self.as_setHeaderButtonsS(self._getAvailableButtons(buttonsToExclude))
-        return

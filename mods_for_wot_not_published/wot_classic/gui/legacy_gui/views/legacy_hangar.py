@@ -1,10 +1,7 @@
-
-import BigWorld
 from GUI import screenResolution
 
 from constants import PREBATTLE_TYPE, QUEUE_TYPE
 from debug_utils import LOG_CURRENT_EXCEPTION
-from functools import partial
 from helpers import dependency
 from PlayerEvents import g_playerEvents
 from CurrentVehicle import g_currentVehicle
@@ -21,6 +18,8 @@ from gui.Scaleform.genConsts.PERSONAL_MISSIONS_ALIASES import PERSONAL_MISSIONS_
 
 from skeletons.gui.app_loader import IAppLoader
 
+from . import getGUIConfig
+
 class LegacyHangar(View, IGlobalListener):
     
     def __init__(self):
@@ -31,13 +30,15 @@ class LegacyHangar(View, IGlobalListener):
         self.__appWidth = screenResolution()[0]
         self.__appHeight = screenResolution()[1]
 
-        g_playerEvents.onLoadingMilestoneReached += self.onHangarUIReady
-        self.startGlobalListening()
-        self.onPrbEntitySwitched()
-        self.guiSubViewsReplace(None, self._getHangarSrc())
+        if getGUIConfig()['isLegacyLobbyHeaderEnabled']:
+            g_playerEvents.onLoadingMilestoneReached += self.onHangarUIReady
+            self.startGlobalListening()
+            self.onPrbEntitySwitched()
+            self.guiSubViewsReplace(None, self._getHangarSrc())
     
     def _dispose(self):
-        self.stopGlobalListening()
+        if getGUIConfig()['isLegacyLobbyHeaderEnabled']:
+            self.stopGlobalListening()
         super(LegacyHangar, self)._dispose()
 
     @property
@@ -50,10 +51,11 @@ class LegacyHangar(View, IGlobalListener):
         return app.containerManager.getContainer(WindowLayer.VIEW).getChildContainer(5).getView()
 
     def onAppResized(self, appWidth, appHeight):
-        self.__appWidth = appWidth
-        self.__appHeight = appHeight
+        if getGUIConfig()['isLegacyLobbyHeaderEnabled']:
+            self.__appWidth = appWidth
+            self.__appHeight = appHeight
 
-        self.guiSubViewsReplace(None, self._getHangarSrc())
+            self.guiSubViewsReplace(None, self._getHangarSrc())
 
     def onPrbEntitySwitched(self):
         if self.prbDispatcher is not None:
@@ -114,7 +116,7 @@ class LegacyHangar(View, IGlobalListener):
         trainView.flashObject.setDisplayInfo(nig)
 
     def onHangarUIReady(self, milestone):
-        if milestone == Milestones.HANGAR_READY or milestone == Milestones.HANGAR_UI_READY:
+        if (milestone == Milestones.HANGAR_READY or milestone == Milestones.HANGAR_UI_READY):
             try:
                 appLoader = dependency.instance(IAppLoader)
                 app = appLoader.getApp()

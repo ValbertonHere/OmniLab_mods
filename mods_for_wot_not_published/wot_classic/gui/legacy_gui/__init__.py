@@ -1,7 +1,10 @@
-from ResMgr import isFile
-
-from .account_hooks import *
-from .avatar_hooks import *
+try:
+    from .account_hooks import *
+    print '[OMNILAB R&D: Legacy GUI] LOBBY GUI INITIALIZED!'
+    from .avatar_hooks import *
+    print '[OMNILAB R&D: Legacy GUI] BATTLE GUI INITIALIZED!'
+except:
+    print '[OMNILAB R&D: Legacy GUI] ONE OF GUI MODS NOT INSTALLED!'
 
 from .views import *
 
