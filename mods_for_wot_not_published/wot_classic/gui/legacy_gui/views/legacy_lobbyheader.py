@@ -1,13 +1,30 @@
 import BigWorld
 
+from adisp import adisp_process
 from constants import PREBATTLE_TYPE
 from realm import CURRENT_REALM
 
+from gui.impl import backport
+from gui.impl.gen import R
+
+from gui.prb_control.dispatcher import g_prbLoader
+from gui.prb_control.entities.base.ctx import PrbAction
+from gui.prb_control.settings import PREBATTLE_ACTION_NAME
+
+from gui.Scaleform.locale.MENU import MENU
+from gui.Scaleform.locale.TOOLTIPS import TOOLTIPS
 from gui.Scaleform.daapi.view.lobby.header import battle_selector_items
+from gui.Scaleform.daapi.view.lobby.header.BattleTypeSelectPopover import BattleTypeSelectPopover
+from gui.Scaleform.daapi.view.lobby.header.battle_selector_items import _SquadItem, _R_BATTLE_TYPES
+from gui.Scaleform.daapi.view.lobby.hangar.daily_quest_widget import DailyQuestWidget
 from gui.Scaleform.daapi.view.lobby.header.LobbyHeader import LobbyHeader, HeaderMenuVisibilityState
 from gui.Scaleform.framework.entities.View import View
+from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
+from gui.Scaleform.genConsts.TOOLTIPS_CONSTANTS import TOOLTIPS_CONSTANTS
 
 from gui.shared.view_helpers.emblems import ClanEmblemsHelper
+from gui.shared.view_helpers.blur_manager import CachedBlur
+from gui.shared.formatters import text_styles
 from gui.shared.formatters.currency import getBWFormatter
 from gui.shared import event_dispatcher as shared_events
 from gui.shared.money import Currency
@@ -31,6 +48,8 @@ from helpers import i18n, time_utils, isPlayerAccount, dependency
 from PlayerEvents import g_playerEvents
 from frameworks.wulf import WindowLayer
 
+from ..utils import override
+
 class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
     itemsCache = dependency.descriptor(IItemsCache)
     lobbyContext = dependency.descriptor(ILobbyContext)
@@ -39,6 +58,11 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
     platoonCtrl = dependency.descriptor(IPlatoonController)
     goodiesCache = dependency.descriptor(IGoodiesCache)
     webCtrl = dependency.descriptor(IWebController)
+
+    appLoader = dependency.instance(IAppLoader)
+
+    LEGACY_HEADER_TABS = (LobbyHeader.TABS.HANGAR, LobbyHeader.TABS.STORE, LobbyHeader.TABS.PROFILE, LobbyHeader.TABS.TECHTREE, LobbyHeader.TABS.BARRACKS, LobbyHeader.TABS.BROWSER, 
+                        LobbyHeader.TABS.RESEARCH, LobbyHeader.TABS.PERSONAL_MISSIONS, LobbyHeader.TABS.PERSONAL_MISSIONS_PAGE)
     SWF = None
 
     def __init__(self):
@@ -46,13 +70,22 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         self.__clanIconID = None
         self.__lobbyHeaderSrc = None
         LegacyLobbyHeader.SWF = self
+
+        override(BattleTypeSelectPopover, 'as_updateS', self._BattleTypeSelectPopover_as_updateS)
+        override(BattleTypeSelectPopover, '_BattleTypeSelectPopover__selectFight', self._BattleTypeSelectPopover__selectFight)
+        override(CachedBlur, 'enable', self._CachedBlur_enable)
+        override(DailyQuestWidget, '_DailyQuestWidget__show', self._DailyQuestWidget__show)
+        override(LobbyHeader, '_populateButtons', self._LobbyHeader_populateButtons)
+        override(LobbyHeader, '_LobbyHeader__setCounter', self._LobbyHeader__setCounter)
+        override(LobbyHeader, '_LobbyHeader__hideCounter', self._LobbyHeader__hideCounter)
+        override(LobbyHeader, 'as_updateOnlineCounterS', self._LobbyHeader_as_updateOnlineCounterS)
+        override(LobbyHeader, '_getHangarMenuItemDataProvider', self._LobbyHeader_getHangarMenuItemDataProvider)
         return
 
     def _populate(self):
         super(LegacyLobbyHeader, self)._populate()
         
-        appLoader = dependency.instance(IAppLoader)
-        app = appLoader.getApp()
+        app = self.appLoader.getApp()
         self.__lobbyHeaderSrc = app.containerManager.getContainer(WindowLayer.VIEW).getView().getComponent('lobbyHeader')
         self._addListeners()
         self.as_setServerNameS()
@@ -87,6 +120,99 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         g_clientUpdateManager.removeObjectCallbacks(self)
         super(LegacyLobbyHeader, self)._dispose()
 
+
+    def _BattleTypeSelectPopover_as_updateS(self, base, baseSelf, items, extraItems, isShowDemonstrator, demonstratorEnabled):
+        squad = _SquadItem(text_styles.middleTitle(backport.text(_R_BATTLE_TYPES.simpleSquad())), PREBATTLE_ACTION_NAME.SQUAD, 0)
+        items.insert(1, squad.getVO())
+        base(baseSelf, items, extraItems, isShowDemonstrator, demonstratorEnabled)
+
+    @adisp_process
+    def _BattleTypeSelectPopover__selectFight(self, base, baseSelf, actionName):
+        if actionName == 'squad':
+            prbDispatcher = g_prbLoader.getDispatcher()
+            yield prbDispatcher.doSelectAction(PrbAction(PREBATTLE_ACTION_NAME.SQUAD))
+        else:
+            base(baseSelf, actionName)
+
+    def _LobbyHeader__setCounter(self, base, baseSelf, alias, counter=None):
+        if alias in self.LEGACY_HEADER_TABS:
+            base(baseSelf, alias, counter)
+        else: pass
+
+    def _LobbyHeader__hideCounter(self, base, baseSelf, alias):
+        if alias in self.LEGACY_HEADER_TABS:
+            base(baseSelf, alias)
+        else: pass
+
+    def _LobbyHeader_getHangarMenuItemDataProvider(self, base, baseSelf):
+        buttonsToExclude = [i for i in baseSelf.BUTTONS.ALL()]
+        baseSelf.as_setHeaderButtonsS(baseSelf._getAvailableButtons(buttonsToExclude))
+        tabDataProvider = [
+        {'label': MENU.HEADERBUTTONS_HANGAR, 
+            'value': baseSelf.TABS.HANGAR, 
+            'textColor': 16764006,
+            'textColorOver': 16768409, 
+            'tooltip': TOOLTIPS.HEADER_BUTTONS_HANGAR},
+        {'label': MENU.HEADERBUTTONS_STORAGE, 
+            'value': baseSelf.TABS.STORAGE, 
+            'tooltip': TOOLTIPS.HEADER_BUTTONS_STORAGE},
+        {'label': MENU.HEADERBUTTONS_SHOP, 
+            'value': baseSelf.TABS.STORE, 
+            'tooltip': TOOLTIPS.HEADER_BUTTONS_SHOP},
+        baseSelf._getPersonalMissionSelectorTabData()]
+        tabDataProvider.append({'label': MENU.HEADERBUTTONS_PROFILE, 
+        'value': baseSelf.TABS.PROFILE, 
+        'tooltip': TOOLTIPS.HEADER_BUTTONS_PROFILE})
+        techTreeData = {'label': MENU.HEADERBUTTONS_TECHTREE, 
+        'value': baseSelf.TABS.TECHTREE, 
+        'tooltip': TOOLTIPS.HEADER_BUTTONS_TECHTREE, 
+        'isTooltipSpecial': False, 
+        'subValues': [baseSelf.TABS.RESEARCH]}
+        if baseSelf.techTreeEventsListener.actions:
+            techTreeData['tooltip'] = TOOLTIPS_CONSTANTS.TECHTREE_DISCOUNT_INFO
+            techTreeData['isTooltipSpecial'] = True
+            if baseSelf.techTreeEventsListener.getNations(unviewed=True):
+                techTreeData['actionIcon'] = backport.image(R.images.gui.maps.icons.library.discountIndicator())
+        tabDataProvider.extend([techTreeData])
+        tabDataProvider.extend([
+        {'label': MENU.HEADERBUTTONS_BARRACKS, 
+            'value': baseSelf.TABS.BARRACKS, 
+            'tooltip': TOOLTIPS.HEADER_BUTTONS_BARRACKS}])
+        tournamentsData = baseSelf._getTournamentsSelectorData()
+        tournamentsData = None
+        if tournamentsData is not None:
+            tabDataProvider.append(tournamentsData)
+        if CURRENT_REALM == 'RU':
+            override = baseSelf._tutorialLoader.gui.lastHangarMenuButtonsOverride
+            if override is not None:
+                tabDataProvider[:] = filter(lambda item: item['value'] in override, tabDataProvider)
+        return tabDataProvider
+
+    def _DailyQuestWidget__show(self, base, baseSelf):
+        base(baseSelf)
+        baseSelf._DailyQuestWidget__hide()
+
+    def _CachedBlur_enable(self, base, baseSelf):
+        baseSelf._switchEnabled(False)
+
+    def _LobbyHeader_as_updateOnlineCounterS(self, base, baseSelf, clusterStats, regionStats, tooltip, isAvailable):
+        clusterUsers, regionUsers, _ = baseSelf.serverStats.getStats()
+        clusterUsers = '%s / %s' % (clusterUsers, regionUsers)
+        base(baseSelf, clusterUsers, '', None, isAvailable)
+
+    def _LobbyHeader_populateButtons(self, base, baseSelf):
+        if CURRENT_REALM == 'RU' and hasattr(self, '_tutorialLoader'):
+            if baseSelf._tutorialLoader.gui.lastHeaderMenuButtonsOverride is not None:
+                baseSelf._LobbyHeader__onOverrideHeaderMenuButtons()
+                return
+        else: pass
+
+    def __removeClanIconFromMemory(self):
+        if self.__clanIconID is not None:
+            self.removeTextureFromMemory(self.__clanIconID)
+            self.__clanIconID = None
+        return
+
     def onClanEmblem32x32Received(self, _, emblem):
         self.flashObject.as_setClanEmblem(self.getMemoryTexturePath(emblem))
 
@@ -95,12 +221,6 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         
     def pyLog(self, msg):
         print '[OMNILAB: LegacyLobbyHeader] %s' % (msg)
-
-    def __removeClanIconFromMemory(self):
-        if self.__clanIconID is not None:
-            self.removeTextureFromMemory(self.__clanIconID)
-            self.__clanIconID = None
-        return
 
     def as_setControlsEnabled(self):
         self.flashObject.as_disableHeaderButtons(False)
