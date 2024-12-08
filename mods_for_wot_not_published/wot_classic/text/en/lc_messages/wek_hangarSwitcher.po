@@ -1,0 +1,42 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WoT it's Classic\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "hangar/title"
+msgstr "Базовый ангар первого поколения"
+
+msgid "hangar_premium/title"
+msgstr "Премиум ангар первого поколения"
+
+msgid "hangar_v2/title"
+msgstr "Базовый ангар второго поколения"
+
+msgid "hangar_premium_v2/title"
+msgstr "Премиум ангар второго поколения"
+
+msgid "lugansk_hangar/title"
+msgstr "Луганский ангар на 5-летие проекту"
+
+msgid "loadError/hangarNotExists"
+msgstr "Ангар не установлен или установлен не правильно! Загрузка отменена."
+
+msgid "modButton/title"
+msgstr "WэК!: Выбор ангара"
+
+msgid "modButton/tooltip"
+msgstr "Выбор ангаров из двух поколений World of Tanks."
+
+msgid "window/title"
+msgstr "WoT это Классика! | Выбор ангара"
+
+msgid "window/birthdayCategory"
+msgstr "День рождения проекта:"
+
+msgid "window/standartCategory"
+msgstr "Стандартные ангары:"

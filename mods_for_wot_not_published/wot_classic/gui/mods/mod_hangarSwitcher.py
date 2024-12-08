@@ -16,6 +16,7 @@ from skeletons.gui.shared.utils import IHangarSpace
 
 class HangarSwitcherWindow(AbstractWindowView):
     hangarSpace = dependency.descriptor(IHangarSpace)
+    BIRTHDAY_HANGARS = ('Luganks_5years_hangar')
     CLASSIC_HANGARS = ('hangar', 'hangar_premium', 'hangar_v2', 'hangar_premium_v2')
 
     def __init__(self):
@@ -25,7 +26,7 @@ class HangarSwitcherWindow(AbstractWindowView):
         super(HangarSwitcherWindow, self)._populate()
         BigWorld.callback(0.01, self.currHangarCheck)
 
-    def _noti(msg, isError=False):
+    def _noti(self, msg, isError=False):
         SystemMessages.pushMessage(msg, (SystemMessages.SM_TYPE.Information if not isError else SystemMessages.SM_TYPE.Error), priority=True)
 
     def onWindowClose(self):
@@ -41,12 +42,16 @@ class HangarSwitcherWindow(AbstractWindowView):
             updateHangarConfig(hanName, True)
             HangarSpaceReloader().changeHangarSpace(hanName, None)
         else:
-            self._noti('#wek_hangarSwitcher:loadError/hangarExists', True)
+            self._noti('#wek_hangarSwitcher:loadError/hangarNotExists', True)
 
     def currHangarCheck(self):
         currHangar = self.hangarSpace.spacePath.split('/')[-1]
-        if currHangar in self.CLASSIC_HANGARS:
-            self.flashObject.hanButtBar.selectedIndex = self.CLASSIC_HANGARS.index(currHangar)
+        if currHangar in self.BIRTHDAY_HANGARS:
+            self.flashObject.BirthdayHanButtBar.selectedIndex = self.BIRTHDAY_HANGARS.index(currHangar)
+            return
+        elif currHangar in self.CLASSIC_HANGARS:
+            self.flashObject.StandardHanButtBar.selectedIndex = self.CLASSIC_HANGARS.index(currHangar)
+            return
 
 def callSwitcherWindow():
     appLoader = dependency.instance(IAppLoader)

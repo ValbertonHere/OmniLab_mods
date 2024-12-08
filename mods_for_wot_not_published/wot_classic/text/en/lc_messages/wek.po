@@ -1,0 +1,206 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WoT it's Classic\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "battleAbilityItemRenderer/notActivated"
+msgstr "Не активирован"
+
+msgid "boosterFittingSelect/buyButton"
+msgstr "Докупить"
+
+msgid "boosterFittingSelect/for_crew/title"
+msgstr "Для экипажа"
+
+msgid "boosterFittingSelect/for_optDevice/title"
+msgstr "К оборудованию"
+
+msgid "boosterFittingSelect/removeButton"
+msgstr "Убрать"
+
+msgid "boosterFittingSelect/title"
+msgstr "Предбоевые инструкции"
+
+msgid "legacy_ammo_panel/battleBooster/empty/body"
+msgstr ""
+"(Используйте левый клик для вызова списка доступных предбоевых инструкций)"
+
+msgid "legacy_ammo_panel/battleBooster/empty/header"
+msgstr "Установить предбоевые инструкции"
+
+msgid "legacy_ammo_panel/equipment/empty/body"
+msgstr "(Используйте левый клик для вызова окна обслуживания танка)"
+
+msgid "legacy_ammo_panel/equipment/empty/header"
+msgstr "Открыть обслуживание"
+
+msgid "legacy_ammo_panel/optionalDevice/empty/body"
+msgstr "(Используйте левый клик для вызова списка доступного оборудования)"
+
+msgid "legacy_ammo_panel/optionalDevice/empty/header"
+msgstr "Установить оборудование"
+
+msgid "lobbyHeader/baseAcc/label"
+msgstr "Базовый аккаунт"
+
+msgid "lobbyHeader/creditsLabel"
+msgstr "ОБМЕН ЗОЛОТА"
+
+msgid "lobbyHeader/creditsTooltip/body"
+msgstr "Открыть окно перевода игрового золота в кредиты."
+
+msgid "lobbyHeader/creditsTooltip/header"
+msgstr "Обмен золота"
+
+msgid "lobbyHeader/crystalLabel"
+msgstr "ЗАСЛУЖИТЬ БОНЫ"
+
+msgid "lobbyHeader/crystalTooltip/body"
+msgstr "Открыть окно с условиями получения бон."
+
+msgid "lobbyHeader/crystalTooltip/header"
+msgstr "Заслужить боны"
+
+msgid "lobbyHeader/freeXPLabel"
+msgstr "ПЕРЕВОД ОПЫТА"
+
+msgid "lobbyHeader/freeXPTooltip/body"
+msgstr "Открыть окно перевода опыта в свободный."
+
+msgid "lobbyHeader/freeXPTooltip/header"
+msgstr "Перевод опыта"
+
+msgid "lobbyHeader/goldLabel"
+msgstr "КУПИТЬ ЗОЛОТО"
+
+msgid "lobbyHeader/goldTooltip/body"
+msgstr ""
+"Перейти на страницу\n"
+"покупки игрового золота на сайте."
+
+msgid "lobbyHeader/goldTooltip/header"
+msgstr "Купить золото"
+
+msgid "lobbyHeader/inDev/text"
+msgstr ""
+"Предварительная версия\n"
+"© 2024 OmniLab R&D\n"
+"© 2024 Mr.Bendy"
+
+msgid "lobbyHeader/personalReserves"
+msgstr ""
+"Личные\n"
+"резервы"
+
+msgid "lobbyHeader/premiumAcc/days"
+msgstr "(дней: %(days)s)"
+
+msgid "lobbyHeader/premiumAcc/hours"
+msgstr "(часов: %(hours)s)"
+
+msgid "lobbyHeader/premiumAcc/label"
+msgstr "Премиум аккаунт "
+
+msgid "lobbyHeader/tasks"
+msgstr ""
+"Боевые\n"
+"задачи и акции"
+
+msgid "lobbyHeader/tasks/tooltip/body"
+msgstr ""
+"Здесь вы увидите действующие боевые задачи и акции и проследите прогресс\n"
+"по ним, а также узнаете о предстоящих боевых задачах."
+
+msgid "lobbyHeader/tasks/tooltip/header"
+msgstr "Боевые задачи и акции"
+
+msgid "lobbyHeader/tutorial"
+msgstr ""
+"Боевое\n"
+"обучение"
+
+msgid "optDeviceFittingSelect/deluxe/title"
+msgstr "Улучшенное"
+
+msgid "optDeviceFittingSelect/modernized/title"
+msgstr "Пробное"
+
+msgid "optDeviceFittingSelect/regular/title"
+msgstr "Штатное"
+
+msgid "optDeviceFittingSelect/title"
+msgstr "Выбор оборудования"
+
+msgid "optDeviceFittingSelect/trophy/title"
+msgstr "Трофейное"
+
+msgid "shellListItemRenderer/replace"
+msgstr "Поменять снаряды местами"
+
+msgid "shellListItemRenderer/setAsDefault"
+msgstr "Назначить снаряд базовым"
+
+msgid "technicalMaintenance/ammo/auto/body"
+msgstr ""
+"При необходимости боекомплект будет пополняться\n"
+"автоматически после выхода машины из боя."
+
+msgid "technicalMaintenance/ammo/auto/header"
+msgstr "Пополнять автоматически"
+
+msgid "technicalMaintenance/ammoTitleEx"
+msgstr "(кассеты по %d шт.)"
+
+msgid "technicalMaintenance/equipment/auto/body"
+msgstr ""
+"Снаряжение будет пополняться автоматически, если это необходимо,\n"
+"после выхода машины из боя."
+
+msgid "technicalMaintenance/equipment/auto/header"
+msgstr "Пополнять автоматически"
+
+msgid "technicalMaintenance/repair/auto/body"
+msgstr ""
+"Ремонт будет выполняться автоматически, если это необходимо,\n"
+"после выхода машины из боя."
+
+msgid "technicalMaintenance/repair/auto/header"
+msgstr "Ремонтировать автоматически"
+
+msgid "technicalMaintenanceConfirm/cancel"
+msgstr "Отменить"
+
+msgid "technicalMaintenanceConfirm/message"
+msgstr "%(content)s"
+
+msgid "technicalMaintenanceConfirm/msg_order_change"
+msgstr "Поменять снаряжение местами?"
+
+msgid "technicalMaintenanceConfirm/msg_populate"
+msgstr "Пополнить снаряжение?"
+
+msgid "technicalMaintenanceConfirm/msg_repair"
+msgstr "Отремонтировать машину?"
+
+msgid "technicalMaintenanceConfirm/msg_repair_order_change"
+msgstr "Отремонтировать машину и поменять снаряжение местами?"
+
+msgid "technicalMaintenanceConfirm/msg_repair_populate"
+msgstr "Отремонтировать машину и пополнить снаряжение?"
+
+msgid "technicalMaintenanceConfirm/msg_repair_unload"
+msgstr "Отремонтировать машину и выгрузить снаряжение?"
+
+msgid "technicalMaintenanceConfirm/msg_unload"
+msgstr "Выгрузить снаряжение?"
+
+msgid "technicalMaintenanceConfirm/submit"
+msgstr "ОК"
+
+msgid "technicalMaintenanceConfirm/title"
+msgstr "Подтверждение покупки"
