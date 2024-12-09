@@ -25,22 +25,14 @@ from gui.Scaleform.genConsts.PERSONAL_MISSIONS_ALIASES import PERSONAL_MISSIONS_
 from skeletons.gui.app_loader import IAppLoader
 
 from . import getGUIConfig
-from ..utils import override
+
+from ..utils import restartOnlyHangar
 
 class LegacyHangar(View, IGlobalListener):
     appLoader = dependency.instance(IAppLoader)
     
     def __init__(self):
         super(LegacyHangar, self).__init__()
-
-        override(Hangar, '_Hangar__onTeaserReceived', self._Hangar__onTeaserReceived)
-        override(Hangar, 'hideTeaser', self._Hangar_hideTeaser)
-        override(EventEntryPointsContainer, 'as_updateEntriesS', self._EventEntryPointsContainer_as_updateEntriesS)
-        override(ResearchPanel, 'as_updateCurrentVehicleS', self._ResearchPanel_as_updateCurrentVehicleS)
-        override(AmmunitionPanelMeta, 'as_updateVehicleStatusS', self._AmmunitionPanelMeta_as_updateVehicleStatusS)
-        override(AmmunitionPanelMeta, 'showRepairDialog', self._AmmunitionPanelMeta_showRepairDialog)
-        if CURRENT_REALM != 'RU':
-            override(Hangar, 'as_setPrestigeWidgetVisibleS', self._Hangar_as_setPrestigeWidgetVisibleS)
 
     def _populate(self):
         super(LegacyHangar, self)._populate()
@@ -61,51 +53,6 @@ class LegacyHangar(View, IGlobalListener):
     def _getHangarSrc(self):
         app = self.appLoader.getApp()
         return app.containerManager.getContainer(WindowLayer.VIEW).getChildContainer(5).getView()
-    
-    def _Hangar__onTeaserReceived(self, base, baseSelf, teaserData, showCallback, closeCallback):
-        baseSelf._Hangar__teaser = None
-        return 
-
-    def _Hangar_hideTeaser(self, base, baseSelf):
-        baseSelf._Hangar__teaser = None
-        return 
-
-    def _EventEntryPointsContainer_as_updateEntriesS(self, base, baseSelf, data):
-        base(baseSelf, [])
-
-    def _ResearchPanel_as_updateCurrentVehicleS(self, base, baseSelf, _):
-        if g_currentVehicle.isPresent():
-            base(baseSelf, {'earnedXP': 0, 
-                    'isElite': False, 
-                    'vehCompareData': {'modeAvailable': False, 'btnEnabled': False, 'btnTooltip': ''}, 
-                    'vehPostProgressionData': {'showCounter': False, 'btnEnabled': False, 'btnVisible': False}, 
-                    'intCD': g_currentVehicle.item.intCD})
-        else:
-            base(baseSelf, {'earnedXP': 0})
-
-    def _AmmunitionPanelMeta_as_updateVehicleStatusS(self, base, baseSelf, data):
-        message = '<font face="$TitleFont" size="20" color="#497212">%s</font>' % g_currentVehicle.getHangarMessage()[1]
-
-        if g_currentVehicle.getHangarMessage()[0] != 'undamaged':
-            message = '<font face="$TitleFont" size="20" color="#9b0202">%s</font>' % g_currentVehicle.getHangarMessage()[1]
-
-        data = {'message': message,
-                    'rentAvailable': '',
-                    'isElite': False,
-                    'tankType': '',
-                    'vehicleLevel': '',
-                    'vehicleName': '',
-                    'roleId': '',
-                    'roleMessage': '', 
-                    'vehicleCD': ''}
-        base(baseSelf, data)
-
-    def _AmmunitionPanelMeta_showRepairDialog(self, base, baseSelf):
-        app = self.appLoader.getApp()
-        app.loadView(SFViewLoadParams('TechnicalMaintenance'))
-
-    def _Hangar_as_setPrestigeWidgetVisibleS(self, base, baseSelf, visible):
-        base(baseSelf, False)
 
     @property
     def researchPanel(self):
@@ -128,8 +75,8 @@ class LegacyHangar(View, IGlobalListener):
     def pyLog(self, msg):
         print '[OMNILAB: LegacyHangar] %s' % msg
 
-    def closeView(self):
-        self.destroy()
+    def reloadView(self):
+        restartOnlyHangar()
 
     def showResearch(self):
         if g_currentVehicle.isPresent():

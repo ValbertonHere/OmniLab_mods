@@ -43,7 +43,6 @@ from frameworks.wulf.gui_constants import WindowLayer
 
 from skeletons.gui.app_loader import IAppLoader
 from skeletons.gui.shared import IItemsCache
-from skeletons.gui.game_control import IEpicBattleMetaGameController
 
 from ..utils import override
 
@@ -117,15 +116,8 @@ class HangarFittingSlotVO(FittingSlotVO):
     
 class LegacyAmmoPanel(View, IGlobalListener):
     itemsCache = dependency.descriptor(IItemsCache)
-    epicMetaGameCtrl = dependency.descriptor(IEpicBattleMetaGameController)
 
     appLoader = dependency.instance(IAppLoader)
-    
-    _TAB_IDS = (0, 1)
-    _OPTDEV_TABS = [{'label': '#tank_setup:tabs/simple', 'id': 'simpleOptDevices'}, 
-            {'label': '#tank_setup:tabs/deluxe', 'id': 'deluxeOptDevices'}]
-    _BOOST_TABS = [{'label': '#tank_setup:tabs/optDevice', 'id': 'boostersForAmmunition'}, 
-    {'label': '#tank_setup:tabs/crew', 'id': 'boostersForCrew'}]
     
     def __init__(self):
         super(LegacyAmmoPanel, self).__init__()
