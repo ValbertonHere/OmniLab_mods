@@ -2,7 +2,7 @@ from debug_utils import LOG_CURRENT_EXCEPTION
 
 try:
     from .account_hooks import *
-    #from .avatar_hooks import *
+    from .avatar_hooks import *
     from .battle_views import *
     from .lobby_views import *
     print '[OMNILAB R&D: Legacy GUI] LOBBY GUI INITIALIZED!'
