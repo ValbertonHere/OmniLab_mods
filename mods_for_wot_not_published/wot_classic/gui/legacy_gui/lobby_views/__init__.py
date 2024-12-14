@@ -53,4 +53,4 @@ for settings in getViewSettings():
     if settings is not None:
         g_entitiesFactories.addSettings(settings)
 
-print '[OMNILAB R&D: views.__init__] DONE!'
+print '[OMNILAB R&D: lobby_views.__init__] DONE!'

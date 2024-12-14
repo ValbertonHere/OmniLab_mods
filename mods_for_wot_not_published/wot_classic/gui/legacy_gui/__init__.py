@@ -1,17 +1,14 @@
+from debug_utils import LOG_CURRENT_EXCEPTION
+
 try:
     from .account_hooks import *
+    #from .avatar_hooks import *
+    from .battle_views import *
+    from .lobby_views import *
     print '[OMNILAB R&D: Legacy GUI] LOBBY GUI INITIALIZED!'
-    from .avatar_hooks import *
-    print '[OMNILAB R&D: Legacy GUI] BATTLE GUI INITIALIZED!'
 except:
-    print '[OMNILAB R&D: Legacy GUI] ONE OF GUI MODS NOT INSTALLED!'
+    print '[OMNILAB R&D: Legacy GUI] One of gui mods not installed or has caused an exception. See lines below.'
+    LOG_CURRENT_EXCEPTION()
 
-from .views import *
 
-__all__ = ('init', 'fini')
-
-def init():
-    print '[OMNILAB R&D: Legacy GUI] INITIALIZED!'
-
-def fini():
-    print '[OMNILAB R&D: Legacy GUI] FINISHED!'
+__all__ = ()

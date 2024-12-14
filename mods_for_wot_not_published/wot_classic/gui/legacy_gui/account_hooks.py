@@ -47,10 +47,10 @@ from skeletons.gui.app_loader import IAppLoader
 from skeletons.gui.game_control import IEpicBattleMetaGameController
 from skeletons.gui.shared import IItemsCache
 
-from .views.legacy_ammopanel import setOnlyBattleAbilities, upgradeModule, installModule, setAutoRearm, onManageBattleAbilitiesClicked, getListOverlayData
-from .views.legacy_ammopanel import _extendByArtefactData, _extendByBattleAbilityData, _extendByBattleBoosterData, _extendByOptionalDeviceData
-from .views import getGUIConfig
-from .utils import override
+from lobby_views.legacy_ammopanel import setOnlyBattleAbilities, upgradeModule, installModule, setAutoRearm, onManageBattleAbilitiesClicked, getListOverlayData
+from lobby_views.legacy_ammopanel import _extendByArtefactData, _extendByBattleAbilityData, _extendByBattleBoosterData, _extendByOptionalDeviceData
+from lobby_views import getGUIConfig
+from utils import override
 
 __all__ = ()
 

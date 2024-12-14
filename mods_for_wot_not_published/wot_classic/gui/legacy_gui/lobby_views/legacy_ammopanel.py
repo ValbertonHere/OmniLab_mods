@@ -13,7 +13,6 @@ from items import ITEM_TYPES as MODULE_ITEM_TYPES
 
 from account_helpers.AccountSettings import SHOW_OPT_DEVICE_HINT, AccountSettings
 
-
 from gui import InputHandler, SystemMessages, g_htmlTemplates, shop
 from gui.prb_control.entities.listener import IGlobalListener
 from gui.shared import event_dispatcher as shared_events
@@ -43,8 +42,6 @@ from frameworks.wulf.gui_constants import WindowLayer
 
 from skeletons.gui.app_loader import IAppLoader
 from skeletons.gui.shared import IItemsCache
-
-from ..utils import override
 
 _MODULE_SLOTS = (GUI_ITEM_TYPE_NAMES[MODULE_ITEM_TYPES.vehicleGun],
  GUI_ITEM_TYPE_NAMES[MODULE_ITEM_TYPES.vehicleTurret],
