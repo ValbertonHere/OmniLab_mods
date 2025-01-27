@@ -55,6 +55,9 @@ msgid "legacy_ammo_panel/postProgression/switch_error"
 msgstr ""
 "Не удалось переключить комплектацию машины. Не открыт альтернаивный вариант."
 
+msgid "lobbyHeader/fightButton/label"
+msgstr "В бой!"
+
 msgid "lobbyHeader/baseAcc/label"
 msgstr "Базовый аккаунт"
 

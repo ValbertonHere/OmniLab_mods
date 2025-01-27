@@ -4,7 +4,7 @@ from AvatarInputHandler.DynamicCameras.arcade_camera_helper import MinMax
 
 def c(self, onChangeControlMode=None, postmortemMode=False, smartPointCalculator=True):
     base(self, onChangeControlMode, postmortemMode, smartPointCalculator)
-    self._cfg['startDistw'] = 12.5
+    self._cfg['startDist'] = 12.5
     self._cfg['startAngle'] = -0.2
     self._ArcadeCamera__defaultAimOffset = (0, 0.325)
     self._cfg['distRange'] = MinMax(min=2.0, max=12.5)
@@ -22,13 +22,13 @@ def u(self, newDist):
 
 try:
     ArcadeCamera.create = base
-    ArcadeCamera._ArcadeCamera__updateCameraSettings = base2
+    ArcadeCamera._updateCameraSettings = base2
 except:
     'base not found'
     
 base = ArcadeCamera.create
-base2 = ArcadeCamera._ArcadeCamera__updateCameraSettings
+base2 = ArcadeCamera._updateCameraSettings
 
 ArcadeCamera.create = c
-ArcadeCamera._ArcadeCamera__updateCameraSettings = u
+ArcadeCamera._updateCameraSettings = u
     

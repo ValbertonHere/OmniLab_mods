@@ -1,5 +1,6 @@
 import BigWorld
 import constants
+from gui.prb_control.dispatcher import EVENT_BUS_SCOPE
 import wg_async as future_async
 
 from account_helpers.AccountSettings import ACTIVE_TEST_PARTICIPATION_CONFIRMED, AccountSettings
@@ -17,7 +18,7 @@ from gui.Scaleform.framework.entities.View import View
 
 from gui.shared.view_helpers.emblems import ClanEmblemsHelper
 from gui.shared.formatters.currency import getBWFormatter
-from gui.shared import event_dispatcher as shared_events
+from gui.shared import event_dispatcher as shared_events, events
 from gui.shared.money import Currency
 
 from gui.ClientUpdateManager import g_clientUpdateManager
@@ -92,13 +93,6 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
     def as_setServerNameS(self):
         serverName = '<TEXTFORMAT INDENT="0" LEFTMARGIN="0" RIGHTMARGIN="0" LEADING="2"><P ALIGN="CENTER"><FONT FACE="$FieldFont" COLOR="#ffced9d9" KERNING="0">#menu:header/serverInfo</FONT></P><P ALIGN="CENTER"><FONT FACE="$FieldFont" COLOR="#fffbce86" KERNING="0"> "%s"</FONT></P></TEXTFORMAT>' % self.connectionMgr.serverUserName
         self.flashObject.as_setServerName(serverName)
-
-    def as_disableHeaderButtonsS(self, *args, **kwargs):
-        if not self.prbDispatcher:
-            self.pyLog('as_disableHeaderButtonsS: prbDispatcher is None')
-            return
-        else:
-            self.flashObject.as_disableHeaderButtons(self.prbDispatcher.getFunctionalState().isNavigationDisabled())
 
     def as_setUserNicknameS(self, clanInfo, diff=None):
         if isPlayerAccount():
@@ -203,7 +197,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         app = self.appLoader.getApp()
         self.__lobbyHeaderSrc = app.containerManager.getContainer(WindowLayer.VIEW).getView().getComponent('lobbyHeader')
         self._addListeners()
-        self.as_setInDevS(True)
+        self.as_setInDevS(False)
         self.as_setServerNameS()
         self.as_setUserNicknameS(g_clanCache.clanInfo)
         self.__getFormattedCurrency()
@@ -214,11 +208,13 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
 
     def _addListeners(self):
         self.startGlobalListening()
+        self.addListener(events.FightButtonEvent.FIGHT_BUTTON_UPDATE, self.__updateLobbyHeaderButtons, scope=EVENT_BUS_SCOPE.LOBBY)
         g_currentVehicle.onChanged += self.onVehicleChanged
+        g_currentVehicle.onChanged += self.__updateLobbyHeaderButtons
         g_currentPreviewVehicle.onChanged += self.onVehicleChanged
-        g_playerEvents.onEnqueued += self.as_disableHeaderButtonsS
-        g_playerEvents.onDequeued += self.as_disableHeaderButtonsS
-        self.platoonCtrl.onMembersUpdate += self.as_disableHeaderButtonsS
+        g_playerEvents.onEnqueued += self.__updateLobbyHeaderButtons
+        g_playerEvents.onDequeued += self.__updateLobbyHeaderButtons
+        self.platoonCtrl.onMembersUpdate += self.__updateLobbyHeaderButtons
         self.serverStats.onStatsReceived += self.__onStatsReceived
         self.__onStatsReceived()
         g_clientUpdateManager.addCurrencyCallback(Currency.CRYSTAL, self.as_setCrystalS)
@@ -230,14 +226,30 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
     
     def _dispose(self):
         self.stopGlobalListening()
+        self.removeListener(events.FightButtonEvent.FIGHT_BUTTON_UPDATE, self.__updateLobbyHeaderButtons, scope=EVENT_BUS_SCOPE.LOBBY)
         g_currentVehicle.onChanged -= self.onVehicleChanged
-        g_playerEvents.onEnqueued -= self.as_disableHeaderButtonsS
-        g_playerEvents.onDequeued -= self.as_disableHeaderButtonsS
-        self.platoonCtrl.onMembersUpdate -= self.as_disableHeaderButtonsS
+        g_currentVehicle.onChanged -= self.__updateLobbyHeaderButtons
+        g_playerEvents.onEnqueued -= self.__updateLobbyHeaderButtons
+        g_playerEvents.onDequeued -= self.__updateLobbyHeaderButtons
+        self.platoonCtrl.onMembersUpdate -= self.__updateLobbyHeaderButtons
         self.serverStats.onStatsReceived -= self.__onStatsReceived
         g_currentPreviewVehicle.onChanged -= self.onVehicleChanged
         g_clientUpdateManager.removeObjectCallbacks(self)
         super(LegacyLobbyHeader, self)._dispose()
+
+    def __updateLobbyHeaderButtons(self, *args, **kwargs):
+        if not self.prbDispatcher:
+            self.pyLog('__updateLobbyHeaderButtons: prbDispatcher is None')
+            return
+        else:
+            items = battle_selector_items.getItems()
+            state = self.prbDispatcher.getFunctionalState()
+            selected = items.update(state)
+            canDo = self.prbEntity.canPlayerDoAction().isValid
+            isFightDisabled = not canDo or selected.isLocked
+
+            self.flashObject.as_setFightButtonDisabled(isFightDisabled)
+            self.flashObject.as_disableHeaderButtons(self.prbDispatcher.getFunctionalState().isNavigationDisabled())
 
     def __getFormattedCurrency(self):
         money = self.itemsCache.items.stats.actualMoney

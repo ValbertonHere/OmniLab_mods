@@ -26,8 +26,8 @@ from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import AmmoPlugin
 # Класс констант мода
 class WTSM_CONSTS():
 
-    IN_DEV = False
-    BUILD = '0624/1'
+    IN_DEV = True
+    BUILD = '1224/1'
     VERSION = 'Release 9'
     UPD_NAME = 'Эпицентр'
     DIST_VALUES = [300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200]
@@ -63,51 +63,10 @@ class WTSM_CONSTS():
     }
 
     CREW_VOICELINES = {
-        'vo_ammo_bay_damaged': 'loader',
-        'vo_commander_killed': ('driver', 'gunner', 'loader'),
-        'vo_driver_killed': ('gunner', 'loader'),
-        'vo_enemy_hp_damaged_by_explosion_at_direct_hit_by_player': 'driver',
-        'vo_enemy_hp_damaged_by_projectile_and_chassis_damaged_by_player': 'driver',
-        'vo_enemy_hp_damaged_by_projectile_and_gun_damaged_by_player': 'driver',
-        'vo_enemy_hp_damaged_by_projectile_by_player': 'driver',
-        'vo_enemy_killed_by_player': 'driver',
-        'vo_engine_damaged': 'driver',
-        'vo_engine_destroyed': 'driver',
-        'vo_engine_functional': 'driver',
-        'vo_fire_started': ('driver', 'gunner', 'loader'),
-        'vo_fire_stopped': ('driver', 'gunner', 'loader'),
-        'vo_fuel_tank_damaged': 'driver',
-        'vo_gun_damaged': 'gunner',
-        'vo_gun_destroyed': 'gunner',
-        'vo_gun_functional': 'gunner',
-        'vo_gunner_killed': ('driver', 'loader'),
-        'vo_loader_killed': ('driver', 'gunner'),
-        'vo_radio_damaged': 'driver',
-        'vo_radioman_killed': 'gunner',
-        'vo_track_destroyed': 'driver',
-        'vo_track_functional': 'driver',
-        'vo_track_functional_can_move': 'driver',
-        'vo_turret_rotator_damaged': 'gunner',
-        'vo_turret_rotator_destroyed': 'gunner',
-        'vo_turret_rotator_functional': 'gunner',
         'vo_wt_art_warning': 'chief_m',
         'vo_wt_battle_lose': 'chief_m',
         'vo_wt_battle_won': 'chief_m',
-        'vo_wt_gun_reloaded': 'loader',
-        'vo_wt_left_track_hit': 'driver',
-        'vo_wt_prepare_shell': 'commander',
-        'vo_wt_right_track_hit': 'driver',
-        'vo_wt_shoot_voice': ('commander', 'loader'),
-        'vo_wt_target_locked_far': 'commander',
-        'vo_wt_target_locked_near': 'commander',
-        'vo_wt_weve_been_hit': ('driver', 'gunner', 'loader'),
-        'vo_wt_wheel_hit': 'driver',
-        'vo_wt_wheel_repaired': 'driver',
-        'vo_wt_chief_battle_start': 'chief_m',
-        'vo_wt_comm_battle_start': 'commander',
-        'vo_wt_driver_ready': 'driver',
-        'vo_wt_gunner_ready': 'gunner',
-        'vo_wt_loader_ready': 'loader'
+        'vo_wt_chief_battle_start': 'chief_m'
     }
 
 # Класс реализации дополнительных голосовых и звуковых уведомлений в очередь основных и прочего
@@ -437,11 +396,6 @@ def wtAutoAim(base, self, target=None, magnetic=False):
 def wtVoiceCallback(base, eventName, objectName, matrix, local=(0.0, 0.0, 0.0)):
     global sound
     if eventName in WTSM_CONSTS.CREW_VOICELINES:
-        if type(WTSM_CONSTS.CREW_VOICELINES[eventName]) == tuple:
-            crew_voice = choice(WTSM_CONSTS.CREW_VOICELINES[eventName])
-        else:
-            crew_voice = WTSM_CONSTS.CREW_VOICELINES[eventName]
-        WTSoundsStuff.setSwitch(WTSM_CONSTS.SWITCHES['crew_voice'], crew_voice)
         sound = WWISE.WW_getSound(eventName, objectName, matrix, local)
         sound.setCallback(WTSoundsStuff.onCrewVoiceEnded)
         sound.play()
@@ -449,9 +403,9 @@ def wtVoiceCallback(base, eventName, objectName, matrix, local=(0.0, 0.0, 0.0)):
     else:
         return base(eventName, objectName, matrix, local)
 
-@overrideMethod(GameLoadingCdnCache, '__init__')
-def ccpmInit(base, self, defaults, externalConfigUrl=None, cohort=None):
-    base(self, defaults, 'https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/config.json', cohort)
+#@overrideMethod(GameLoadingCdnCache, '__init__')
+#def ccpmInit(base, self, defaults, externalConfigUrl=None, cohort=None):
+#    base(self, defaults, 'https://raw.githubusercontent.com/ValbertonHere/OmniLab_mods/main/wtsm_loading_screen/config.json', cohort)
 
 tcvo_first = True
 tcvo_callbacks = []

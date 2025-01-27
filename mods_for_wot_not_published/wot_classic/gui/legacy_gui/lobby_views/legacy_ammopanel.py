@@ -4,14 +4,16 @@ from gui.Scaleform.locale.MENU import MENU
 from helpers import dependency
 from helpers.i18n import makeString
 from functools import partial
-from constants import PREBATTLE_TYPE, QUEUE_TYPE
+from constants import PREBATTLE_TYPE, QUEUE_TYPE, ROLE_TYPE_TO_LABEL
 from CurrentVehicle import g_currentVehicle
 from debug_utils import LOG_CURRENT_EXCEPTION
 
 from items import getTypeInfoByName
 from items import ITEM_TYPES as MODULE_ITEM_TYPES
+from items.vehicles import g_cache
 
 from account_helpers.AccountSettings import SHOW_OPT_DEVICE_HINT, AccountSettings
+from account_helpers.settings_core.ServerSettingsManager import UI_STORAGE_KEYS
 
 from gui import InputHandler, SystemMessages, g_htmlTemplates, shop
 from gui.prb_control.entities.listener import IGlobalListener
@@ -26,7 +28,7 @@ from gui.ClientUpdateManager import g_clientUpdateManager
 
 from gui.Scaleform.daapi.settings.views import VIEW_ALIAS
 from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPanel
-from gui.Scaleform.daapi.view.lobby.shared.fitting_slot_vo import FittingSlotVO
+from gui.Scaleform.daapi.view.lobby.shared.fitting_slot_vo import _SlotVOConstants
 from gui.Scaleform.daapi.view.lobby.shared.fitting_select_popover import ModuleFittingSelectPopover, _POPOVER_FIRST_TAB_IDX, _POPOVER_SECOND_TAB_IDX, CommonFittingSelectPopover, _HangarLogicProvider, PopoverLogicProvider, _extendByModuleData
 from gui.Scaleform.daapi.view.lobby.storage.storage_helpers import OptDeviceBonusesDescriptionBuilder
 from gui.Scaleform.genConsts.SLOT_HIGHLIGHT_TYPES import SLOT_HIGHLIGHT_TYPES
@@ -36,12 +38,15 @@ from gui.Scaleform.framework.entities.View import View
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.Scaleform.locale.ITEM_TYPES import ITEM_TYPES
 from gui.Scaleform.locale.RES_ICONS import RES_ICONS
+from gui.Scaleform.locale.TOOLTIPS import TOOLTIPS
 
 from frameworks.wulf import Array
 from frameworks.wulf.gui_constants import WindowLayer
 
+from skeletons.account_helpers.settings_core import ISettingsCore
 from skeletons.gui.app_loader import IAppLoader
 from skeletons.gui.shared import IItemsCache
+from skeletons.gui.game_control import IComp7Controller
 
 _MODULE_SLOTS = (GUI_ITEM_TYPE_NAMES[MODULE_ITEM_TYPES.vehicleGun],
  GUI_ITEM_TYPE_NAMES[MODULE_ITEM_TYPES.vehicleTurret],
@@ -51,7 +56,7 @@ _MODULE_SLOTS = (GUI_ITEM_TYPE_NAMES[MODULE_ITEM_TYPES.vehicleGun],
  GUI_ITEM_TYPE_NAMES[MODULE_ITEM_TYPES.optionalDevice],
  GUI_ITEM_TYPE_NAMES[MODULE_ITEM_TYPES.shell],
  GUI_ITEM_TYPE_NAMES[MODULE_ITEM_TYPES.equipment],
- 'battleBooster', 'battleAbility')
+ 'battleBooster', 'battleAbility', 'modificator')
 
 class EmptySlotVO(dict):
     
@@ -76,9 +81,46 @@ class EmptySlotVO(dict):
             self['tooltipType'] = TOOLTIPS_CONSTANTS.COMPLEX
             self['moduleLabel'] = 'empty' if moduleType != 'battleBooster' else 'emptyBooster'
 
-class HangarFittingSlotVO(FittingSlotVO):
+class HangarFittingSlotVO(dict):
 
-    def _prepareModule(self, modulesData, vehicle):
+    def __init__(self, modulesData, vehicle, moduleType, tooltipType=None, isDisabledTooltip=False):
+        super(HangarFittingSlotVO, self).__init__()
+        if moduleType == FITTING_TYPES.VEHICLE_TURRET and not vehicle.hasTurrets:
+            ttType = ''
+        else:
+            ttType = tooltipType or TOOLTIPS_CONSTANTS.PREVIEW_MODULE
+        vehicleModule = self._prepareModule(modulesData, vehicle, moduleType)
+        if moduleType == FITTING_TYPES.VEHICLE_CHASSIS:
+            if vehicleModule and vehicleModule.isWheeledChassis():
+                moduleType = FITTING_TYPES.VEHICLE_WHEELED_CHASSIS
+        self['tooltip'] = ''
+        self['name'] = ''
+        self['tooltipType'] = ttType
+        self['slotType'] = moduleType
+        self['removable'] = True
+        if vehicleModule is None:
+            self['id'] = _SlotVOConstants.UNRESOLVED_LIST_INDEX
+            self['tooltipType'] = TOOLTIPS_CONSTANTS.COMPLEX
+            if not isDisabledTooltip:
+                self['tooltip'] = TOOLTIPS.HANGAR_AMMO_PANEL_EQUIPMENT_EMPTY
+            else:
+                self['tooltip'] = TOOLTIPS.HANGAR_AMMO_PANEL_EQUIPMENT_DISABLED
+            self['moduleLabel'] = _SlotVOConstants.MODULE_LABEL_EMPTY
+        elif moduleType == 'modificator':
+            self['id'] = vehicleModule.id.itemID
+            self['moduleLabel'] = vehicleModule.name
+            self['name'] = vehicleModule.userString
+            self['slotLocked'] = True
+            return
+        else:
+            self['id'] = vehicleModule.intCD
+            self['removable'] = vehicleModule.isRemovable
+            self['moduleLabel'] = vehicleModule.getGUIEmblemID()
+            self['name'] = vehicleModule.userName
+        self._setNewCounter(vehicleModule, vehicle)
+        return
+
+    def _prepareModule(self, modulesData, vehicle, moduleType):
         module = modulesData[0]
         self['slotLocked'] = vehicle.isLocked or not vehicle.isAlive
         if module.itemTypeName == FITTING_TYPES.OPTIONAL_DEVICE:
@@ -88,9 +130,13 @@ class HangarFittingSlotVO(FittingSlotVO):
 
             self['bgHighlightType'] = module.getHighlightType()
             self['overlayType'] = module.getOverlayType()
-        elif module.itemTypeName == FITTING_TYPES.EQUIPMENT:
+        elif module.itemTypeName == FITTING_TYPES.EQUIPMENT and moduleType != 'modificator':
             self['bgHighlightType'] = module.getHighlightType()
             self['overlayType'] = module.getOverlayType()
+        elif module.itemTypeName == FITTING_TYPES.EQUIPMENT and moduleType == 'modificator':
+            self['bgHighlightType'] = module.getHighlightType()
+            self['overlayType'] = module.getOverlayType()
+            return module
         elif module.itemTypeName == FITTING_TYPES.BOOSTER:
             affectsAtTTC = module.isAffectsOnVehicle(vehicle)
             self['affectsAtTTC'] = affectsAtTTC
@@ -110,10 +156,41 @@ class HangarFittingSlotVO(FittingSlotVO):
             if module.itemTypeName == GUI_ITEM_TYPE_NAMES[MODULE_ITEM_TYPES.vehicleTurret] and vehicle.isAlive:
                 self['slotLocked'] = vehicle.isLocked or not vehicle.hasTurrets
         return module
+
+    def _setNewCounter(self, vehicleModule, vehicle):
+        if vehicleModule is None:
+            return
+        else:
+            if vehicleModule.itemTypeID == MODULE_ITEM_TYPES.vehicleGun:
+                if vehicleModule.isAutoReloadable(vehicle.descriptor):
+                    uiStorage = dependency.instance(ISettingsCore).serverSettings.getUIStorage()
+                    if not uiStorage.get(UI_STORAGE_KEYS.AUTO_RELOAD_MARK_IS_SHOWN):
+                        self['counter'] = 1
+                if vehicleModule.isDualGun(vehicle.descriptor):
+                    uiStorage = dependency.instance(ISettingsCore).serverSettings.getUIStorage()
+                    if not uiStorage.get(UI_STORAGE_KEYS.DUAL_GUN_MARK_IS_SHOWN):
+                        if 'counter' in self:
+                            self['counter'] += 3
+                        else:
+                            self['counter'] = 3
+                if vehicleModule.hasDualAccuracy(vehicle.descriptor):
+                    uiStorage = dependency.instance(ISettingsCore).serverSettings.getUIStorage2()
+                    if not uiStorage.get(UI_STORAGE_KEYS.DUAL_ACCURACY_MARK_IS_SHOWN):
+                        self['counter'] = self.get('counter', 0) + 1
+            if vehicleModule.itemTypeID == MODULE_ITEM_TYPES.vehicleEngine:
+                if vehicleModule.hasTurboshaftEngine():
+                    uiStorage = dependency.instance(ISettingsCore).serverSettings.getUIStorage()
+                    if not uiStorage.get(UI_STORAGE_KEYS.TURBOSHAFT_MARK_IS_SHOWN):
+                        self['counter'] = self.get('counter', 0) + 1
+                if vehicleModule.hasRocketAcceleration():
+                    uiStorage = dependency.instance(ISettingsCore).serverSettings.getUIStorage2()
+                    if not uiStorage.get(UI_STORAGE_KEYS.ROCKET_ACCELERATION_MARK_IS_SHOWN):
+                        self['counter'] = self.get('counter', 0) + 1
+            return
     
 class LegacyAmmoPanel(View, IGlobalListener):
     itemsCache = dependency.descriptor(IItemsCache)
-
+    comp7Controller = dependency.descriptor(IComp7Controller)
     appLoader = dependency.instance(IAppLoader)
     
     def __init__(self):
@@ -142,7 +219,6 @@ class LegacyAmmoPanel(View, IGlobalListener):
         g_clientUpdateManager.removeObjectCallbacks(self)
         super(LegacyAmmoPanel, self)._dispose()
 
-
     def showModuleInfo(self, itemCD):
         vehicle = g_currentVehicle.item
         if vehicle is not None and itemCD is not None and int(itemCD) > 0:
@@ -165,9 +241,12 @@ class LegacyAmmoPanel(View, IGlobalListener):
         app = self.appLoader.getApp()
         app.loadView(SFViewLoadParams('TechnicalMaintenance'))
 
-    def as_setBattleAbilitiesVisible(self):
+    def as_setModificationVisibleS(self, isVisible):
+        self.flashObject.as_setModificationVisible(bool(isVisible))
+
+    def as_setBattleAbilitiesVisibleS(self):
         isVisible = self.prbDispatcher is not None and self.prbDispatcher.getFunctionalState().isInPreQueue(QUEUE_TYPE.EPIC) or self.prbDispatcher.getFunctionalState().isInUnit(PREBATTLE_TYPE.EPIC)
-        self.flashObject.as_setBattleAbilitiesVisibleS(isVisible)
+        self.flashObject.as_setBattleAbilitiesVisible(isVisible)
 
     def switchPostProgressionLayout(self, isOptDev):
         if g_currentVehicle.item.isLocked:
@@ -253,6 +332,20 @@ class LegacyAmmoPanel(View, IGlobalListener):
                         else:
                             bASlot = HangarFittingSlotVO([battleAbility], vehicle, 'battleAbility', tooltipType=TOOLTIPS_CONSTANTS.EPIC_SKILL_SLOT_INFO)
                         battleAbilities.append(bASlot)
+                elif slotType == 'modificator':
+                    elevenLVLModificator = g_cache.getEquipmentByID(vehicle.typeDescr.ability)
+
+                    if self.comp7Controller.isSuitableVehicle(vehicle) is not None or not self.comp7Controller.isComp7PrbActive():
+                        comp7Modificator = None
+                    else:
+                        comp7Modificator = self.comp7Controller.getRoleEquipment(ROLE_TYPE_TO_LABEL.get(vehicle.descriptor.role))
+                    
+                    print 'comp7Modificator:', comp7Modificator
+                    print 'elevenLVLModificator', type(elevenLVLModificator)
+                    if comp7Modificator is None and elevenLVLModificator is None:
+                        modSlot = EmptySlotVO('modificator')
+                    else:
+                        modSlot = HangarFittingSlotVO([comp7Modificator or elevenLVLModificator], vehicle, 'modificator', tooltipType=TOOLTIPS_CONSTANTS.ABILITY_LOBBY_TOOLTIP)
                 else:
                     data = self.itemsCache.items.getItems(GUI_ITEM_TYPE_INDICES[slotType], REQ_CRITERIA.CUSTOM(lambda item: item.isInstalled(vehicle))).values()
                     moduleSlot = HangarFittingSlotVO(data, vehicle, slotType, tooltipType=TOOLTIPS_CONSTANTS.HANGAR_MODULE)
@@ -279,8 +372,10 @@ class LegacyAmmoPanel(View, IGlobalListener):
             ammunitionData['equipment'] = consumables
             ammunitionData['booster'] = boosterSlot
             ammunitionData['battleAbilities'] = battleAbilities
+            ammunitionData['modificator'] = modSlot
 
-            self.as_setBattleAbilitiesVisible()
+            self.as_setBattleAbilitiesVisibleS()
+            self.as_setModificationVisibleS(comp7Modificator or elevenLVLModificator)
             self.flashObject.setupSlots(ammunitionData)
 
 def _extendByArtefactData(targetData, module, slotIndex):

@@ -5,6 +5,12 @@ from gui.modsSettingsApi import g_modsSettingsApi
 from helpers import dependency
 from skeletons.gui.app_loader import IAppLoader
 from CurrentVehicle import g_currentVehicle
+from skeletons.gui.shared.utils import IHangarSpace
+from gui.Scaleform.daapi.settings.views import VIEW_ALIAS
+from gui.Scaleform.framework.managers.containers import POP_UP_CRITERIA
+from gui.prb_control.events_dispatcher import g_eventDispatcher
+from gui import SystemMessages
+from gui.SystemMessages import SM_TYPE
 
 class ActiveWidgetsPlaceholder(object):
     LEFT = 1
@@ -17,24 +23,35 @@ class ActiveWidgetsPlaceholder(object):
     def update(self, position, alias):
         return False
 
-lootbox_visible = False
-header_visible = False
+lootbox_visible = None
+header_visible = None
 
 modLinkage = 'wot_classic_lobby_gui'
-modDataVersion = 1.1
-settings = {'disable_lootboxes': True, 'disable_battlepass': True}
-template = {'modDisplayName': '\xd0\x9a\xd0\xbb\xd0\xb0\xd1\x81\xd1\x81\xd0\xb8\xd1\x87\xd0\xb5\xd1\x81\xd0\xba\xd0\xb8\xd0\xb9 \xd0\xb8\xd0\xbd\xd1\x82\xd0\xb5\xd1\x80\xd1\x84\xd0\xb5\xd0\xb9\xd1\x81 \xd0\xb0\xd0\xbd\xd0\xb3\xd0\xb0\xd1\x80\xd0\xb0',
+modDataVersion = 1.2
+default_settings = {'enabled': True, 'enable_lootboxes': False, 'enable_battlepass': False}
+template = {'modDisplayName': 'Классический интерфейс ангара',
  'enabled': True,
  'column1': [{'type': 'CheckBox',
-              'text': '\xd0\xa1\xd0\xba\xd1\x80\xd1\x8b\xd1\x82\xd1\x8c \xd0\xbb\xd1\x83\xd1\x82\xd0\xb1\xd0\xbe\xd0\xba\xd1\x81\xd1\x8b',
-              'value': True,
-              'tooltip': '{HEADER}\xd0\xa1\xd0\xba\xd1\x80\xd1\x8b\xd1\x82\xd1\x8c \xd0\xba\xd0\xbe\xd0\xbd\xd1\x82\xd0\xb5\xd0\xb9\xd0\xbd\xd0\xb5\xd1\x80\xd1\x8b{/HEADER}{BODY}\xd0\x98\xd0\xb7 \xd0\xb0\xd0\xbd\xd0\xb3\xd0\xb0\xd1\x80\xd0\xb0 \xd0\xb1\xd1\x83\xd0\xb4\xd0\xb5\xd1\x82 \xd1\x81\xd0\xba\xd1\x80\xd1\x8b\xd1\x82 \xd1\x84\xd1\x83\xd0\xbd\xd0\xba\xd1\x86\xd0\xb8\xd0\xbe\xd0\xbd\xd0\xb0\xd0\xbb \xd0\xba\xd0\xbe\xd0\xbd\xd1\x82\xd0\xb5\xd0\xb9\xd0\xbd\xd0\xb5\xd1\x80\xd0\xbe\xd0\xb2.{/BODY}',
-              'varName': 'disable_lootboxes'},
+              'text': 'Отображать лутбоксы',
+              'value': False,
+              'tooltip': '{HEADER}Отображать лутбоксы{/HEADER}{BODY}В ангаре будет показана/скрыта функциональность контейнеров.{/BODY}',
+              'varName': 'enable_lootboxes'},
              {'type': 'CheckBox',
-              'text': '\xd0\xa1\xd0\xba\xd1\x80\xd1\x8b\xd1\x82\xd1\x8c \xd0\xb1\xd0\xbe\xd0\xb5\xd0\xb2\xd0\xbe\xd0\xb9 \xd0\xbf\xd1\x80\xd0\xbe\xd0\xbf\xd1\x83\xd1\x81\xd0\xba',
-              'value': True,
-              'tooltip': '{HEADER}\xd0\xa1\xd0\xba\xd1\x80\xd1\x8b\xd1\x82\xd1\x8c \xd0\xb1\xd0\xbe\xd0\xb5\xd0\xb2\xd0\xbe\xd0\xb9 \xd0\xbf\xd1\x80\xd0\xbe\xd0\xbf\xd1\x83\xd1\x81\xd0\xba{/HEADER}{BODY}\xd0\x9e\xd1\x82\xd0\xba\xd0\xbb\xd1\x8e\xd1\x87\xd0\xb8\xd1\x82\xd1\x8c \xd0\xb8\xd0\xbd\xd0\xb4\xd0\xb8\xd0\xba\xd0\xb0\xd1\x82\xd0\xbe\xd1\x80\xd1\x8b \xd1\x83\xd1\x80\xd0\xbe\xd0\xb2\xd0\xbd\xd1\x8f \xd0\xb1\xd0\xbe\xd0\xb5\xd0\xb2\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xbf\xd1\x80\xd0\xbe\xd0\xbf\xd1\x83\xd1\x81\xd0\xba\xd0\xb0 \xd0\xb2 \xd0\xbe\xd0\xba\xd0\xbd\xd0\xb5 \xd0\xb0\xd0\xbd\xd0\xb3\xd0\xb0\xd1\x80\xd0\xb0.{/BODY}',
-              'varName': 'disable_battlepass'}]}
+              'text': 'Отображать кнопки в верхней части окна ангара',
+              'value': False,
+              'tooltip': '{HEADER}Отображать кнопки в верхней части окна ангара{/HEADER}{BODY}Включить/отключить кнопки в верхней части окна ангара (боевой пропуск, ЛБЗ и т. д.).{/BODY}',
+              'varName': 'enable_battlepass'}]}
+
+try:
+    from gui.legacy_gui.lobby_views import getGUIConfig
+    default_settings['enable_lobbyHeader'] = getGUIConfig()['isLegacyLobbyHeaderEnabled']
+    template['column1'].append({'type': 'CheckBox',
+                                'text': 'Включить старую шапку ангара',
+                                'value': getGUIConfig()['isLegacyLobbyHeaderEnabled'],
+                                'tooltip': '{HEADER}Включить старую шапку ангара{/HEADER}{BODY}Включить старый вид шапки ангара (Требуется перезапуск клиента).{/BODY}',
+                                'varName': 'enable_lobbyHeader'})
+except:
+    print '[WeK_old_lobby] No Legacy Lobby Header found. Skipping...'
 
 def setHangarHeaderVisible(self):
     header_base(self)
@@ -53,6 +70,23 @@ def setLootBoxesVisible(self, _):
 lootbox_base = Hangar.as_updateCarouselEventEntryStateS
 Hangar.as_updateCarouselEventEntryStateS = setLootBoxesVisible
 
+def restartSubView():
+    appLoader = dependency.instance(IAppLoader)
+    hangarSpace = dependency.instance(IHangarSpace)
+    if hangarSpace.spaceInited:
+        lobby = appLoader.getDefLobbyApp()
+        if lobby and lobby.containerManager:
+            view = lobby.containerManager.getView(WindowLayer.SUB_VIEW, {POP_UP_CRITERIA.VIEW_ALIAS: VIEW_ALIAS.LOBBY_HANGAR})
+            if view is not None:
+                view.destroy()
+            g_eventDispatcher.loadHangar()
+
+def setLootboxesVisibillity(lb_value):
+    appLoader = dependency.instance(IAppLoader)
+    app = appLoader.getApp()
+    hangar = app.containerManager.getContainer(WindowLayer.VIEW).getChildContainer(5).getView()
+    hangar.as_updateCarouselEventEntryStateS(lb_value)
+
 def onModSettingsChanged(linkage, newSettings):
     if linkage == modLinkage:
         print '[WeK_old_lobby] Configuration modified: ', newSettings
@@ -69,21 +103,23 @@ def onGameKeyDown(event):
 
 def apply_settings(settings):
     try:
+
         global lootbox_visible
         global header_visible
 
-        value = settings.get('disable_lootboxes')
-        print 'disable_lootboxes', not value
-        lootbox_visible = not value
+        lootboxes_value = settings.get('enable_lootboxes')
+        battlepass_value = settings.get('enable_battlepass')
+        lobbyHeader_value = settings.get('enable_lobbyHeader', None)
+        
+        lootbox_visible = lootboxes_value
+        header_visible = battlepass_value
 
-        value = settings.get('disable_battlepass')
-        print 'disable_battlepass', not value
-        header_visible = not value
+        setLootboxesVisibillity(lootboxes_value)
+        restartSubView()
+        
+        if lobbyHeader_value is not None:
+            getGUIConfig(lobbyHeader_value)
 
-        appLoader = dependency.instance(IAppLoader)
-        app = appLoader.getApp()
-        hangar = app.containerManager.getContainer(WindowLayer.VIEW).getChildContainer(5).getView()
-        hangar.as_updateCarouselEventEntryStateS(lootbox_visible)
     except:
         print "[WeK_old_lobby] Couldn't apply_settings"
         LOG_CURRENT_EXCEPTION()
@@ -91,11 +127,14 @@ def apply_settings(settings):
 try:
     savedSettings = g_modsSettingsApi.getModSettings(modLinkage, template)
     if savedSettings:
-        settings = savedSettings
-        apply_settings(settings)
+        print savedSettings
+        print default_settings
+        default_settings = savedSettings
         g_modsSettingsApi.registerCallback(modLinkage, onModSettingsChanged, onButtonClicked)
+        apply_settings(savedSettings)
     else:
-        settings = g_modsSettingsApi.setModTemplate(modLinkage, template, onModSettingsChanged, onButtonClicked)
+        print 'g_modsSettingsApi.setModTemplate'
+        default_settings = g_modsSettingsApi.setModTemplate(modLinkage, template, onModSettingsChanged, onButtonClicked)
     print '[WeK_old_lobby] Configuration menu has been created successfully'
 except:
     print "[WeK_old_lobby] Couldn't create configuration menu"

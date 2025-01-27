@@ -1,6 +1,7 @@
 # Помощник для УГВ.
 
 # Импорты модулей
+import SoundGroups
 import BigWorld
 import WWISE
 
@@ -27,6 +28,14 @@ class WTSM_CONSTS():
         'DEVICE_DESTROYED_AT_RAMMING',
         'DEVICE_DESTROYED_AT_WORLD_COLLISION'
     }
+
+    RTPCS = [
+        'RTPC_WT_WoTA_shot_sideChain',
+        'RTPC_WT_WoTA_expl_sideChain',
+        'RTPC_WT_WoTA_horiz_sideChain',
+        'RTPC_WT_WoTA_imp_pc_sideChain',
+        'RTPC_WT_WoTA_hanmusic_sideChain'
+    ]
 
     SWITCHES = {
         'shell_prepared': 'SWITCH_shell_prepared',
@@ -79,14 +88,15 @@ class WTSoundsStuff():
         
         inDevLog('Alive allies: %s, alive enemies: %s' % (alive_allies, aiive_enemies))
 
-        if alive_allies > aiive_enemies and aiive_enemies <= 3:
-            BigWorld.player().soundNotifications.play('wt_ally_dominating')
-        elif  alive_allies < aiive_enemies and alive_allies <= 3:
-            BigWorld.player().soundNotifications.play('wt_enemy_dominating')
-        elif alive_allies < aiive_enemies:
-            BigWorld.player().soundNotifications.play('wt_enemy_winning')
-        elif alive_allies > aiive_enemies:
-            BigWorld.player().soundNotifications.play('wt_ally_winning')
+        if alive_allies != 0 or aiive_enemies != 0:
+            if alive_allies > aiive_enemies and aiive_enemies <= 3:
+                BigWorld.player().soundNotifications.play('wt_ally_dominating')
+            elif  alive_allies < aiive_enemies and alive_allies <= 3:
+                BigWorld.player().soundNotifications.play('wt_enemy_dominating')
+            elif alive_allies < aiive_enemies:
+                BigWorld.player().soundNotifications.play('wt_enemy_winning')
+            elif alive_allies > aiive_enemies:
+                BigWorld.player().soundNotifications.play('wt_ally_winning')
         
         tcvo_callbacks.append(BigWorld.callback(cooldown, WTSoundsStuff.teamCorrelationVO))
 
@@ -130,6 +140,9 @@ class WTSoundsStuff():
         tcvo_first = True
         shell_change_first = True
 
+        SoundGroups.g_instance.playSound2D('mt_hangar_music_stop')
+        SoundGroups.g_instance.playSound2D('wt_hangar_music')
+
         WTSoundsStuff.clearAllCallbacks()
 
     @staticmethod
@@ -149,14 +162,18 @@ class WTSoundsStuff():
         WTSoundsStuff.addEvent('wt_prepare_shell', fxEvent='load_shell_fx', lifetime='0')
 
         WTSoundsStuff.teamCorrelationVO()
+        SoundGroups.g_instance.playSound2D('wt_battle_music')
         BigWorld.player().guiSessionProvider.shared.ammo.onNextShellChanged += WTSoundsStuff.shellChangeVO
 
     @staticmethod
     def onBattleFinished(winnerTeam, *args, **kwargs):
-        WTSoundsStuff.clearAllCallbacks()
+        WTSoundsStuff.clearAllCallbacks(True)
+        SoundGroups.g_instance.playSound2D('wt_battle_end')
         if winnerTeam == BigWorld.player().team:
+            SoundGroups.g_instance.playSound2D('wt_win_music')
             BigWorld.player().soundNotifications.play('wt_battle_won')
         else:
+            SoundGroups.g_instance.playSound2D('wt_lose_music')
             BigWorld.player().soundNotifications.play('wt_battle_lose')
                     
     @staticmethod
@@ -225,6 +242,9 @@ ServicesLocator.appLoader.onGUISpaceEntered += WTSoundsStuff.onGUISpaceEntered
 
 inDevLog('Add to game events - End')
 
+for rtpc in WTSM_CONSTS.RTPCS:
+    WTSoundsStuff.setRTPC(rtpc, -48)
+    
 print '[OMNILAB: WTSM] INIT END!'
 
 print '----------OMNILAB RESEARCH & DEVELOPMENT-----------'

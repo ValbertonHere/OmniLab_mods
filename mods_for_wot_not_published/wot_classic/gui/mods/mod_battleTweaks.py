@@ -37,22 +37,21 @@ class LegacyFlashBangEffect(_FlashBangEffectDesc):
             self._duration = 0.0
         return
 
-def onOwnVehicleDamaged(self, attackerID, points, effectsIndex, damageFactor, lastMaterialIsShield, damageCausedByDiscreteFactor):
-    base(self, attackerID, points, effectsIndex, damageFactor, lastMaterialIsShield, damageCausedByDiscreteFactor)
+def onOwnVehicleDamaged(self, attackerID, points, effectsIndex, damageFactor, lastMaterialIsShield):
+    base(self, attackerID, points, effectsIndex, damageFactor, lastMaterialIsShield)
     maxComponentIdx = self.calcMaxComponentIdx()
     decodedPoints = DamageFromShotDecoder.decodeHitPoints(points, self.appearance.collisions, maxComponentIdx, self.typeDescriptor)
     g_legacyFlashBangEffect.create(effectCode=decodedPoints[(-1)].hitEffectCode)
 
-
 def AC_advCollider(self, onChangeControlMode=None, postmortemMode=False, smartPointCalculator=True):
     self._ArcadeCamera__adCfg['enable'] = False
-    base(self, onChangeControlMode, postmortemMode, smartPointCalculator)
+    base2(self, onChangeControlMode, postmortemMode, smartPointCalculator)
     self.setCameraDistance(self._cfg['startDist'] - 5)
-
-base = ArcadeCamera.create
-ArcadeCamera.create = AC_advCollider
 
 g_legacyFlashBangEffect = LegacyFlashBangEffect()
 
 base = Vehicle.showDamageFromShot
 Vehicle.showDamageFromShot = onOwnVehicleDamaged
+
+base2 = ArcadeCamera.create
+ArcadeCamera.create = AC_advCollider

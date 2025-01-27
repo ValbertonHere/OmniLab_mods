@@ -45,6 +45,9 @@ msgstr "(Используйте левый клик для вызова спис
 msgid "legacy_ammo_panel/optionalDevice/empty/header"
 msgstr "Установить оборудование"
 
+msgid "lobbyHeader/fightButton/label"
+msgstr "В бой!"
+
 msgid "lobbyHeader/baseAcc/label"
 msgstr "Базовый аккаунт"
 
