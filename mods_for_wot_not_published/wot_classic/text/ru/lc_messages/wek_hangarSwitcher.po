@@ -35,8 +35,11 @@ msgstr "Выбор ангаров из двух поколений World of Tank
 msgid "window/title"
 msgstr "WoT это Классика! | Выбор ангара"
 
+msgid "window/standartCategory"
+msgstr "Стандартные ангары:"
+
 msgid "window/birthdayCategory"
 msgstr "День рождения проекта:"
 
-msgid "window/standartCategory"
-msgstr "Стандартные ангары:"
+msgid "window/premSenseCategory"
+msgstr ":"

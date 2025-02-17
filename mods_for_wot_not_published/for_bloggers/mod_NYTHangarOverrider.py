@@ -1,0 +1,36 @@
+
+from debug_utils import LOG_NOTE
+from gui.game_control.hangar_switch_controller import SceneSpaceConfig
+from gui.shared.personality import ServicesLocator
+from helpers import dependency
+from skeletons.gui.app_loader import GuiGlobalSpaceID
+from skeletons.gui.game_control import IHangarSpaceSwitchController
+
+
+class NYTHangarOverrider():
+    hangarSwitchController = dependency.descriptor(IHangarSpaceSwitchController)
+    EXCEPT_THIS_SCENES = ['COMP7', 'ARMORY_YARD']
+
+    def __init__(self):
+        ServicesLocator.appLoader.onGUISpaceEntered += self.onGUISpaceEntered
+
+    def onGUISpaceEntered(self, spaceID, *args, **kwargs):
+        if spaceID != GuiGlobalSpaceID.LOBBY:
+            return
+        
+        if self.hangarSwitchController is not None:
+            self.lockHangarOverride('NearYouHangar')
+
+    def lockHangarOverride(self, hangarName):
+        for name in self.hangarSwitchController._sceneSpaceParams.iterkeys():
+            if name not in self.EXCEPT_THIS_SCENES:
+                self.hangarSwitchController._sceneSpaceParams[name] = SceneSpaceConfig(hangarName)
+
+        for isPremium in (True, False):
+            self.hangarSwitchController._defaultHangarSpaceConfig.setSpaceIdOverride(isPremium, hangarName)
+
+        self.hangarSwitchController._HangarSpaceSwitchController__isHangarOverridingLocked = True
+        LOG_NOTE('Hangar override was locked. Hangar name: ', hangarName, 'Excepted this scenes:', self.EXCEPT_THIS_SCENES)
+
+
+g_NYTHangarOverrider = NYTHangarOverrider()

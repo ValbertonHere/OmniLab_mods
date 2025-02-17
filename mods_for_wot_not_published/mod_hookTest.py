@@ -23,12 +23,11 @@ class TestWindow(AbstractWindowView):
 
 g_entitiesFactories.addSettings(ViewSettings('TestWindow', TestWindow, 'TestWindowUI.swf', WindowLayer.WINDOW, None, ScopeTemplates.VIEW_SCOPE))
 
-
 def onhandleKeyEvent(event):
     key = getBigworldNameFromKey(event.key)
     if key == 'KEY_F8':
         appLoader = dependency.instance(IAppLoader)
         app = appLoader.getApp()
-        app.loadView(SFViewLoadParams('HookTestWindow'))
+        app.loadView(SFViewLoadParams('TestWindow'))
 
 InputHandler.g_instance.onKeyDown += onhandleKeyEvent

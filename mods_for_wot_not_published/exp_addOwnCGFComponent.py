@@ -56,6 +56,7 @@ class OmniSelectionRule(Rule):
             print 'No need to add OmniEnvironment tooltip builder again.'
         return
 
+
 class OmniEnvironmentTooltipData(ToolTipBaseData):
 
     _ENV_TOOLTIPS_PATH = '#test_tooltip:%s'

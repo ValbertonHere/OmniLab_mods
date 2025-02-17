@@ -134,8 +134,6 @@ class HangarFittingSlotVO(dict):
             self['bgHighlightType'] = module.getHighlightType()
             self['overlayType'] = module.getOverlayType()
         elif module.itemTypeName == FITTING_TYPES.EQUIPMENT and moduleType == 'modificator':
-            self['bgHighlightType'] = module.getHighlightType()
-            self['overlayType'] = module.getOverlayType()
             return module
         elif module.itemTypeName == FITTING_TYPES.BOOSTER:
             affectsAtTTC = module.isAffectsOnVehicle(vehicle)
@@ -340,8 +338,6 @@ class LegacyAmmoPanel(View, IGlobalListener):
                     else:
                         comp7Modificator = self.comp7Controller.getRoleEquipment(ROLE_TYPE_TO_LABEL.get(vehicle.descriptor.role))
                     
-                    print 'comp7Modificator:', comp7Modificator
-                    print 'elevenLVLModificator', type(elevenLVLModificator)
                     if comp7Modificator is None and elevenLVLModificator is None:
                         modSlot = EmptySlotVO('modificator')
                     else:
