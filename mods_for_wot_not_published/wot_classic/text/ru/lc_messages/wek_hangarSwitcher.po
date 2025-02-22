@@ -23,6 +23,15 @@ msgstr "Премиум ангар второго поколения"
 msgid "lugansk_hangar/title"
 msgstr "Луганский ангар на 5-летие проекту"
 
+msgid "23feb_2014_hangar/title"
+msgstr "На 23 февраля 2014 гойда"
+
+msgid "prem_sense_hangars_v1/title"
+msgstr "Ангары первого поколения"
+
+msgid "prem_sense_hangars_v2/title"
+msgstr "Ангары второго поколения"
+
 msgid "loadError/hangarNotExists"
 msgstr "Ангар не установлен или установлен не правильно! Загрузка отменена."
 
@@ -38,8 +47,17 @@ msgstr "WoT это Классика! | Выбор ангара"
 msgid "window/standartCategory"
 msgstr "Стандартные ангары:"
 
-msgid "window/birthdayCategory"
-msgstr "День рождения проекта:"
+msgid "window/specialCategory"
+msgstr "Ивентовые ангары:"
 
 msgid "window/premSenseCategory"
-msgstr ":"
+msgstr "Как раньше:"
+
+msgid "premSenseToggle/label"
+msgstr "Отслеживание статуса премиум-аккаунта"
+
+msgid "premSenseToggle/tooltip/header"
+msgstr "Зависимость от статуса премиум-аккаунта"
+
+msgid "premSenseToggle/tooltip/body"
+msgstr "Ангары будут переключаться в зависимости от статуса премиум-аккаунта."

@@ -4,7 +4,7 @@
 		<userString>#vehicle_customization:camouflage/transparent</userString>
 		<season>ALL</season>
 		<historical>1</historical>
-		<tags>hiddenInUI questsProgression fullRGB styleOnly</tags>
+		<tags>questsProgression fullRGB styleOnly</tags>
 		<priceGroup>MT camouflages 50g notInShop</priceGroup>
 		<camouflage>
 			<id>14881</id>
@@ -26,13 +26,13 @@
 			<emissionPatternMap>omnilab/user_customization/camouflages/Forze_Camo_PatternMap.dds</emissionPatternMap>
 			<deferredEmissionBrightness>3</deferredEmissionBrightness>
 			<emissionAnimationSpeed>
-				0.35
+				0.7
 				<!--BW_String-->
 			</emissionAnimationSpeed>
 			<rotation>
-				<HULL>-0.349066</HULL>
-				<TURRET>-0.349066</TURRET>
-				<GUN>-0.349066</GUN>
+				<HULL>0.0</HULL>
+				<TURRET>0.0</TURRET>
+				<GUN>0.0</GUN>
 			</rotation>
 			<tilingSettings>
 				<type>relative</type>

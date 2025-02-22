@@ -341,7 +341,7 @@ class LegacyAmmoPanel(View, IGlobalListener):
                     if comp7Modificator is None and elevenLVLModificator is None:
                         modSlot = EmptySlotVO('modificator')
                     else:
-                        modSlot = HangarFittingSlotVO([comp7Modificator or elevenLVLModificator], vehicle, 'modificator', tooltipType=TOOLTIPS_CONSTANTS.ABILITY_LOBBY_TOOLTIP)
+                        modSlot = HangarFittingSlotVO([comp7Modificator or elevenLVLModificator], vehicle, 'modificator', tooltipType='')
                 else:
                     data = self.itemsCache.items.getItems(GUI_ITEM_TYPE_INDICES[slotType], REQ_CRITERIA.CUSTOM(lambda item: item.isInstalled(vehicle))).values()
                     moduleSlot = HangarFittingSlotVO(data, vehicle, slotType, tooltipType=TOOLTIPS_CONSTANTS.HANGAR_MODULE)
@@ -414,6 +414,7 @@ def _extendByBattleBoosterData(targetData, module, vehicle):
             targetData['notAffectedTTC'] = not module.isAffectsOnVehicle(vehicle)
         targetData['desc'] = text_styles.main(module.getOptDeviceBoosterDescription(vehicle, text_styles.bonusAppliedText))
         _extendHighlightData(targetData, SLOT_HIGHLIGHT_TYPES.BATTLE_BOOSTER, overlay)
+        
     targetData['count'] = module.inventoryCount
     targetData['removeButtonLabel'] = '#wek:boosterFittingSelect/removeButton'
     targetData['buyButtonLabel'] = '#wek:boosterFittingSelect/buyButton'

@@ -1,7 +1,7 @@
 from debug_utils import LOG_CURRENT_EXCEPTION
 from frameworks.wulf.gui_constants import WindowLayer
 from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
-from gui.modsSettingsApi import g_modsSettingsApi
+from gui.modsSettingsApi.skeleton import IModsSettingsApi
 from helpers import dependency
 from skeletons.gui.app_loader import IAppLoader
 from CurrentVehicle import g_currentVehicle
@@ -22,6 +22,22 @@ class ActiveWidgetsPlaceholder(object):
 
     def update(self, position, alias):
         return False
+
+class ClassicModSettingsAPI(IModsSettingsApi):
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 lootbox_visible = None
 header_visible = None

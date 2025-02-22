@@ -12,6 +12,7 @@ from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from skeletons.gui.app_loader import IAppLoader
 from skeletons.gui.shared.utils import IHangarSpace
 
+
 def override(holder, name, wrapper=None, setter=None):
     if wrapper is None:
         return lambda wrapper, setter=None: override(holder, name, wrapper, setter)

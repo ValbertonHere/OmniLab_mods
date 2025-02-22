@@ -30,7 +30,7 @@ from skeletons.connection_mgr import IConnectionManager
 from skeletons.gui.lobby_context import ILobbyContext
 from skeletons.gui.app_loader import IAppLoader
 from skeletons.gui.shared import IItemsCache
-from skeletons.gui.game_control import IManualController, IPlatoonController, IServerStatsController
+from skeletons.gui.game_control import IManualController, IPlatoonController, IServerStatsController, IGameSessionController
 from skeletons.gui.goodies import IGoodiesCache
 from skeletons.gui.web import IWebController
 
@@ -45,6 +45,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
     itemsCache = dependency.descriptor(IItemsCache)
     lobbyContext = dependency.descriptor(ILobbyContext)
     connectionMgr = dependency.descriptor(IConnectionManager)
+    gameSession = dependency.descriptor(IGameSessionController)
     manualController = dependency.descriptor(IManualController)
     platoonCtrl = dependency.descriptor(IPlatoonController)
     goodiesCache = dependency.descriptor(IGoodiesCache)
@@ -131,8 +132,11 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         state = self.prbDispatcher.getFunctionalState()
         selected = items.update(state)
         squadSelected = squadItems.update(state)
+        playerInfo = self.prbDispatcher.getPlayerInfo()
+        fightButtonLabel = selected.getFightButtonLabel(state, playerInfo)
         isSquad = self.prbDispatcher.getFunctionalState().isInUnit() and self.prbEntity.getEntityType() in PREBATTLE_TYPE.SQUAD_PREBATTLES
         battleType = '#menu:headerButtons/battle/types/%s' % squadSelected.getData() if isSquad else selected.getLabel()
+        # self.flashObject.as_setFightButtonLabel(fightButtonLabel)
         self.flashObject.as_setBattleType(i18n.makeString(battleType))
 
     def onVehicleChanged(self):
@@ -212,8 +216,10 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         g_currentVehicle.onChanged += self.onVehicleChanged
         g_currentVehicle.onChanged += self.__updateLobbyHeaderButtons
         g_currentPreviewVehicle.onChanged += self.onVehicleChanged
+        g_currentPreviewVehicle.onChanged += self.__updateLobbyHeaderButtons
         g_playerEvents.onEnqueued += self.__updateLobbyHeaderButtons
         g_playerEvents.onDequeued += self.__updateLobbyHeaderButtons
+        self.gameSession.onPremiumNotify += self.__onPremiumExpireTimeChanged
         self.platoonCtrl.onMembersUpdate += self.__updateLobbyHeaderButtons
         self.serverStats.onStatsReceived += self.__onStatsReceived
         self.__onStatsReceived()
@@ -231,6 +237,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         g_currentVehicle.onChanged -= self.__updateLobbyHeaderButtons
         g_playerEvents.onEnqueued -= self.__updateLobbyHeaderButtons
         g_playerEvents.onDequeued -= self.__updateLobbyHeaderButtons
+        self.gameSession.onPremiumNotify -= self.__onPremiumExpireTimeChanged
         self.platoonCtrl.onMembersUpdate -= self.__updateLobbyHeaderButtons
         self.serverStats.onStatsReceived -= self.__onStatsReceived
         g_currentPreviewVehicle.onChanged -= self.onVehicleChanged

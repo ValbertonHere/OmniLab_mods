@@ -1,5 +1,6 @@
 
 from debug_utils import LOG_NOTE
+from gui import ClientHangarSpace
 from gui.game_control.hangar_switch_controller import SceneSpaceConfig
 from gui.shared.personality import ServicesLocator
 from helpers import dependency
@@ -13,6 +14,8 @@ class NYTHangarOverrider():
 
     def __init__(self):
         ServicesLocator.appLoader.onGUISpaceEntered += self.onGUISpaceEntered
+
+        ClientHangarSpace._getHangarPath = lambda pld1, pld2: 'spaces/NearYouHangar'
 
     def onGUISpaceEntered(self, spaceID, *args, **kwargs):
         if spaceID != GuiGlobalSpaceID.LOBBY:

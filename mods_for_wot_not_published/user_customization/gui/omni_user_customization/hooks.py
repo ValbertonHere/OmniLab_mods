@@ -3,7 +3,7 @@
 
 from debug_utils import LOG_ERROR
 from items.vehicles import g_cache
-from items.components.c11n_components import CamouflageItem, DecalItem, PaintItem
+from items.components.c11n_components import CamouflageItem, InsigniaItem, PaintItem
 from vehicle_systems import camouflages
 from vehicle_systems.CompoundAppearance import CompoundAppearance
 from VehicleStickers import VehicleStickers
@@ -60,7 +60,7 @@ def customization_inject():
 	print 'NIGGER INJECT!'
 	cache = g_cache.customization20()
 	readBrandingItem(CamouflageItem, 'camouflage', cache, cache.camouflages)
-	#readBrandingItem(DecalItem, 'decal', cache, cache.decals)
-	#readBrandingItem(PaintItem, 'paint', cache, cache.paints)
+	readBrandingItem(InsigniaItem, 'insignia', cache, cache.insignias)
+	readBrandingItem(PaintItem, 'paint', cache, cache.paints)
 
 customization_inject()

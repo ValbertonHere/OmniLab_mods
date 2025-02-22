@@ -21,7 +21,7 @@ from gui.game_control.hangar_switch_controller import SceneSpaceConfig
 from gui.shared.personality import ServicesLocator
 from skeletons.gui.app_loader import GuiGlobalSpaceID
 from skeletons.gui.game_control import IHangarSpaceSwitchController
-from gui.ClientHangarSpace import getDefaultHangarPath, getHangarFullVisibilityMask
+from gui.ClientHangarSpace import _getHangarPath, getHangarFullVisibilityMask
 
 
 class ClassicSceneSpaceConfig(SceneSpaceConfig):
@@ -65,7 +65,7 @@ class ClassicHangarOverrider(object):
     hangarSwitchController = dependency.descriptor(IHangarSpaceSwitchController)
 
     CLASSIC_HANGARS = ('hangar', 'hangar_premium', 'hangar_v2', 'hangar_premium_v2')
-    BIRTHDAY_HANGARS = ('Luganks_5years_hangar')
+    EVENT_HANGARS = ('Luganks_5years_hangar', 'hangar_premium_23feb_v2')
     PREM_SENSETIVE_HANGARS = {'ps_v1': {'basic': 'hangar', 'premium': 'hangar_premium'},
                               'ps_v2': {'basic': 'hangar_v2', 'premium': 'hangar_premium_v2'}}
 
@@ -123,7 +123,7 @@ class ClassicHangarOverrider(object):
                 self.hangarSwitchController._defaultHangarSpaceConfig.setSpaceIdOverride(isPremium, hanLinkage)
 
         self.hangarSwitchController._HangarSpaceSwitchController__isHangarOverridingLocked = True
-        LOG_NOTE('Hangar override was locked. Hangar name: ', hanLinkage, 'Excepted this scenes:', self.hangar_config['excepted_scenes'])
+        LOG_NOTE('Hangar override was locked. Hangar preset:', hanLinkage, 'Excepted this scenes:', self.hangar_config['excepted_scenes'])
     
     def updateHangarConfig(self, spaceName=None, isPremSensetive=False, needToWrite=False):
         hangar_config_file_path = 'mods/configs/wotclassic/hangar_config.json'
@@ -142,10 +142,12 @@ class ClassicHangarOverrider(object):
             json.dump(self.hangar_config, hangar_config_file)
             print '[OMNILAB: HangarSwitcher] Hangar config file not found! Created and loaded default in "mods/configs/wotclassic".'
 
+        spacePaths = {True: self.PREM_SENSETIVE_HANGARS[self.hangar_config['current_hangar']]['premium'], False: self.PREM_SENSETIVE_HANGARS[self.hangar_config['current_hangar']]['basic']} if self.hangar_config['is_prem_sensetive'] else {True: self.hangar_config['current_hangar'], False: self.hangar_config['current_hangar']}
+        ClientHangarSpace._getHangarPath = lambda isPremium, _: 'spaces/' + spacePaths[isPremium]
+
 
 class HangarSwitcherWindow(AbstractWindowView):
     hangarSpace = dependency.descriptor(IHangarSpace)
-
 
     def __init__(self):
         super(HangarSwitcherWindow, self).__init__()
@@ -181,12 +183,11 @@ class HangarSwitcherWindow(AbstractWindowView):
             self.flashObject.as_setPremSensetive(False)
             self.flashObject.StandardHanButtBar.selectedIndex = g_classicHangarOverrider.CLASSIC_HANGARS.index(currHangar)
             return
-        elif currHangar in g_classicHangarOverrider.BIRTHDAY_HANGARS:
+        elif currHangar in g_classicHangarOverrider.EVENT_HANGARS:
             self.flashObject.as_setPremSensetive(False)
-            self.flashObject.BirthdayHanButtBar.selectedIndex = g_classicHangarOverrider.BIRTHDAY_HANGARS.index(currHangar)
+            self.flashObject.BirthdayHanButtBar.selectedIndex = g_classicHangarOverrider.EVENT_HANGARS.index(currHangar)
             return
         else:
-            self._noti('Ни один из ангаров не установлен.', True)
             self.flashObject.as_setPremSensetive(False)
 
 def callSwitcherWindow():
@@ -195,9 +196,7 @@ def callSwitcherWindow():
     app.loadView(SFViewLoadParams('HangarSwitcherWindow'))
 
 
-
 g_classicHangarOverrider = ClassicHangarOverrider()
-# ClientHangarSpace._getHangarPath = lambda nigger1, nigger2: 'spaces/' + hangar_config['current_hangar']
 
 g_modsListApi.addModification(id='HangarSwitcherWindow', name='#wek_hangarSwitcher:modButton/title', description='#wek_hangarSwitcher:modButton/tooltip',
             icon='gui/maps/icons/quests/bonuses/small/slots.png', enabled=True, login=False, lobby=True, callback=callSwitcherWindow)

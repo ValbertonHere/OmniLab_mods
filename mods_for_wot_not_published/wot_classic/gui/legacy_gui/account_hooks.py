@@ -1,13 +1,12 @@
+import BigWorld
 
-
-from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
-from CurrentVehicle import g_currentVehicle
 from adisp import adisp_process
+from CurrentVehicle import g_currentVehicle
 from debug_utils import LOG_CURRENT_EXCEPTION
 from items import getTypeInfoByName
 from realm import CURRENT_REALM
 
-from helpers import dependency
+from helpers import dependency, isPlayerAccount
 from helpers.i18n import makeString
 
 from gui.impl.gen import R
@@ -18,7 +17,6 @@ from gui.prb_control.entities.base.ctx import PrbAction
 from gui.prb_control.settings import PREBATTLE_ACTION_NAME
 
 from gui.Scaleform.daapi.view.meta.AmmunitionPanelMeta import AmmunitionPanelMeta
-from gui.Scaleform.daapi.view.meta.LobbyHeaderMeta import LobbyHeaderMeta
 
 from gui.Scaleform.daapi.view.lobby.header.LobbyHeader import LobbyHeader
 from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPanel
@@ -30,6 +28,9 @@ from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPan
 from gui.Scaleform.daapi.view.lobby.hangar.daily_quest_widget import DailyQuestWidget
 from gui.Scaleform.daapi.view.lobby.hangar.ResearchPanel import ResearchPanel
 from gui.Scaleform.daapi.view.lobby.shared.fitting_select_popover import ModuleFittingSelectPopover, _POPOVER_FIRST_TAB_IDX, _POPOVER_SECOND_TAB_IDX, CommonFittingSelectPopover, _HangarLogicProvider, PopoverLogicProvider, _extendByModuleData
+
+from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
+from gui.Scaleform.framework.managers.optimization_manager import GraphicsOptimizationManager
 
 from gui.Scaleform.genConsts.FITTING_TYPES import FITTING_TYPES
 from gui.Scaleform.genConsts.TOOLTIPS_CONSTANTS import TOOLTIPS_CONSTANTS
@@ -292,6 +293,7 @@ class LegacyAmmoPanelHooks():
             isDestroy = oldId < 0 and isRemove
             isTrophyOrModern = newItem.isTrophy or newItem.isModernized
             installedOptDevice = g_currentVehicle.item.optDevices.installed[baseSelf._slotIndex]
+            print oldId, newId, isRemoving, isDestroy, isTrophyOrModern, installedOptDevice, newItem.isInstalled(baseSelf._vehicle)
             if isRemoving:
                 ItemsActionsFactory.doAction(ItemsActionsFactory.REMOVE_OPT_DEVICE, baseSelf._vehicle, installedOptDevice, baseSelf._slotIndex)
                 return
@@ -364,6 +366,8 @@ class LegacyHangarHooks():
         override(ResearchPanel, 'as_updateCurrentVehicleS', self._ResearchPanel_as_updateCurrentVehicleS)
         override(AmmunitionPanelMeta, 'as_updateVehicleStatusS', self._AmmunitionPanelMeta_as_updateVehicleStatusS)
         override(AmmunitionPanel, 'showRepairDialog', self._AmmunitionPanel_showRepairDialog)
+        override(BigWorld, 'worldDrawEnabled', self._BigWorld__worldDrawEnabled)
+        override(GraphicsOptimizationManager, 'switchOptimizationEnabled', self._GraphicsOptimizationManager__switchOptimizationEnabled)
         if CURRENT_REALM != 'RU':
             override(Hangar, 'as_setPrestigeWidgetVisibleS', self._Hangar_as_setPrestigeWidgetVisibleS)
 
@@ -371,7 +375,6 @@ class LegacyHangarHooks():
         base(baseSelf)
         
         app = self.appLoader.getApp()
-        app.graphicsOptimizationManager.switchOptimizationEnabled(False)
         app.loadView(SFViewLoadParams('LegacyHangarUI'))
 
     def _Hangar__onTeaserReceived(self, base, baseSelf, teaserData, showCallback, closeCallback):
@@ -418,6 +421,13 @@ class LegacyHangarHooks():
 
     def _Hangar_as_setPrestigeWidgetVisibleS(self, base, baseSelf, visible):
         base(baseSelf, False)
+    
+    def _BigWorld__worldDrawEnabled(self, base, isVisible):
+        base(True)
+
+    def _GraphicsOptimizationManager__switchOptimizationEnabled(self, base, baseSelf, isVisible):
+        base(baseSelf, False)
+
 
 g_hangarHooks = LegacyHangarHooks()
 
