@@ -26,7 +26,7 @@ from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import AmmoPlugin
 # Класс констант мода
 class WTSM_CONSTS():
 
-    IN_DEV = True
+    IN_DEV = False
     BUILD = '1224/1'
     VERSION = 'Release 9'
     UPD_NAME = 'Эпицентр'
@@ -265,6 +265,8 @@ class WTSoundsStuff():
     @staticmethod
     def onBattleFinished(winnerTeam, *args, **kwargs):
         WTSoundsStuff.clearAllCallbacks(True)
+        for queueNum in BigWorld.player().soundNotifications._IngameSoundNotifications__queues:
+            BigWorld.player().soundNotifications.clearQueue(queueNum)
         SoundGroups.g_instance.playSound2D('wt_battle_end')
         if winnerTeam == BigWorld.player().team:
             SoundGroups.g_instance.playSound2D('wt_win_music')

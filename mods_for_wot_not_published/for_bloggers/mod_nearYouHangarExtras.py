@@ -1,35 +1,30 @@
-from debug_utils import LOG_NOTE, LOG_ERROR, LOG_CURRENT_EXCEPTION
-from skeletons.gui.shared.utils import IHangarSpace
+import BigWorld, CGF, GUI, Event
+from AvatarInputHandler import cameras
+from cgf_script.component_meta_class import registerComponent, ComponentProperty, CGFMetaTypes
+from cgf_script.managers_registrator import tickGroup, onAddedQuery, onRemovedQuery, registerManager, Rule, registerRule
+from constants import CollisionFlags
 from ClientSelectableCameraObject import ClientSelectableCameraObject
 from ClientSelectableCameraVehicle import ClientSelectableCameraVehicle
+from debug_utils import LOG_NOTE, LOG_ERROR, LOG_CURRENT_EXCEPTION
+from frameworks.wulf import WindowLayer
+from GenericComponents import VSEComponent
+from helpers import dependency
+from skeletons.gui.shared.utils import IHangarSpace
 from skeletons.gui.app_loader import IAppLoader
+from PlayerEvents import g_playerEvents
+from gui.game_loading.resources.consts import Milestones
+from gui.Scaleform.daapi.view.lobby.LobbySelectableView import LobbySelectableView
+from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
+from gui.Scaleform.framework.entities.View import View
+from gui.prb_control.events_dispatcher import g_eventDispatcher
 from cgf_components.hangar_camera_manager import HangarCameraManager
 from cgf_components.hover_component import IsHoveredComponent
 from gui.shared.event_dispatcher import showShop
 from items import vehicles
-from vehicle_outfit.outfit import Outfit
 from items.customizations import ProjectionDecalComponent, CustomizationOutfit, CamouflageComponent, PaintComponent, InsigniaComponent
-
-import BigWorld, CGF, GUI, Event
-from AvatarInputHandler import cameras
-from cgf_components.hover_component import IsHoveredComponent
-from cgf_script.component_meta_class import registerComponent, ComponentProperty, CGFMetaTypes
-from cgf_script.managers_registrator import tickGroup, onAddedQuery, onRemovedQuery, registerManager, Rule, registerRule
-from constants import CollisionFlags
-from frameworks.wulf import WindowLayer
-from GenericComponents import VSEComponent
-from gui.Scaleform.daapi.view.lobby.LobbySelectableView import LobbySelectableView
-from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
-from gui.Scaleform.framework.entities.View import View
-from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
-from gui.prb_control.events_dispatcher import g_eventDispatcher
-from helpers import dependency
-from skeletons.gui.app_loader import IAppLoader
-from skeletons.gui.shared.utils import IHangarSpace
+from vehicle_outfit.outfit import Outfit
 from vehicle_systems.tankStructure import ColliderTypes
-from ClientSelectableCameraObject import ClientSelectableCameraObject
-
 
 @registerComponent
 class NYTSelectionComponent(object):
@@ -127,12 +122,10 @@ class NYTSelectionRule(Rule):
 
     @registerManager(NYTHoverManager)
     def reg1(self):
-        LOG_NOTE('NYTHoverManager')
         return
     
     @registerManager(NYTClickManager)
     def reg2(self):
-        LOG_NOTE('NYTClickManager')
         return
 
 
@@ -153,9 +146,6 @@ class NearYouTeamSubView(LobbySelectableView, View):
         
     def onViewClose(self, _):
         self.destroy()
-    
-    def pyLog(self, msg):
-        print msg
 
 
 class NearYouHangarExtras():
@@ -166,7 +156,7 @@ class NearYouHangarExtras():
         self.__cameraEntity = None
         self.__vehStylePreviewEnt = None
 
-        self.hangarSpace.onSpaceCreate += self.onHangarLoaded
+        g_playerEvents.onLoadingMilestoneReached += self.onHangarLoaded
         g_entitiesFactories.addSettings(ViewSettings('NearYouTeamSubViewUI', NearYouTeamSubView, 'nearYouTeamSubView.swf', WindowLayer.SUB_VIEW, 'NearYouTeamSubViewUI', ScopeTemplates.LOBBY_SUB_SCOPE))
 
     def onGameObjectClicked(self, selectionID):
@@ -180,27 +170,27 @@ class NearYouHangarExtras():
         handler = self.callNYTTVHandlerBySelectionID(selectionID)
         if handler is not None:
             handler()
-        LOG_NOTE('onClicked', selectionID)
 
-    def onHangarLoaded(self, *args, **kwargs):
-        if self.hangarSpace.spacePath.split('/')[-1].lower() == 'nearyouhangar':
-            try:
-                LOG_NOTE('Catching entities...')
-                for entity in BigWorld.entities.values():
-                    if type(entity) is ClientSelectableCameraVehicle:
-                        self.__onVehicleStylePreviewEntityCatched(entity)
-                    elif type(entity) is ClientSelectableCameraObject:
-                        self.__cameraEntity = entity
+    def onHangarLoaded(self, milestoneName):
+        if milestoneName == Milestones.HANGAR_READY:
+            if self.hangarSpace.spacePath.split('/')[-1].lower() == 'nearyouhangar':
+                try:
+                    LOG_NOTE('Catching entities...')
+                    for entity in BigWorld.entities.values():
+                        if type(entity) is ClientSelectableCameraVehicle:
+                            self.__onVehicleStylePreviewEntityCatched(entity)
+                        elif type(entity) is ClientSelectableCameraObject:
+                            self.__cameraEntity = entity
 
-                LOG_NOTE('Catching prefabs...')
-                nytQuery = CGF.Query(self.hangarSpace.spaceID, (CGF.GameObject, NYTSelectionComponent))
-                for _, selectionComponent in nytQuery:
-                    selectionComponent.onClickAction += self.onGameObjectClicked
+                    LOG_NOTE('Catching prefabs...')
+                    nytQuery = CGF.Query(self.hangarSpace.spaceID, (CGF.GameObject, NYTSelectionComponent))
+                    for _, selectionComponent in nytQuery:
+                        selectionComponent.onClickAction += self.onGameObjectClicked
 
-                LOG_NOTE('Complete!')
-            except:
-                LOG_ERROR('Error during loading hangar extras, send lines below to developer. Telegram: @lrvval.')
-                LOG_CURRENT_EXCEPTION()
+                    LOG_NOTE('Complete!')
+                except:
+                    LOG_ERROR('Error during loading hangar extras, send lines below to developer. Telegram: @lrvval.')
+                    LOG_CURRENT_EXCEPTION()
 
     def callNYTTVHandlerBySelectionID(self, selectionID):
         handlersDict = {'TV_Near': self.__onNearTVClicked,
@@ -218,7 +208,8 @@ class NearYouHangarExtras():
 
     def __onVehicleStylePreviewEntityCatched(self, ent):
         self.__vehStylePreviewEnt = ent
-        self.__vehStylePreviewEnt.onMouseClick = self.__onVehicleStylePreviewEntityClicked
+        self.__vehStylePreviewEnt.setEnable(False)
+        # self.__vehStylePreviewEnt.onMouseClick = self.__onVehicleStylePreviewEntityClicked
 
         styleId = 31289
         modifications = [(4)]

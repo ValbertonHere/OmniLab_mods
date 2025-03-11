@@ -6,6 +6,8 @@ from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from helpers import dependency
 from skeletons.gui.app_loader import IAppLoader
 from gui.shared.utils.key_mapping import getBigworldNameFromKey
+from gui.shared.personality import ServicesLocator
+from gui.app_loader.settings import APP_NAME_SPACE
 
 class TestWindow(AbstractWindowView):
 
@@ -18,14 +20,15 @@ class TestWindow(AbstractWindowView):
     def onWindowClose(self):
         self.destroy()
     
-    def pyLog(self, msg):
-        print msg
+    def onClicked(self):
+        app = ServicesLocator.appLoader.getApp(APP_NAME_SPACE.SF_LOBBY)
+        app.loadView(SFViewLoadParams("OmniSessionStatsPopoverUI"))
 
 g_entitiesFactories.addSettings(ViewSettings('TestWindow', TestWindow, 'TestWindowUI.swf', WindowLayer.WINDOW, None, ScopeTemplates.VIEW_SCOPE))
 
 def onhandleKeyEvent(event):
     key = getBigworldNameFromKey(event.key)
-    if key == 'KEY_F8':
+    if key == 'KEY_F9':
         appLoader = dependency.instance(IAppLoader)
         app = appLoader.getApp()
         app.loadView(SFViewLoadParams('TestWindow'))

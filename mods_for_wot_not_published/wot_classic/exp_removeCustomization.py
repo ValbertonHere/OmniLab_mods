@@ -1,14 +1,6 @@
-from vehicle_outfit.outfit import Outfit
-from vehicle_systems.CompoundAppearance import CompoundAppearance
-from OpenModsCore import overrideMethod
+from items.readers import shared_readers
 
-@overrideMethod(CompoundAppearance, '_prepareOutfit')
-def _prepareOutfit(baseMethod, baseInstance, outfitCD):
-	outfit = Outfit()
-	return outfit or baseMethod(baseInstance, outfitCD)
+def shared_readers_readProjectionDecalSlot(ctx, subsection, slotType):
+    return None
 
-@overrideMethod(CompoundAppearance, '_CompoundAppearance__applyVehicleOutfit')
-def _applyVehicleOutfit(baseMethod, baseInstance):
-	outfit = Outfit()
-	baseInstance._CommonTankAppearance__outfit = outfit or baseInstance.outfit
-	return baseMethod(baseInstance)
+shared_readers._readProjectionDecalSlot = lambda ctx, subsection, slotType: None

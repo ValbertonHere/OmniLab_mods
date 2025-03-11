@@ -366,7 +366,6 @@ class LegacyHangarHooks():
         override(ResearchPanel, 'as_updateCurrentVehicleS', self._ResearchPanel_as_updateCurrentVehicleS)
         override(AmmunitionPanelMeta, 'as_updateVehicleStatusS', self._AmmunitionPanelMeta_as_updateVehicleStatusS)
         override(AmmunitionPanel, 'showRepairDialog', self._AmmunitionPanel_showRepairDialog)
-        override(BigWorld, 'worldDrawEnabled', self._BigWorld__worldDrawEnabled)
         override(GraphicsOptimizationManager, 'switchOptimizationEnabled', self._GraphicsOptimizationManager__switchOptimizationEnabled)
         if CURRENT_REALM != 'RU':
             override(Hangar, 'as_setPrestigeWidgetVisibleS', self._Hangar_as_setPrestigeWidgetVisibleS)
@@ -421,9 +420,6 @@ class LegacyHangarHooks():
 
     def _Hangar_as_setPrestigeWidgetVisibleS(self, base, baseSelf, visible):
         base(baseSelf, False)
-    
-    def _BigWorld__worldDrawEnabled(self, base, isVisible):
-        base(True)
 
     def _GraphicsOptimizationManager__switchOptimizationEnabled(self, base, baseSelf, isVisible):
         base(baseSelf, False)

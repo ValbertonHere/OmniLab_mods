@@ -7,7 +7,7 @@ PLACEHOLDER_NAME = 'BattleUnit'
 
 def ClientArena__vehicleInfoAsDict(self, info):
     if info[2] != BigWorld.player().name:
-
+        return
     info = list(info)
     info[2] = PLACEHOLDER_NAME + str(randint(0, 20000))
     info[8] = ''

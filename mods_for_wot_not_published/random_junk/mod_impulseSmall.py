@@ -6,10 +6,7 @@ from AvatarInputHandler.DynamicCameras.SniperCamera import SniperCamera
 
 @overrideMethod(SniperCamera, '__applyNoiseImpulse')
 def SniperCamera__updateOscillators(base, self, noiseMagnitude):
-    noiseM = noiseMagnitude - 1.5
-    if noiseM < 0.0:
-        noiseM = 0.0
-    base(self, noiseM)
+    base(self, 0.0)
 
 @overrideMethod(SniperCamera, 'enable')
 def SniperCamera_enable(base, self, targetPos, saveZoom):

@@ -1,11 +1,11 @@
 import BigWorld
 import constants
-from gui.prb_control.dispatcher import EVENT_BUS_SCOPE
 import wg_async as future_async
 
 from account_helpers.AccountSettings import ACTIVE_TEST_PARTICIPATION_CONFIRMED, AccountSettings
 from adisp import adisp_process, adisp_async
 
+from debug_utils import LOG_ERROR
 from constants import PREBATTLE_TYPE
 from realm import CURRENT_REALM
 
@@ -23,6 +23,7 @@ from gui.shared.money import Currency
 
 from gui.ClientUpdateManager import g_clientUpdateManager
 from gui.clans.clan_cache import g_clanCache
+from gui.prb_control.dispatcher import EVENT_BUS_SCOPE
 from gui.prb_control.entities.listener import IGlobalListener
 from gui.prb_control.entities.base.ctx import PrbAction
 
@@ -63,9 +64,6 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         self.__clanIconID = None
         self.__lobbyHeaderSrc = None
         return
-        
-    def pyLog(self, msg):
-        print '[OMNILAB: LegacyLobbyHeader] %s' % (msg)
 
     @adisp_process
     def fightClick(self, mmData, actionName):
@@ -82,7 +80,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
                 if actionAllowed:
                     self.prbDispatcher.doAction(PrbAction(actionName, mmData))
             else:
-                self.pyLog('Prebattle dispatcher is not defined')
+                LOG_ERROR('Prebattle dispatcher is not defined')
 
     def as_setControlsEnabled(self):
         if self._isDAAPIInited():
@@ -124,7 +122,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
 
     def onPrbEntitySwitched(self):
         if not self.prbDispatcher:
-            self.pyLog('onPrbEntitySwitched: prbDispatcher is None')
+            LOG_ERROR('onPrbEntitySwitched: prbDispatcher is None')
             return
         
         items = battle_selector_items.getItems()
@@ -219,7 +217,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         g_currentPreviewVehicle.onChanged += self.__updateLobbyHeaderButtons
         g_playerEvents.onEnqueued += self.__updateLobbyHeaderButtons
         g_playerEvents.onDequeued += self.__updateLobbyHeaderButtons
-        self.gameSession.onPremiumNotify += self.__onPremiumExpireTimeChanged
+        self.gameSession.onPremiumNotify += self.onPremiumChanged
         self.platoonCtrl.onMembersUpdate += self.__updateLobbyHeaderButtons
         self.serverStats.onStatsReceived += self.__onStatsReceived
         self.__onStatsReceived()
@@ -237,7 +235,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         g_currentVehicle.onChanged -= self.__updateLobbyHeaderButtons
         g_playerEvents.onEnqueued -= self.__updateLobbyHeaderButtons
         g_playerEvents.onDequeued -= self.__updateLobbyHeaderButtons
-        self.gameSession.onPremiumNotify -= self.__onPremiumExpireTimeChanged
+        self.gameSession.onPremiumNotify -= self.onPremiumChanged
         self.platoonCtrl.onMembersUpdate -= self.__updateLobbyHeaderButtons
         self.serverStats.onStatsReceived -= self.__onStatsReceived
         g_currentPreviewVehicle.onChanged -= self.onVehicleChanged
@@ -246,7 +244,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
 
     def __updateLobbyHeaderButtons(self, *args, **kwargs):
         if not self.prbDispatcher:
-            self.pyLog('__updateLobbyHeaderButtons: prbDispatcher is None')
+            LOG_ERROR('__updateLobbyHeaderButtons: prbDispatcher is None')
             return
         else:
             items = battle_selector_items.getItems()
@@ -266,9 +264,18 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         self.as_setGoldS(money.gold)
         self.as_setCreditsS(money.credits)
         self.as_setFreeXPS(freeXP)
+    
+    def onPremiumChanged(self, isPremium, attrs, premiumExpiryTime):
+        self.__setPremium(isPremium)
 
     def __onPremiumExpireTimeChanged(self, _):
-        if self.itemsCache.items.stats.isPremium:
+        isPremium = self.itemsCache.items.stats.isPremium
+        self.__setPremium(isPremium)
+
+    def __setPremium(self, isPremium):
+        accAttrs = self.itemsCache.items.stats.attributes
+        battle_selector_items.getItems().validateAccountAttrs(accAttrs)
+        if isPremium:
             premTime = self.itemsCache.items.stats.activePremiumExpiryTime
             deltaInSeconds = float(time_utils.getTimeDeltaFromNow(time_utils.makeLocalServerTime(premTime)))
             timeLeft, timeMetric = self.__lobbyHeaderSrc._LobbyHeader__getPremiumExpiryTimeAttrs(deltaInSeconds)

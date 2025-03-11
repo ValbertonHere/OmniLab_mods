@@ -2,26 +2,21 @@
 
 from ResMgr import isDir
 from gui.modsListApi import g_modsListApi
-from gui.shared.utils.hangar_space_reloader import HangarSpaceReloader
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
 from gui.Scaleform.framework.entities.abstract.AbstractWindowView import AbstractWindowView
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from helpers import dependency
-from items.artefacts import FactorSkillBattleBooster
 from skeletons.gui.app_loader import IAppLoader
-from skeletons.gui.shared import IItemsCache
 from skeletons.gui.shared.utils import IHangarSpace
-from gui.shared.utils.hangar_space_reloader import HangarSpaceReloader
 from gui import ClientHangarSpace, SystemMessages
-from skeletons.gui.shared.utils import IHangarSpace
 
 from debug_utils import LOG_NOTE
 from gui.game_control.hangar_switch_controller import SceneSpaceConfig
 from gui.shared.personality import ServicesLocator
 from skeletons.gui.app_loader import GuiGlobalSpaceID
 from skeletons.gui.game_control import IHangarSpaceSwitchController
-from gui.ClientHangarSpace import _getHangarPath, getHangarFullVisibilityMask
+from gui.ClientHangarSpace import getHangarFullVisibilityMask
 
 
 class ClassicSceneSpaceConfig(SceneSpaceConfig):
@@ -65,7 +60,7 @@ class ClassicHangarOverrider(object):
     hangarSwitchController = dependency.descriptor(IHangarSpaceSwitchController)
 
     CLASSIC_HANGARS = ('hangar', 'hangar_premium', 'hangar_v2', 'hangar_premium_v2')
-    EVENT_HANGARS = ('Luganks_5years_hangar', 'hangar_premium_23feb_v2')
+    SPECIAL_HANGARS = ('hangar_premium_23feb_v2', 'Luganks_5years_hangar')
     PREM_SENSETIVE_HANGARS = {'ps_v1': {'basic': 'hangar', 'premium': 'hangar_premium'},
                               'ps_v2': {'basic': 'hangar_v2', 'premium': 'hangar_premium_v2'}}
 
@@ -74,7 +69,7 @@ class ClassicHangarOverrider(object):
         
         self.hangar_config = {
             'is_prem_sensetive': True,
-            'current_hangar': {'basic': 'hangar_v2', 'premium': 'hangar_premium_v2'},
+            'current_hangar': 'ps_v2',
             'excepted_scenes': ['COMP7', 'ARMORY_YARD']
         }
 
@@ -137,13 +132,19 @@ class ClassicHangarOverrider(object):
                     self.hangar_config['is_prem_sensetive'] = isPremSensetive
                     json.dump(self.hangar_config, f2w)
         else:
-            os.mkdir(hangar_config_file_path.replace('/hangar_config.json', ''))
+            try:
+                os.makedirs(hangar_config_file_path.replace('/hangar_config.json', ''))
+            except OSError:
+                LOG_NOTE('Config folder already exists.')
             hangar_config_file = open(hangar_config_file_path, 'w')
             json.dump(self.hangar_config, hangar_config_file)
             print '[OMNILAB: HangarSwitcher] Hangar config file not found! Created and loaded default in "mods/configs/wotclassic".'
 
-        spacePaths = {True: self.PREM_SENSETIVE_HANGARS[self.hangar_config['current_hangar']]['premium'], False: self.PREM_SENSETIVE_HANGARS[self.hangar_config['current_hangar']]['basic']} if self.hangar_config['is_prem_sensetive'] else {True: self.hangar_config['current_hangar'], False: self.hangar_config['current_hangar']}
-        ClientHangarSpace._getHangarPath = lambda isPremium, _: 'spaces/' + spacePaths[isPremium]
+        if self.hangar_config['is_prem_sensetive']:
+            spacePaths = {True: self.PREM_SENSETIVE_HANGARS[self.hangar_config['current_hangar']]['premium'], False: self.PREM_SENSETIVE_HANGARS[self.hangar_config['current_hangar']]['basic']}
+        else:
+            spacePaths = {True: self.hangar_config['current_hangar'], False: self.hangar_config['current_hangar']}
+        ClientHangarSpace._getHangarPath = lambda isPremium, _: 'spaces/' + spacePaths[isPremium] if self.hangarSwitchController.currentSceneName not in self.hangar_config['excepted_scenes'] else 'spaces/' + self.hangarSwitchController._sceneSpaceParams[self.hangarSwitchController.currentSceneName].getHangarSpaceId()
 
 
 class HangarSwitcherWindow(AbstractWindowView):
@@ -183,9 +184,9 @@ class HangarSwitcherWindow(AbstractWindowView):
             self.flashObject.as_setPremSensetive(False)
             self.flashObject.StandardHanButtBar.selectedIndex = g_classicHangarOverrider.CLASSIC_HANGARS.index(currHangar)
             return
-        elif currHangar in g_classicHangarOverrider.EVENT_HANGARS:
+        elif currHangar in g_classicHangarOverrider.SPECIAL_HANGARS:
             self.flashObject.as_setPremSensetive(False)
-            self.flashObject.BirthdayHanButtBar.selectedIndex = g_classicHangarOverrider.EVENT_HANGARS.index(currHangar)
+            self.flashObject.SpecialHanButtBar.selectedIndex = g_classicHangarOverrider.SPECIAL_HANGARS.index(currHangar)
             return
         else:
             self.flashObject.as_setPremSensetive(False)
@@ -194,7 +195,6 @@ def callSwitcherWindow():
     appLoader = dependency.instance(IAppLoader)
     app = appLoader.getApp()
     app.loadView(SFViewLoadParams('HangarSwitcherWindow'))
-
 
 g_classicHangarOverrider = ClassicHangarOverrider()
 
