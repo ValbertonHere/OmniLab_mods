@@ -10,7 +10,6 @@ models_count = 0
 def addModel():
     global models_count
 
-    print models_count
     model = BigWorld.Model(MODELS[models_count])
     model.position = BigWorld.camera().position
     BigWorld.addModel(model)

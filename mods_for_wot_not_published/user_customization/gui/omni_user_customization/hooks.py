@@ -57,7 +57,6 @@ if g_modsListApi:
 '''
 
 def customization_inject():
-	print 'NIGGER INJECT!'
 	cache = g_cache.customization20()
 	readBrandingItem(CamouflageItem, 'camouflage', cache, cache.camouflages)
 	readBrandingItem(InsigniaItem, 'insignia', cache, cache.insignias)

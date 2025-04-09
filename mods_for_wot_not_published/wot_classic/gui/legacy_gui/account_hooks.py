@@ -293,7 +293,6 @@ class LegacyAmmoPanelHooks():
             isDestroy = oldId < 0 and isRemove
             isTrophyOrModern = newItem.isTrophy or newItem.isModernized
             installedOptDevice = g_currentVehicle.item.optDevices.installed[baseSelf._slotIndex]
-            print oldId, newId, isRemoving, isDestroy, isTrophyOrModern, installedOptDevice, newItem.isInstalled(baseSelf._vehicle)
             if isRemoving:
                 ItemsActionsFactory.doAction(ItemsActionsFactory.REMOVE_OPT_DEVICE, baseSelf._vehicle, installedOptDevice, baseSelf._slotIndex)
                 return

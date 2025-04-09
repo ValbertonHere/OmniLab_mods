@@ -123,9 +123,6 @@ def HangarVehicleAppearance__startBuild(self, vDesc, vState):
 
     BigWorld.loadResourceListBG(tuple(resources), makeCallbackWeak(self._HangarVehicleAppearance__onResourcesLoaded, self._HangarVehicleAppearance__curBuildInd))
     return
-    base2(self, vDesc, vState)
-    for attachment in self._HangarVehicleAppearance__attachments:
-        attachment.scale.set(1.4, 1.4, 1.4)
 
 base = HangarVehicleAppearance._HangarVehicleAppearance__setupModel
 HangarVehicleAppearance._HangarVehicleAppearance__setupModel = HangarVehicleAppearance__setupModel

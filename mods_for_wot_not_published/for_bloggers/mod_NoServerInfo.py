@@ -9,7 +9,7 @@ def IngameMenu_as_setServerSettingS(self, serverName, tooltipFullData, state):
     base2(self, 'No Server Info | © 2024 OmniLab R&D', '', '')
 
 def IngameMenu_as_setServerStatsS(self, stats, tooltipType):
-    base3(self, 'Джекпот, Джекпот! Хуй тебе в рот! Поцелуй мою залупу! Залупу-лупу!', 'unavailable')
+    base3(self, 'No Server Info | © 2024 OmniLab R&D', 'unavailable')
 
 base = LobbyHeaderMeta.as_updateOnlineCounterS
 LobbyHeaderMeta.as_updateOnlineCounterS = LobbyHeaderMeta_as_updateOnlineCounterS

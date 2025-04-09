@@ -137,6 +137,48 @@ msgstr ""
 "Боевое\n"
 "обучение"
 
+msgid "vehicleParams/maxHealth"
+msgstr "<h1>Прочность <p></p></h1>"
+
+msgid "vehicleParams/vehicleWeight"
+msgstr "<h1>Масса <p>(т)</p></h1>"
+
+msgid "vehicleParams/enginePower"
+msgstr "<h1>Мощность двигателя <p>(л.с.)</p></h1>"
+
+msgid "vehicleParams/speedLimits"
+msgstr "<h1>Максимальная скорость <p>(км/ч)</p></h1>"
+
+msgid "vehicleParams/chassisRotationSpeed"
+msgstr "<h1>Скорость поворота шасси <p>(град/сек)</p></h1>"
+
+msgid "vehicleParams/hullArmor"
+msgstr "<h1>Бронирование корпуса <p>(лоб/борт/корма в мм)</p></h1>"
+
+msgid "vehicleParams/turretArmor"
+msgstr "<h1>Бронирование башни <p>(лоб/борт/корма в мм)</p></h1>"
+
+msgid "vehicleParams/damage"
+msgstr "<h1>Урон базовым снарядом <p></p></h1> "
+
+msgid "vehicleParams/piercingPower"
+msgstr "<h1>Бронепробиваемость базовым снарядом <p>(мм)</p></h1>"
+
+msgid "vehicleParams/reloadTime"
+msgstr "<h1>Скорострельность орудия <p>(выстр/мин)</p></h1>"
+
+msgid "vehicleParams/turretRotationSpeed"
+msgstr "<h1>Скорость поворота башни <p>(град/сек)</p></h1>"
+
+msgid "vehicleParams/gunRotationSpeed"
+msgstr "<h1>Скорость горизонтального наведения <p>(град/сек)</p></h1>"
+
+msgid "vehicleParams/circularVisionRadius"
+msgstr "<h1>Обзор <p>(м)</p></h1>"
+
+msgid "vehicleParams/radioDistance"
+msgstr "<h1>Дальность связи <p>(м)</p></h1>"
+
 msgid "optDeviceFittingSelect/deluxe/title"
 msgstr "Улучшенное"
 

@@ -223,9 +223,6 @@ class LegacyAmmoPanel(View, IGlobalListener):
             shared_events.showModuleInfo(itemCD, vehicle.descriptor)
         return
 
-    def pyLog(self, msg):
-        print msg
-
     def onPrbEntitySwitched(self):
         self._update()
 
@@ -428,7 +425,7 @@ def _extendByBattleAbilityData(targetData, ability, slotIndex, mayInstall=False)
     targetData['name'] = text_styles.stats(ability.userName)
     targetData['level'] = ability.level if ability.isUnlocked else 0
     targetData['removeButtonLabel'] = '#menu:buttonLabel/remove'
-    targetData['changeOrderButtonLabel'] = 'NIGGER'
+    targetData['changeOrderButtonLabel'] = 'TEST'
     targetData['filterText'] = filterText
 
 def __isHintVisible(self):

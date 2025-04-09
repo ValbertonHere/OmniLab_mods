@@ -20,10 +20,8 @@ class PreBattleTimerHooks():
         app.loadView(SFViewLoadParams('LegacyBattlePageUI'))
 
     def _SharedPage__onRegisterFlashComponent(self, base, baseSelf, viewPy, alias):
-        if alias == BATTLE_VIEW_ALIASES.PREBATTLE_TIMER:
+        if alias in (BATTLE_VIEW_ALIASES.BATTLE_TIMER, BATTLE_VIEW_ALIASES.PREBATTLE_TIMER, BATTLE_VIEW_ALIASES.FRAG_CORRELATION_BAR):
             viewPy.flashObject.visible = False
         base(baseSelf, viewPy, alias)
     
 g_prbTimerHooks = PreBattleTimerHooks()
-
-print 'NIGGER'

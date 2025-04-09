@@ -58,6 +58,10 @@ class LegacyHangar(View, IGlobalListener):
     def researchPanel(self):
         return self.getComponent('LegacyResearchPanelUI')
     
+    @property
+    def vehicleParams(self):
+        return self.getComponent('LegacyVehicleParamsUI')
+    
     def onAppResized(self, appWidth, appHeight):
         if getGUIConfig()['isLegacyLobbyHeaderEnabled']:
             self.__appWidth = appWidth
@@ -71,9 +75,6 @@ class LegacyHangar(View, IGlobalListener):
             isInCorrectPreQueue = state.isInPreQueue(QUEUE_TYPE.BATTLE_ROYALE) or state.isInPreQueue(400)
             isInCorrectUnit =  state.isInUnit(PREBATTLE_TYPE.BATTLE_ROYALE) or state.isInUnit(400)
             self.researchPanel.flashObject.visible = not (isInCorrectPreQueue or isInCorrectUnit)
-
-    def pyLog(self, msg):
-        print '[OMNILAB: LegacyHangar] %s' % msg
 
     def reloadView(self):
         restartOnlyHangar()
@@ -97,31 +98,31 @@ class LegacyHangar(View, IGlobalListener):
                                 VIEW_ALIAS.PERSONAL_MISSIONS_BROWSER_VIEW, VIEW_ALIAS.LOBBY_STRONGHOLD, VIEW_ALIAS.WIKI_VIEW, VIEW_ALIAS.STYLE_PREVIEW, 
                                 VIEW_ALIAS.STYLE_PROGRESSION_PREVIEW, VIEW_ALIAS.SHOWCASE_STYLE_BUYING_PREVIEW, VIEW_ALIAS.MANUAL_BROWSER_VIEW, VIEW_ALIAS.BROWSER_LOBBY_TOP_SUB):
                     view.flashObject.updateStage(self.__appWidth, self.__appHeight-155)
-                    nig = view.flashObject.getDisplayInfo()
-                    nig.y = 65
-                    view.flashObject.setDisplayInfo(nig)
+                    displayInfo = view.flashObject.getDisplayInfo()
+                    displayInfo.y = 65
+                    view.flashObject.setDisplayInfo(displayInfo)
                 elif view.alias == VIEW_ALIAS.LOBBY_TECHTREE:
                     view.flashObject.nationTree.levelsBg.visible = False
                     view.flashObject.background.y = 65
                 elif view.alias in (VIEW_ALIAS.LOBBY_HANGAR, VIEW_ALIAS.VEHICLE_COMPARE_MAIN_CONFIGURATOR, VIEW_ALIAS.BADGES_PAGE, VIEW_ALIAS.MANUAL_CHAPTER_VIEW):
                     view.flashObject.updateStage(self.__appWidth, self.__appHeight-125)
-                    nig = view.flashObject.getDisplayInfo()
-                    nig.y = 40
-                    view.flashObject.setDisplayInfo(nig)
+                    displayInfo = view.flashObject.getDisplayInfo()
+                    displayInfo.y = 40
+                    view.flashObject.setDisplayInfo(displayInfo)
                 elif view.alias == VIEW_ALIAS.LOBBY_CUSTOMIZATION:
                     view.flashObject.updateStage(self.__appWidth, self.__appHeight-180)
-                    nig = view.flashObject.getDisplayInfo()
-                    nig.y = 95
-                    view.flashObject.setDisplayInfo(nig)
+                    displayInfo = view.flashObject.getDisplayInfo()
+                    displayInfo.y = 95
+                    view.flashObject.setDisplayInfo(displayInfo)
 
         except Exception:
             LOG_CURRENT_EXCEPTION()
 
     def guiTrainingsSubViewReplace(self):
         trainView = self._getHangarSrc()
-        nig = trainView.flashObject.getDisplayInfo()
-        nig.y = -80
-        trainView.flashObject.setDisplayInfo(nig)
+        displayInfo = trainView.flashObject.getDisplayInfo()
+        displayInfo.y = -80
+        trainView.flashObject.setDisplayInfo(displayInfo)
 
     def onHangarUIReady(self, milestone):
         if (milestone == Milestones.HANGAR_READY or milestone == Milestones.HANGAR_UI_READY):

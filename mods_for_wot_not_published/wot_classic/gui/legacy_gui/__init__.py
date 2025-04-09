@@ -1,3 +1,5 @@
+# TO DO: Переписать для устранения зависимости ангарного интерфейса от боевого.
+
 from debug_utils import LOG_CURRENT_EXCEPTION
 
 try:

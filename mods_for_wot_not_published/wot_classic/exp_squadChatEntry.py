@@ -17,12 +17,12 @@ def new_loadViewWithDefName(self, alias, name=None, parent=None, *args, **kwargs
 #_MessengerPackageBusinessHandler.loadViewWithDefName = new_loadViewWithDefName
 
 def addChannel():
-    #nig = BWChannelEntity({'id': -483, 'channelName': '#chat:channels/squad', 'isReadOnly': True, 'isSystem': True, 'isSecured': True, 'greeting': 'OmniTest1'})
-    #nig.setClientID(-483)
-    #MessengerEntry.g_instance.gui.getEntry(2)._LobbyEntry__carouselHandler.addChannel(nig, True)
+    #channelEnt = BWChannelEntity({'id': -483, 'channelName': '#chat:channels/squad', 'isReadOnly': True, 'isSystem': True, 'isSecured': True, 'greeting': 'OmniTest1'})
+    #channelEnt.setClientID(-483)
+    #MessengerEntry.g_instance.gui.getEntry(2)._LobbyEntry__carouselHandler.addChannel(channelEnt, True)
     MessengerEntry.g_instance.gui.getEntry(2)._LobbyEntry__carouselHandler._ChannelsCarouselHandler__setItemField(-483, 'icon', 'squad_icon.png')
     
 #print MessengerEntry.g_instance.gui.getEntry(2)._LobbyEntry__carouselHandler._ChannelsCarouselHandler__channelsDP._ChannelsDataProvider__data
-#print nig
+#print channelEnt
 addChannel()
 print 'done'

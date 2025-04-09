@@ -23,7 +23,7 @@ class OMCMenu(SimpleConfigInterface):
                      'UI_setting_build_current': '0124/3',
                      'UI_setting_build_prev': '1223/6',
                      'UI_setting_build_first': '0000/0',
-                     'UI_setting_control_text': 'Чекбокс хуй знает чего'}
+                     'UI_setting_control_text': 'Чекбокс'}
         super(OMCMenu, self).init()
     
     def createTemplate(self):

@@ -141,8 +141,5 @@ class NearYouTeamSubView(LobbySelectableView, View):
         
     def onViewClose(self, _):
         self.destroy()
-    
-    def pyLog(self, msg):
-        print msg
 
 g_entitiesFactories.addSettings(ViewSettings('NearYouTeamSubViewUI', NearYouTeamSubView, 'nearYouTeamSubView.swf', WindowLayer.SUB_VIEW, 'NearYouTeamSubViewUI', ScopeTemplates.LOBBY_SUB_SCOPE))

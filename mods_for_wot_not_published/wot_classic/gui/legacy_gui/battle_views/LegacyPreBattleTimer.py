@@ -35,7 +35,6 @@ class LegacyPreBattleTimer(PreBattleTimerBase):
     
     def updateRespawnTime(self, timeLeft):
         if self._isDAAPIInited():
-            print timeLeft
             self.flashObject.as_setTimer(timeLeft)
             self.flashObject.as_setTimerPeriod(False)
             self.flashObject.as_setMessage('#battle_royale:battle/respawnMessagePanel/respawnActivated/title')
@@ -54,6 +53,3 @@ class LegacyPreBattleTimer(PreBattleTimerBase):
             self.flashObject.as_setTimerPeriod(self.__arenaPeriod != ARENA_PERIOD.PREBATTLE)
             self.flashObject.as_setMessage(backport.text(_STATE_TO_MESSAGE[self._state]))
             self.flashObject.as_setWinText(self._battleWinText)
-
-    def pyLog(self, msg):
-        print msg

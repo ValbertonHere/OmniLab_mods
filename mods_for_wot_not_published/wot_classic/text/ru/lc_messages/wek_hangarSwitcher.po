@@ -26,6 +26,9 @@ msgstr "Луганский ангар на 5-летие проекту"
 msgid "23feb_2014_hangar/title"
 msgstr "На 23 февраля 2014 года"
 
+msgid "hangar_premium_igr/title"
+msgstr "Ангар в пещере"
+
 msgid "prem_sense_hangars_v1/title"
 msgstr "Ангары первого поколения"
 

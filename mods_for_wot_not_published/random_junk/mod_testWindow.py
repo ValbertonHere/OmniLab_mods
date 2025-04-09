@@ -17,9 +17,6 @@ class TestWindow(AbstractWindowView):
 
     def onWindowClose(self):
         self.destroy()
-    
-    def pyLog(self, msg):
-        print msg
 
 g_entitiesFactories.addSettings(ViewSettings('TestWindow', TestWindow, 'TestWindowUI.swf', WindowLayer.WINDOW, None, ScopeTemplates.VIEW_SCOPE))
 

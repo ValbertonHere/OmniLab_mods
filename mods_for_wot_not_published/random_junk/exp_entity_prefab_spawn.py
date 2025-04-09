@@ -15,12 +15,12 @@ from gui.shared import g_eventBus, events, EVENT_BUS_SCOPE
 
 scale = 0.18
 
-def nig(go):
+def callback(go):
     print go
 
 #print BigWorld.camera().position
-#niggerID = BigWorld.createEntity('ClientSelectableCameraObject', BigWorld.player().hangarSpace.spaceID, 0, (-180, 0, 6), (0, 0, 0), {'modelName': '', 'clickSoundName': 'play'})
-CGF.loadGameObject('content/OmniPrefabs/OmniCamera.prefab', BigWorld.player().hangarSpace.spaceID, (-0.348, 2, 0.06), nig)
+#entityID = BigWorld.createEntity('ClientSelectableCameraObject', BigWorld.player().hangarSpace.spaceID, 0, (-180, 0, 6), (0, 0, 0), {'modelName': '', 'clickSoundName': 'play'})
+CGF.loadGameObject('content/OmniPrefabs/OmniCamera.prefab', BigWorld.player().hangarSpace.spaceID, (-0.348, 2, 0.06), callback)
 
 #null = (-3.983, 1, 4.341)
 

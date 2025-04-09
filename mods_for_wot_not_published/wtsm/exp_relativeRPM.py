@@ -5,7 +5,7 @@ from WWISE import WW_setRTCPGlobal
 from PlayerEvents import g_playerEvents
 from threading import Thread
 
-def nig():
+def worker():
     while isinstance(BigWorld.player(), PlayerAvatar):
         relativeRPM = BigWorld.player().vehicle.appearance.detailedEngineState.relativeRPM
         WW_setRTCPGlobal('RTPC_ext_wtsm_rpm_rel', relativeRPM)
@@ -13,7 +13,7 @@ def nig():
     return
 
 def start_thread():
-    thread = Thread(target=nig)
+    thread = Thread(target=worker)
     thread.start()
 
 g_playerEvents.onAvatarReady += start_thread

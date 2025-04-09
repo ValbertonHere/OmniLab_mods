@@ -48,7 +48,7 @@ class ClassicCosmicPage(ClassicPage):
 
 def checkSet():
     while g_entitiesFactories.getSettings(VIEW_ALIAS.COSMIC_BATTLE_PAGE) is None:
-        print VIEW_ALIAS.COSMIC_BATTLE_PAGE, 'not found yet.'
+        continue
     else:
         replaceSet()
 

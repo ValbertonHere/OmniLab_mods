@@ -9,13 +9,9 @@ class OLPopOverTest(AbstractPopOverView):
 
     def _populate(self):
         super(OLPopOverTest, self)._populate()
-        print 'NIGGER'
 
     def _dispose(self):
         super(OLPopOverTest, self)._dispose()
-
-    def pyLog(self, msg):
-        print msg
 
 popoverSettings = GroupedViewSettings('OLPopOverTest', OLPopOverTest, 'OLPopOverTest.swf',
     WindowLayer.WINDOW, 'OLPopOverTest', 'OLPopOverTest',

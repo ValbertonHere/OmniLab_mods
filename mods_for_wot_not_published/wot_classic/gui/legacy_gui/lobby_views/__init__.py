@@ -32,6 +32,7 @@ from .bonds_window import BondsWindowUI
 from .legacy_ammopanel import LegacyAmmoPanel
 from .legacy_hangar import LegacyHangar
 from .legacy_research_panel import LegacyResearchPanel
+from .legacy_vehicle_params import LegacyVehicleParams
 from .personal_reserves import PersonalReservesComponent
 from .technical_maintenance import TechnicalMaintenance
 
@@ -45,6 +46,7 @@ def getViewSettings():
     return [ViewSettings('LegacyHangarUI', LegacyHangar, 'legacyHangar.swf', WindowLayer.WINDOW, None, ScopeTemplates.VIEW_SCOPE),
             ViewSettings('TechnicalMaintenance', TechnicalMaintenance, 'techMain.swf', WindowLayer.WINDOW, None, ScopeTemplates.VIEW_SCOPE),
             #ViewSettings('BondsWindowUI', BondsWindowUI, 'BondsWindowUI.swf', WindowLayer.WINDOW, None, ScopeTemplates.VIEW_SCOPE),
+            ComponentSettings('LegacyVehicleParamsUI', LegacyVehicleParams, ScopeTemplates.DEFAULT_SCOPE),
             ComponentSettings('LegacyAmmoPanelUI', LegacyAmmoPanel, ScopeTemplates.DEFAULT_SCOPE),
             ComponentSettings('PersonalReservesComponentUI', PersonalReservesComponent, ScopeTemplates.DEFAULT_SCOPE),
             ComponentSettings('LegacyResearchPanelUI', LegacyResearchPanel, ScopeTemplates.DEFAULT_SCOPE)] + [legacyLobbyHeaderSettings]

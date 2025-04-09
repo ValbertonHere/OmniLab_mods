@@ -8,7 +8,7 @@ def noti(header, msg, url):
         priority=True,
         messageData={'header': 'РќР° РїРѕСЂС‚Р°Р»Рµ WСЌРљ РїРѕСЏРІРёР»Р°СЃСЊ РЅРѕРІРѕСЃС‚СЊ!\n"%s"\n' % header})
 
-nig = xmltodict.parse(urlopen('https://wot-classic.ru/feed.xml').read().decode('utf-8-sig'))
-lastNew = nig['feed']['entry'][0]
+feed = xmltodict.parse(urlopen('https://wot-classic.ru/feed.xml').read().decode('utf-8-sig'))
+lastNew = feed['feed']['entry'][0]
 noti(lastNew['title']['#text'], lastNew['content']['#text'], lastNew['content']['@xml:base'])
 print lastNew['content']['@xml:base']

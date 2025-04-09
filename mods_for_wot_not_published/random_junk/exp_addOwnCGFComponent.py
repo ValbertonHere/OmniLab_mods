@@ -48,8 +48,6 @@ class OmniSelectionRule(Rule):
 
     @registerManager(OmniTooltipManager)
     def reg1(self):
-        print '-----------'
-        print 'onManagerRegistered'
         try:
             appLoader.getDefLobbyApp()._toolTip._builders.addBuilder(DataBuilder('OmniEnvironment', TOOLTIPS_CONSTANTS.ENVIRONMENT_UI, OmniEnvironmentTooltipData(contexts.HangarContext())))
         except:
