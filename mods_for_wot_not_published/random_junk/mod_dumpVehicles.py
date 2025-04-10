@@ -1,3 +1,5 @@
+# Мод-дампер техники. Нужен для сбора данных при вылете с SD-моделями.
+
 import BigWorld
 import os
 from datetime import datetime

@@ -1,28 +1,30 @@
+# Экстры для прототипа ангара Near_You Team
+
 import BigWorld, CGF, GUI, Event
 from AvatarInputHandler import cameras
+from constants import CollisionFlags
 from cgf_script.component_meta_class import registerComponent, ComponentProperty, CGFMetaTypes
 from cgf_script.managers_registrator import tickGroup, onAddedQuery, onRemovedQuery, registerManager, Rule, registerRule
-from constants import CollisionFlags
+from cgf_components.hangar_camera_manager import HangarCameraManager
+from cgf_components.hover_component import IsHoveredComponent
 from ClientSelectableCameraObject import ClientSelectableCameraObject
 from ClientSelectableCameraVehicle import ClientSelectableCameraVehicle
 from debug_utils import LOG_NOTE, LOG_ERROR, LOG_CURRENT_EXCEPTION
 from frameworks.wulf import WindowLayer
 from GenericComponents import VSEComponent
-from helpers import dependency
-from skeletons.gui.shared.utils import IHangarSpace
-from skeletons.gui.app_loader import IAppLoader
-from PlayerEvents import g_playerEvents
+from gui.shared.event_dispatcher import showShop
 from gui.game_loading.resources.consts import Milestones
 from gui.Scaleform.daapi.view.lobby.LobbySelectableView import LobbySelectableView
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.Scaleform.framework.entities.View import View
 from gui.prb_control.events_dispatcher import g_eventDispatcher
-from cgf_components.hangar_camera_manager import HangarCameraManager
-from cgf_components.hover_component import IsHoveredComponent
-from gui.shared.event_dispatcher import showShop
+from helpers import dependency
 from items import vehicles
 from items.customizations import ProjectionDecalComponent, CustomizationOutfit, CamouflageComponent, PaintComponent, InsigniaComponent
+from skeletons.gui.shared.utils import IHangarSpace
+from skeletons.gui.app_loader import IAppLoader
+from PlayerEvents import g_playerEvents
 from vehicle_outfit.outfit import Outfit
 from vehicle_systems.tankStructure import ColliderTypes
 
@@ -176,7 +178,7 @@ class NearYouHangarExtras():
             if self.hangarSpace.spacePath.split('/')[-1].lower() == 'nearyouhangar':
                 try:
                     LOG_NOTE('Catching entities...')
-                    for entity in BigWorld.entities.values():
+                    for entity in BigWorld.entities.values(): # Проверка на конкретный тип объекта без наследуемых классов.
                         if type(entity) is ClientSelectableCameraVehicle:
                             self.__onVehicleStylePreviewEntityCatched(entity)
                         elif type(entity) is ClientSelectableCameraObject:

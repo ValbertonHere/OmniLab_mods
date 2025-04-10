@@ -1,3 +1,5 @@
+# Скрытие сервера.
+
 from gui.Scaleform.daapi.view.meta.LobbyHeaderMeta import LobbyHeaderMeta
 from gui.Scaleform.daapi.view.meta.IngameMenuMeta import IngameMenuMeta
 from gui.shared.utils.functions import makeTooltip

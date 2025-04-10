@@ -1,3 +1,5 @@
+# Анонимизатор боя.
+
 import BigWorld
 from ClientArena import ClientArena
 from random import randint

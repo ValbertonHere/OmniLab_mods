@@ -1,11 +1,13 @@
-from gui.hangar_vehicle_appearance import HangarVehicleAppearance, _CAMERA_CAPSULE_GUN_SCALE, _CAMERA_CAPSULE_SCALE
+# Костыль для scale'a модели танка для прототипа ангара Near_You Team. Ныне не используется ввиду уменьшения геометрии.
+
 import Math, math_utils, BigWorld
-from vehicle_systems.tankStructure import ModelsSetParams, TankPartNames, ColliderTypes
 from gui.ClientHangarSpace import hangarCFG
-from vehicle_systems import camouflages
-from gui.hangar_cameras.hangar_camera_common import CameraRelatedEvents
 from gui.shared import g_eventBus, EVENT_BUS_SCOPE
+from gui.hangar_cameras.hangar_camera_common import CameraRelatedEvents
+from gui.hangar_vehicle_appearance import HangarVehicleAppearance, _CAMERA_CAPSULE_GUN_SCALE, _CAMERA_CAPSULE_SCALE
+from vehicle_systems import camouflages
 from vehicle_systems.stricted_loading import makeCallbackWeak
+from vehicle_systems.tankStructure import ModelsSetParams, TankPartNames, ColliderTypes
 
 def HangarVehicleAppearance__setupModel(self, buildIdx):
     self._HangarVehicleAppearance__assembleModel()

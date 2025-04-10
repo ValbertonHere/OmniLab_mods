@@ -1,3 +1,5 @@
+# Меню настроек.
+
 from OpenModsCore import SimpleConfigInterface
 
 class OMCMenu(SimpleConfigInterface):

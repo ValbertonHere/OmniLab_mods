@@ -61,6 +61,7 @@ class LegacyBattlePage(View):
         self.removeListener(events.ViewEventType.LOAD_VIEW, self.__handleLobbyEvent, scope=EVENT_BUS_SCOPE.BATTLE)
         super(LegacyBattlePage, self)._dispose()
 
+    # Переписать всё ниже с циклом.
     def _handleRadialMenuCmd(self, event):
         if self._isDAAPIInited():
             self.flashObject.as_setComponentsVisibility('LegacyBattleTimerUI', not event.ctx['isDown'])

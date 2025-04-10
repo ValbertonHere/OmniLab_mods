@@ -1,3 +1,5 @@
+# На переработке.
+
 from debug_utils import LOG_CURRENT_EXCEPTION
 from frameworks.wulf.gui_constants import WindowLayer
 from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar

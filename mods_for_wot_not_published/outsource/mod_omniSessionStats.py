@@ -1,3 +1,5 @@
+# Заготовка для сессионной статистики.
+
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, GroupedViewSettings, ScopeTemplates
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.framework.entities.abstract.AbstractPopOverView import AbstractPopOverView

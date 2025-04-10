@@ -1,4 +1,4 @@
-# Помощник для УГВ.
+# Помощник для УГВ (устарело).
 
 import BigWorld
 import WWISE

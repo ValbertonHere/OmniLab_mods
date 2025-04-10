@@ -1,3 +1,5 @@
+# Эксперимент: Добавление твоего префаб-компонента - подсказка и клик.
+
 import CGF
 import ResMgr
 from cgf_components.hover_component import IsHoveredComponent

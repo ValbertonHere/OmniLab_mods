@@ -1,4 +1,6 @@
-﻿import BigWorld
+﻿# Попытка в тундровскую камеру.
+
+import BigWorld
 from AvatarInputHandler.DynamicCameras.ArcadeCamera import ArcadeCamera
 from AvatarInputHandler.DynamicCameras.arcade_camera_helper import MinMax
 

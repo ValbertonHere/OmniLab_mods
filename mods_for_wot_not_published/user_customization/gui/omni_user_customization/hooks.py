@@ -1,5 +1,4 @@
-# SPDX-License-Identifier: MIT
-# Copyright (c) 2015-2025 Andrii Andrushchyshyn
+# Основа от POLIROID.
 
 from debug_utils import LOG_ERROR
 from items.vehicles import g_cache

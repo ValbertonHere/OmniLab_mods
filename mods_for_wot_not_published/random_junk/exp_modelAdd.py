@@ -1,3 +1,5 @@
+# Для спавна моделей для видео.
+
 import BigWorld, Keys, ResMgr
 from gui import InputHandler
 

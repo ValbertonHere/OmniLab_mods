@@ -1,3 +1,5 @@
+# Спавн танка в ангаре.
+
 import BigWorld
 from CurrentVehicle import g_currentVehicle
 from skeletons.gui.shared import IItemsCache

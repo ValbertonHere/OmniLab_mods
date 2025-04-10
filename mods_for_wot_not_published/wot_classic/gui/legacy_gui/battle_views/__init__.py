@@ -1,4 +1,3 @@
-from gui.Scaleform.daapi.view.battle.shared import battle_timers
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates, ComponentSettings
 from frameworks.wulf import WindowLayer
 

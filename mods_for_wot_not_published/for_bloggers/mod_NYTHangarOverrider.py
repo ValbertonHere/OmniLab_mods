@@ -1,3 +1,4 @@
+# Гарантированная загрузка ангара.
 
 from debug_utils import LOG_NOTE
 from gui import ClientHangarSpace
@@ -10,7 +11,7 @@ from skeletons.gui.game_control import IHangarSpaceSwitchController
 
 class NYTHangarOverrider():
     hangarSwitchController = dependency.descriptor(IHangarSpaceSwitchController)
-    EXCEPT_THIS_SCENES = ['COMP7', 'ARMORY_YARD']
+    EXCEPT_THIS_SCENES = ['ARMORY_YARD'] # Исключение для запуска ивент-зависимых ангаров.
 
     def __init__(self):
         ServicesLocator.appLoader.onGUISpaceEntered += self.onGUISpaceEntered

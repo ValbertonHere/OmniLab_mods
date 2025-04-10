@@ -1,24 +1,19 @@
 import BigWorld, CGF, GUI, Event
 from AvatarInputHandler import cameras
+from ClientSelectableCameraObject import ClientSelectableCameraObject
 from cgf_components.hover_component import IsHoveredComponent
-from cgf_components.on_click_components import ClickManager
 from cgf_script.component_meta_class import registerComponent, ComponentProperty, CGFMetaTypes
 from cgf_script.managers_registrator import tickGroup, onAddedQuery, onRemovedQuery, registerManager, Rule, registerRule
 from constants import CollisionFlags
 from frameworks.wulf import WindowLayer
 from GenericComponents import VSEComponent
-from gui import InputHandler
 from gui.Scaleform.daapi.view.lobby.LobbySelectableView import LobbySelectableView
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
 from gui.Scaleform.framework.entities.View import View
-from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
-from gui.shared.utils.key_mapping import getBigworldNameFromKey
 from gui.prb_control.events_dispatcher import g_eventDispatcher
 from helpers import dependency
-from skeletons.gui.app_loader import IAppLoader
 from skeletons.gui.shared.utils import IHangarSpace
 from vehicle_systems.tankStructure import ColliderTypes
-from ClientSelectableCameraObject import ClientSelectableCameraObject
 
 
 @registerComponent

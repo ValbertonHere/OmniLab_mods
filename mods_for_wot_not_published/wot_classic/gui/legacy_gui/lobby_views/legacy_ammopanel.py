@@ -1,14 +1,10 @@
 import BigWorld, Keys
 
-from gui.Scaleform.locale.MENU import MENU
 from helpers import dependency
-from helpers.i18n import makeString
 from functools import partial
 from constants import PREBATTLE_TYPE, QUEUE_TYPE, ROLE_TYPE_TO_LABEL
 from CurrentVehicle import g_currentVehicle
-from debug_utils import LOG_CURRENT_EXCEPTION
 
-from items import getTypeInfoByName
 from items import ITEM_TYPES as MODULE_ITEM_TYPES
 from items.vehicles import g_cache
 
@@ -27,9 +23,7 @@ from gui.shared.utils.requesters import REQ_CRITERIA
 from gui.ClientUpdateManager import g_clientUpdateManager
 
 from gui.Scaleform.daapi.settings.views import VIEW_ALIAS
-from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPanel
 from gui.Scaleform.daapi.view.lobby.shared.fitting_slot_vo import _SlotVOConstants
-from gui.Scaleform.daapi.view.lobby.shared.fitting_select_popover import ModuleFittingSelectPopover, _POPOVER_FIRST_TAB_IDX, _POPOVER_SECOND_TAB_IDX, CommonFittingSelectPopover, _HangarLogicProvider, PopoverLogicProvider, _extendByModuleData
 from gui.Scaleform.daapi.view.lobby.storage.storage_helpers import OptDeviceBonusesDescriptionBuilder
 from gui.Scaleform.genConsts.SLOT_HIGHLIGHT_TYPES import SLOT_HIGHLIGHT_TYPES
 from gui.Scaleform.genConsts.FITTING_TYPES import FITTING_TYPES

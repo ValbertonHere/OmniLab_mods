@@ -283,7 +283,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
                 timeMetric = i18n.makeString('#wek:lobbyHeader/premiumAcc/days', days=int(timeLeft))
             else:
                 timeMetric = i18n.makeString('#wek:lobbyHeader/premiumAcc/hours', hours=int(timeLeft))
-
+            # Переписать с использованием локазилации с разметкой.
             accountType = '<TEXTFORMAT INDENT="0" LEFTMARGIN="0" RIGHTMARGIN="0" LEADING="2"><P ALIGN="LEFT"><FONT FACE="$FieldFont" COLOR="#fffbce86" KERNING="0">#wek:lobbyHeader/premiumAcc/label</FONT></P><P ALIGN="LEFT"><FONT FACE="$FieldFont" COLOR="#ffced9d9" KERNING="0">%s</FONT></P></TEXTFORMAT>' % timeMetric
         else:
             accountType = '<TEXTFORMAT INDENT="0" LEFTMARGIN="0" RIGHTMARGIN="0" LEADING="2"><P ALIGN="LEFT"><FONT FACE="$FieldFont" COLOR="#ff7f7d6a" KERNING="0">#wek:lobbyHeader/baseAcc/label</FONT></P></TEXTFORMAT>'

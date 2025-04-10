@@ -70,7 +70,7 @@ class ClassicHangarOverrider(object):
         self.hangar_config = {
             'is_prem_sensetive': True,
             'current_hangar': 'ps_v2',
-            'excepted_scenes': ['COMP7', 'ARMORY_YARD']
+            'excepted_scenes': ['ARMORY_YARD']
         }
 
         self.updateHangarConfig()

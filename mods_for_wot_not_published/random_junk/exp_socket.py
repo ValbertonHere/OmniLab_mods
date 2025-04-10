@@ -1,4 +1,6 @@
-﻿import socket
+﻿# Общение клиента и сервера на Web-Socket.
+
+import socket
 from time import sleep
 from gui.Scaleform.daapi.view.battle.shared.damage_log_panel import DamageLogPanel
 from OpenModsCore import overrideMethod

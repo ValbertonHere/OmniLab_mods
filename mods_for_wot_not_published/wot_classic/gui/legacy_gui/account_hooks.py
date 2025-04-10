@@ -1,12 +1,10 @@
-import BigWorld
-
 from adisp import adisp_process
 from CurrentVehicle import g_currentVehicle
 from debug_utils import LOG_CURRENT_EXCEPTION
 from items import getTypeInfoByName
 from realm import CURRENT_REALM
 
-from helpers import dependency, isPlayerAccount
+from helpers import dependency
 from helpers.i18n import makeString
 
 from gui.impl.gen import R

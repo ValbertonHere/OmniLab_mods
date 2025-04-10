@@ -3,7 +3,7 @@ from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from helpers import dependency
 from skeletons.gui.app_loader import IAppLoader
 from gui.Scaleform.daapi.view.battle.shared import SharedPage
-from battle_royale.gui.Scaleform.daapi.view.battle.respawn_message_panel import RespawnMessagePanel
+# from battle_royale.gui.Scaleform.daapi.view.battle.respawn_message_panel import RespawnMessagePanel
 from .utils import override
 
 class PreBattleTimerHooks():
