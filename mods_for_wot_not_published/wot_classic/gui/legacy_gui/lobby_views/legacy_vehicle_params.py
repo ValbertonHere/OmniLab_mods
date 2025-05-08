@@ -20,18 +20,35 @@ class LegacyVehicleParams(BaseDAAPIComponent):
 
         for param in self.PARAMS:
             value = getParam(param)[0] if param == 'speedLimits' else getParam(param)
+            newParam = None
             if not self._getVehicle().hasTurrets:
                 if param == 'turretArmor':
                     continue
                 elif param == 'turretRotationSpeed':
                     param = 'gunRotationSpeed'
+            
+            if self._getVehicle().isWheeledTech and param == 'chassisRotationSpeed' and value == 'NF':
+                newParam = 'maxSteeringLockAngle'
+
+            if self._getVehicle().gun.isAutoReloadable(self._getVehicle().descriptor) and param == 'reloadTime':
+                newParam = 'clipFireRate'
+            elif self._getVehicle().gun.isDualGun(self._getVehicle().descriptor) and param == 'reloadTime':
+                newParam = 'reloadTimeSecs'
+            elif param == 'reloadTime' and value == 'NF':
+                newParam = 'reloadTimePerSecond'
+            
+            if newParam is not None:
+                param = newParam
+                value = getParam(param)
+
             if isinstance(value, list) or isinstance(value, tuple):
-                separator = '-' if param in ('damage', 'piercingPower') else '/'
+                separator = '-' if (param) in ('damage', 'piercingPower') else '/'
                 value = separator.join(normalizeValue(v) for v in value)
             elif value == 'NF':
                 pass
             else:
                 value = normalizeValue(value)
+
             paramsList.append({'title': '#wek:vehicleParams/%s' % param, 'value': value})
         if self._isDAAPIInited():
             self.flashObject.as_update(paramsList)

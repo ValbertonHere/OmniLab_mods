@@ -145,6 +145,7 @@ class HangarFittingSlotVO(dict):
                     self['bgHighlightType'] = 'battleBooster'
         else:
             self['level'] = module.level
+            self['extraModuleInfo'] = module.getExtraIconInfo()
             if module.itemTypeName == GUI_ITEM_TYPE_NAMES[MODULE_ITEM_TYPES.vehicleTurret] and vehicle.isAlive:
                 self['slotLocked'] = vehicle.isLocked or not vehicle.hasTurrets
         return module

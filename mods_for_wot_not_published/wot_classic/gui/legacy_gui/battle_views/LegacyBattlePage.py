@@ -6,7 +6,7 @@ from gui.shared import EVENT_BUS_SCOPE, events
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 from skeletons.gui.app_loader import GuiGlobalSpaceID, IAppLoader
-from debug_utils import LOG_ERROR
+from debug_utils import LOG_ERROR, LOG_DEBUG
 
 class _LegacyComponentsConfig(ComponentsConfig):
 
@@ -115,4 +115,4 @@ class LegacyBattlePage(View):
         self.sessionProvider.removeViewComponent(alias)
 
     def onAppResized(self, app_width, app_height):
-        self.pyLog('%s, %s' % (app_width, app_height))
+        LOG_DEBUG('%s, %s' % (app_width, app_height))

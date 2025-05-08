@@ -29,6 +29,9 @@ msgstr "На 23 февраля 2014 года"
 msgid "hangar_premium_igr/title"
 msgstr "Ангар в пещере"
 
+msgid "hangar_premium_9may/title"
+msgstr "На День Победы 2014 года"
+
 msgid "prem_sense_hangars_v1/title"
 msgstr "Ангары первого поколения"
 

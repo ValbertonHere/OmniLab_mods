@@ -1,0 +1,71 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Settings Preset Window\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "modsListAPI/title"
+msgstr "Пресет настроек"
+
+msgid "modsListAPI/tooltip"
+msgstr ""
+"Создайте пресет настроек из тех, что сейчас установлены в клиенте\n"
+"или загрузите уже сохранённый для восстановления настроек."
+
+msgid "createApplyBtn/create/tooltip/header"
+msgstr "Создать пресет настроек"
+
+msgid "createApplyBtn/create/tooltip/body"
+msgstr "Нажмите, чтобы сохранить текущих пресет настроек в файл."
+
+msgid "createApplyBtn/apply/tooltip/header"
+msgstr "Применить пресет настроек"
+
+msgid "createApplyBtn/apply/tooltip/body"
+msgstr "Нажмите, чтобы применить пресет настроек из файла."
+
+msgid "updateDeleteBtn/update/tooltip/header"
+msgstr "Сканировать папку с пресетами"
+
+msgid "updateDeleteBtn/update/tooltip/body"
+msgstr "Нажмите, чтобы проверить папку с пресетами на наличие файла."
+
+msgid "updateDeleteBtn/delete/tooltip/header"
+msgstr "Удалить пресет настроек"
+
+msgid "updateDeleteBtn/delete/tooltip/body"
+msgstr "Нажмите, чтобы удалить файл пресета настроек."
+
+msgid "showFolderBtn/delete/tooltip/header"
+msgstr "Открыть папку с пресетами"
+
+msgid "showFolderBtn/delete/tooltip/body"
+msgstr "Нажмите, чтобы открыть папку с пресетами настроек."
+
+msgid "presetStatus/found"
+msgstr "Найден сохранённый пресет настроек."
+
+msgid "presetStatus/not_found"
+msgstr "Пресет настроек не найден."
+
+msgid "presetStatus/creating"
+msgstr "Сохранение текущих настроек..."
+
+msgid "presetStatus/created"
+msgstr "Текущие настройки сохранены."
+
+msgid "presetStatus/applying"
+msgstr "Применение пресета настроек..."
+
+msgid "presetStatus/applied"
+msgstr "Пресет настроек применён."
+
+msgid "presetStatus/apply_failed"
+msgstr "Ошибка! Пресет настроек повреждён."
+
+msgid "presetStatus/deleted"
+msgstr "Пресет настроек удалён."

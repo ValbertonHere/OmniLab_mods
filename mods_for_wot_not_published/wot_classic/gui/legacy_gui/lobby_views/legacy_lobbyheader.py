@@ -90,8 +90,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         self.flashObject.as_setInDev(isInDev)
 
     def as_setServerNameS(self):
-        serverName = '<TEXTFORMAT INDENT="0" LEFTMARGIN="0" RIGHTMARGIN="0" LEADING="2"><P ALIGN="CENTER"><FONT FACE="$FieldFont" COLOR="#ffced9d9" KERNING="0">#menu:header/serverInfo</FONT></P><P ALIGN="CENTER"><FONT FACE="$FieldFont" COLOR="#fffbce86" KERNING="0"> "%s"</FONT></P></TEXTFORMAT>' % self.connectionMgr.serverUserName
-        self.flashObject.as_setServerName(serverName)
+        self.flashObject.as_setServerName(i18n.makeString('#wek:lobbyHeader/serverInfo', serverName='"%s"' % self.connectionMgr.serverUserName))
 
     def as_setUserNicknameS(self, clanInfo, diff=None):
         if isPlayerAccount():
@@ -280,13 +279,11 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
             deltaInSeconds = float(time_utils.getTimeDeltaFromNow(time_utils.makeLocalServerTime(premTime)))
             timeLeft, timeMetric = self.__lobbyHeaderSrc._LobbyHeader__getPremiumExpiryTimeAttrs(deltaInSeconds)
             if timeMetric == backport.text(R.strings.menu.header.account.premium.days()):
-                timeMetric = i18n.makeString('#wek:lobbyHeader/premiumAcc/days', days=int(timeLeft))
+                accountType = i18n.makeString('#wek:lobbyHeader/premiumAcc/labelDays', days=int(timeLeft))
             else:
-                timeMetric = i18n.makeString('#wek:lobbyHeader/premiumAcc/hours', hours=int(timeLeft))
-            # Переписать с использованием локазилации с разметкой.
-            accountType = '<TEXTFORMAT INDENT="0" LEFTMARGIN="0" RIGHTMARGIN="0" LEADING="2"><P ALIGN="LEFT"><FONT FACE="$FieldFont" COLOR="#fffbce86" KERNING="0">#wek:lobbyHeader/premiumAcc/label</FONT></P><P ALIGN="LEFT"><FONT FACE="$FieldFont" COLOR="#ffced9d9" KERNING="0">%s</FONT></P></TEXTFORMAT>' % timeMetric
+                accountType = i18n.makeString('#wek:lobbyHeader/premiumAcc/labelHours', hours=int(timeLeft))
         else:
-            accountType = '<TEXTFORMAT INDENT="0" LEFTMARGIN="0" RIGHTMARGIN="0" LEADING="2"><P ALIGN="LEFT"><FONT FACE="$FieldFont" COLOR="#ff7f7d6a" KERNING="0">#wek:lobbyHeader/baseAcc/label</FONT></P></TEXTFORMAT>'
+            accountType = '#wek:lobbyHeader/baseAcc/label'
 
         self.flashObject.as_setAccountType(accountType)
 

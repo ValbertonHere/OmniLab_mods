@@ -18,8 +18,8 @@ from skeletons.gui.app_loader import GuiGlobalSpaceID
 from skeletons.gui.game_control import IHangarSpaceSwitchController
 from gui.ClientHangarSpace import getHangarFullVisibilityMask
 
-
 class ClassicSceneSpaceConfig(SceneSpaceConfig):
+    hangarSpace = dependency.descriptor(IHangarSpace)
 
     def __init__(self, spaceId=None, waitingMessage=None, waitingBackground=None):
         self._waitingMessage = waitingMessage
@@ -29,7 +29,12 @@ class ClassicSceneSpaceConfig(SceneSpaceConfig):
         self._visibilityMask = {True: None, False: None}
         self._spaceIdOverride = {}
 
-    def getVisibilityMask(self, isPremium):
+    def getVisibilityMask(self, isPremium=False):
+        if self.hangarSpace.inited and isPremium is None:
+            isPremium = self.hangarSpace.isPremium
+        else:
+            isPremium = False
+            
         if self._visibilityMask[isPremium] is not None:
             return self._visibilityMask[isPremium]
         else:
@@ -42,7 +47,11 @@ class ClassicSceneSpaceConfig(SceneSpaceConfig):
     def setVisibilityMask(self, isPremium, visibilityMask):
         self._visibilityMask[isPremium] = visibilityMask
 
-    def getHangarSpaceId(self, isPremium):
+    def getHangarSpaceId(self, isPremium=None):
+        if self.hangarSpace.inited and isPremium is None:
+            isPremium = self.hangarSpace.isPremium
+        else:
+            isPremium = False
         return self._premiumSpaceId if isPremium else self._basicSpaceId
 
     def setSpaceIdOverride(self, isPremium, newId):
@@ -60,7 +69,7 @@ class ClassicHangarOverrider(object):
     hangarSwitchController = dependency.descriptor(IHangarSpaceSwitchController)
 
     CLASSIC_HANGARS = ('hangar', 'hangar_premium', 'hangar_v2', 'hangar_premium_v2')
-    SPECIAL_HANGARS = ('hangar_premium_23feb_v2', 'Luganks_5years_hangar', 'hangar_premium_igr')
+    SPECIAL_HANGARS = ('hangar_premium_9may', 'hangar_premium_23feb_v2', 'Luganks_5years_hangar', 'hangar_premium_igr')
     PREM_SENSETIVE_HANGARS = {'ps_v1': {'basic': 'hangar', 'premium': 'hangar_premium'},
                               'ps_v2': {'basic': 'hangar_v2', 'premium': 'hangar_premium_v2'}}
 
@@ -70,7 +79,7 @@ class ClassicHangarOverrider(object):
         self.hangar_config = {
             'is_prem_sensetive': True,
             'current_hangar': 'ps_v2',
-            'excepted_scenes': ['ARMORY_YARD']
+            'excepted_scenes': ['ARMORY_YARD', 'hb_offence', 'hb_defence']
         }
 
         self.updateHangarConfig()

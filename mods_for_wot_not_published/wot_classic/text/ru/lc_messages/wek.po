@@ -55,11 +55,11 @@ msgid "legacy_ammo_panel/postProgression/switch_error"
 msgstr ""
 "Не удалось переключить комплектацию машины. Не открыт альтернаивный вариант."
 
+msgid "lobbyHeader/serverInfo"
+msgstr "<h1>Сервер <p>%(serverName)s</p></h1>"
+
 msgid "lobbyHeader/fightButton/label"
 msgstr "В бой!"
-
-msgid "lobbyHeader/baseAcc/label"
-msgstr "Базовый аккаунт"
 
 msgid "lobbyHeader/creditsLabel"
 msgstr "ОБМЕН ЗОЛОТА"
@@ -110,14 +110,14 @@ msgstr ""
 "Личные\n"
 "резервы"
 
-msgid "lobbyHeader/premiumAcc/days"
-msgstr "(дней: %(days)s)"
+msgid "lobbyHeader/baseAcc/label"
+msgstr "<b1>Базовый аккаунт<b1>"
 
-msgid "lobbyHeader/premiumAcc/hours"
-msgstr "(часов: %(hours)s)"
+msgid "lobbyHeader/premiumAcc/labelDays"
+msgstr "<p>Премиум аккаунт <h1>(дней: %(days)s)</h1></p>"
 
-msgid "lobbyHeader/premiumAcc/label"
-msgstr "Премиум аккаунт "
+msgid "lobbyHeader/premiumAcc/labelHours"
+msgstr "<p>Премиум аккаунт <h1>(часов: %(hours)s)</h1></p>"
 
 msgid "lobbyHeader/tasks"
 msgstr ""
@@ -164,8 +164,17 @@ msgstr "<h1>Урон базовым снарядом <p></p></h1> "
 msgid "vehicleParams/piercingPower"
 msgstr "<h1>Бронепробиваемость базовым снарядом <p>(мм)</p></h1>"
 
+msgid "vehicleParams/clipFireRate"
+msgstr "<h1>Перезарядка <p>(полная/между/кол-во)</p></h1>"
+
 msgid "vehicleParams/reloadTime"
 msgstr "<h1>Скорострельность орудия <p>(выстр/мин)</p></h1>"
+
+msgid "vehicleParams/reloadTimeSecs"
+msgstr "<h1>Заряжание орудия <p>(с)</p></h1>"
+
+msgid "vehicleParams/reloadTimePerSecond"
+msgstr "<h1>Скорострельность орудия <p>(выстр/сек)</p></h1>"
 
 msgid "vehicleParams/turretRotationSpeed"
 msgstr "<h1>Скорость поворота башни <p>(град/сек)</p></h1>"
