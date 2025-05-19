@@ -7,6 +7,7 @@ import os
 import ResMgr
 import types
 
+from debug_utils import LOG_CURRENT_EXCEPTION
 from constants import ARENA_GUI_TYPE
 from gui.game_loading import loading
 from helpers import dependency
@@ -142,12 +143,13 @@ def getParentWindow():
 		return uiLoader.windowsManager.getMainWindow()
 '''
 
-def readBrandingItem(itemCls, itemName, cache, storage):
+def readUserCustomItem(itemCls, itemType, itemName, dataSection, cache, storage):
 	from items.readers.c11n_readers import _readItems
-	itemsFileName = 'omnilab/user_customization/xml/%ss.xml' % itemName
-	dataSection = ResMgr.openSection(itemsFileName)
+	itemsFileName = 'omnilab/user_customization/xml/%s' % itemName
 	try:
-		_readItems(cache, itemCls, (None, 'branding_%ss.xml' % itemName), dataSection, itemName, storage, {})
+		_readItems(cache, itemCls, (None, 'ouc_%s' % itemName), dataSection, itemType, storage, {})
+	except:
+		LOG_CURRENT_EXCEPTION()
 	finally:
 		ResMgr.purge(itemsFileName)
 

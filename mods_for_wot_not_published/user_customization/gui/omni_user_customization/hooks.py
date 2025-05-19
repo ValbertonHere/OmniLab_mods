@@ -1,13 +1,14 @@
 # Основа от POLIROID.
 
+import ResMgr
 from debug_utils import LOG_ERROR
 from items.vehicles import g_cache
-from items.components.c11n_components import CamouflageItem, InsigniaItem, PaintItem
+from items.components.c11n_components import StyleItem, CamouflageItem, DecalItem, PaintItem
 from vehicle_systems import camouflages
 from vehicle_systems.CompoundAppearance import CompoundAppearance
 from VehicleStickers import VehicleStickers
 
-from .utils import readBrandingItem, awaitGameLoadingComplete
+from .utils import readUserCustomItem, awaitGameLoadingComplete
 
 __all__ = ()
 
@@ -55,10 +56,28 @@ if g_modsListApi:
 		login=True, lobby=True, callback=g_eventsManager.showUI)
 '''
 
-def customization_inject():
+def injectUserCustomization():
 	cache = g_cache.customization20()
-	readBrandingItem(CamouflageItem, 'camouflage', cache, cache.camouflages)
-	readBrandingItem(InsigniaItem, 'insignia', cache, cache.insignias)
-	readBrandingItem(PaintItem, 'paint', cache, cache.paints)
+	for filename, dataSection in ResMgr.openSection('omnilab/user_customization/xml').items():
+		if 'styles' in filename:
+			itemClass = StyleItem
+			itemType = 'style'
+			storage = cache.styles
+		elif 'camouflages' in filename:
+			itemClass = CamouflageItem
+			itemType = 'camouflage'
+			storage = cache.camouflages
+		elif 'decals' in filename:
+			itemClass = DecalItem
+			itemType = 'decal'
+			storage = cache.decals
+		elif 'paints' in filename:
+			itemClass = PaintItem
+			itemType = 'paint'
+			storage = cache.paints
+		else:
+			return
+		
+		readUserCustomItem(itemClass, itemType, filename, dataSection, cache, storage)
 
-customization_inject()
+injectUserCustomization()
