@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root xmlns:china="china" xmlns:czech="czech" xmlns:france="france" xmlns:germany="germany" xmlns:italy="italy" xmlns:japan="japan" xmlns:poland="poland" xmlns:sweden="sweden" xmlns:uk="uk" xmlns:usa="usa" xmlns:ussr="ussr" xmlns:xmlref="http://bwt/xmlref">
   <itemGroup>
-    <userString>	ous_test_style	</userString>
+    <userString>	ouc_test_styles	</userString>
     <season>	ALL	</season>
     <historical>	true	</historical>
     <priceGroup>	MT 2D styles universal 1000g notInShop	</priceGroup>
@@ -14,9 +14,9 @@
     <style>
       <id>	10000	</id>
       <texture>	gui/maps/vehicles/styles/NY_4.png	</texture>
-      <userString>	ous_test_style	</userString>
+      <userString>	ouc_test_style1	</userString>
       <longDescriptionSpecial>	#vehicle_customization:ny_style/asian_ny_style_01_desc/long	</longDescriptionSpecial>
-      <tags/>
+      <!--tags> hiddenInUI </tags-->
       <outfits>
         <outfit>
           <season>	ALL	</season>
@@ -30,11 +30,41 @@
           </camouflages>
           <decals>
             <item>
-              <id>	67	</id>
+              <id>	30000	</id>
               <appliedTo>	13104	</appliedTo>
             </item>
             <item>
-              <id>	68	</id>
+              <id>	40000	</id>
+              <appliedTo>	52416	</appliedTo>
+            </item>
+          </decals>
+        </outfit>
+      </outfits>
+    </style>
+    <style>
+      <id>	10001	</id>
+      <texture>	gui/maps/vehicles/styles/NY_3.png	</texture>
+      <userString>	ouc_test_style2	</userString>
+      <longDescriptionSpecial>	#vehicle_customization:ny_style/asian_ny_style_01_desc/long	</longDescriptionSpecial>
+      <!--tags> hiddenInUI </tags-->
+      <outfits>
+        <outfit>
+          <season>	ALL	</season>
+          <camouflages>
+            <item>
+              <id>	20000	</id>
+              <appliedTo>	4368	</appliedTo>
+              <patternSize>	1	</patternSize>
+              <palette>	0	</palette>
+            </item>
+          </camouflages>
+          <decals>
+            <item>
+              <id>	30000	</id>
+              <appliedTo>	13104	</appliedTo>
+            </item>
+            <item>
+              <id>	40000	</id>
               <appliedTo>	52416	</appliedTo>
             </item>
           </decals>

@@ -1,16 +1,18 @@
 # Основа от POLIROID.
 
-import ResMgr
-from debug_utils import LOG_ERROR
+import ResMgr, BigWorld
+from debug_utils import LOG_ERROR, CRITICAL_ERROR
 from items.vehicles import g_cache
 from items.components.c11n_components import StyleItem, CamouflageItem, DecalItem, PaintItem
 from vehicle_systems import camouflages
 from vehicle_systems.CompoundAppearance import CompoundAppearance
 from VehicleStickers import VehicleStickers
+from soft_exception import SoftException
 
 from .utils import readUserCustomItem, awaitGameLoadingComplete
 
 __all__ = ()
+g_oucCache = {'styles': [], 'camouflages': [], 'decals': [], 'paints': []}
 
 '''
 # change vehicle outfit (may dont work if arena data not ready)
@@ -57,6 +59,7 @@ if g_modsListApi:
 '''
 
 def injectUserCustomization():
+	global g_oucCache
 	cache = g_cache.customization20()
 	for filename, dataSection in ResMgr.openSection('omnilab/user_customization/xml').items():
 		if 'styles' in filename:
@@ -78,6 +81,16 @@ def injectUserCustomization():
 		else:
 			return
 		
+		for name, section in dataSection['itemGroup'].items():
+			if name != itemType:
+				continue
+			itemTypeCache = g_oucCache[itemType + 's']
+			itemID = section.readInt('id')
+			if itemID in storage or itemID in itemTypeCache:
+				LOG_ERROR("[USER CUSTOMIZATION] Duplicate ID in OUC/game cache, change it in your XML's to a unique one! (itemID=%s)" % itemID)
+				BigWorld.quit()
+			itemTypeCache.append(itemID)
+			
 		readUserCustomItem(itemClass, itemType, filename, dataSection, cache, storage)
 
 injectUserCustomization()

@@ -3,8 +3,18 @@ from PlayerEvents import g_playerEvents
 from gui.Scaleform.daapi.view.login.LoginView import LoginView
 from .wotc_legacyGLFlash import GameLoading
 
+from gui.game_loading.state_machine.machine import GameLoadingStateMachine
+
+class LegacyStateMachine(GameLoadingStateMachine):
+    def configure(self, preferences, settings):
+        super(LegacyStateMachine, self).configure(preferences, settings)
+        print preferences, settings
+        print '-------------------'
+
+
 from gui.sounds.sound import Sound
 from gui.game_loading.loading import *
+_g_Loader = LegacyStateMachine()
 from gui.game_loading.resources.cdn.cache import GameLoadingCdnCache
 from gui.game_loading.resources.consts import Milestones
 from gui.game_loading.state_machine.states.client_loading import ClientLoadingState, ClientLoadingProgressStateComponent
@@ -54,6 +64,11 @@ def ClientLoadingProgressStateComponent_setProgress(self, progress):
 def LoginView_setVersionS(self, version):
     LVSVS_base(self, '#wek_gameLoading:game_version')
 
+def GameLoadingStateMachine_configure(self, preferences, settings):
+    GLSM_base(self, preferences, settings)
+    
+
+GLSM_base = getLoader().configure
 CLPSC_base = ClientLoadingProgressStateComponent._setProgress
 LVSVS_base = LoginView.as_setVersionS
 

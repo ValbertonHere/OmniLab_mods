@@ -15,8 +15,7 @@ class NYTHangarOverrider():
 
     def __init__(self):
         ServicesLocator.appLoader.onGUISpaceEntered += self.onGUISpaceEntered
-
-        ClientHangarSpace._getHangarPath = lambda pld1, pld2: 'spaces/NearYouHangar'
+        ClientHangarSpace._getHangarPath = lambda pld1, pld2: 'spaces/NearYouHangar' if self.hangarSwitchController.currentSceneName not in self.EXCEPT_THIS_SCENES else 'spaces/' + self.hangarSwitchController._sceneSpaceParams[self.hangarSwitchController.currentSceneName].getHangarSpaceId()
 
     def onGUISpaceEntered(self, spaceID, *args, **kwargs):
         if spaceID != GuiGlobalSpaceID.LOBBY:
