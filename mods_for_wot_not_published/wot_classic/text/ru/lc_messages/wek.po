@@ -79,6 +79,24 @@ msgstr "Открыть окно с условиями получения бон.
 msgid "lobbyHeader/crystalTooltip/header"
 msgstr "Заслужить боны"
 
+msgid "lobbyHeader/buyPremiumLabel"
+msgstr "КУПИТЬ ПРЕМИУМ"
+
+msgid "lobbyHeader/buyPremiumTooltip/body"
+msgstr "Открыть окно покупки премиум аккаунта."
+
+msgid "lobbyHeader/buyPremiumTooltip/header"
+msgstr "Купить премиум аккаунт"
+
+msgid "lobbyHeader/extendPremiumLabel"
+msgstr "ПРОДЛИТЬ ПРЕМИУМ"
+
+msgid "lobbyHeader/extendPremiumTooltip/body"
+msgstr "Открыть окно продления премиум аккаунта."
+
+msgid "lobbyHeader/extendPremiumTooltip/header"
+msgstr "Продлить премиум аккаунт"
+
 msgid "lobbyHeader/freeXPLabel"
 msgstr "ПЕРЕВОД ОПЫТА"
 
@@ -100,10 +118,7 @@ msgid "lobbyHeader/goldTooltip/header"
 msgstr "Купить золото"
 
 msgid "lobbyHeader/inDev/text"
-msgstr ""
-"Предварительная версия\n"
-"© 2024 OmniLab R&D\n"
-"© 2024 Mr.Bendy"
+msgstr "Предварительная версия | © 2025 OmniLab R&D | © 2025 Mr.Bendy"
 
 msgid "lobbyHeader/personalReserves"
 msgstr ""

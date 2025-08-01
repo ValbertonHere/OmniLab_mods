@@ -3,7 +3,7 @@
 from debug_utils import LOG_CURRENT_EXCEPTION
 from frameworks.wulf.gui_constants import WindowLayer
 from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
-from gui.modsSettingsApi.skeleton import IModsSettingsApi
+from gui.modsSettingsApi import g_modsSettingsApi
 from helpers import dependency
 from skeletons.gui.app_loader import IAppLoader
 from CurrentVehicle import g_currentVehicle
@@ -24,22 +24,6 @@ class ActiveWidgetsPlaceholder(object):
 
     def update(self, position, alias):
         return False
-
-class ClassicModSettingsAPI(IModsSettingsApi):
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 lootbox_visible = None
 header_visible = None
@@ -63,11 +47,19 @@ template = {'modDisplayName': 'Классический интерфейс ан�
 try:
     from gui.legacy_gui.lobby_views import getGUIConfig
     default_settings['enable_lobbyHeader'] = getGUIConfig()['isLegacyLobbyHeaderEnabled']
+    default_settings['set_crystalAsPremium'] = getGUIConfig()['isCrystalPremium']
+
     template['column1'].append({'type': 'CheckBox',
                                 'text': 'Включить старую шапку ангара',
                                 'value': getGUIConfig()['isLegacyLobbyHeaderEnabled'],
                                 'tooltip': '{HEADER}Включить старую шапку ангара{/HEADER}{BODY}Включить старый вид шапки ангара (Требуется перезапуск клиента).{/BODY}',
                                 'varName': 'enable_lobbyHeader'})
+    
+    template['column1'].append({'type': 'CheckBox',
+                                'text': 'Заменить боны на премиум аккаунт',
+                                'value': getGUIConfig()['isCrystalPremium'],
+                                'tooltip': '{HEADER}Заменить боны на премиум аккаунт{/HEADER}{BODY}Заменить кнопку информации о бонах\nна кнопку продления/покупки премиум аккаунта.{/BODY}',
+                                'varName': 'set_crystalAsPremium'})
 except:
     print '[WeK_old_lobby] No Legacy Lobby Header found. Skipping...'
 
@@ -99,6 +91,17 @@ def restartSubView():
                 view.destroy()
             g_eventDispatcher.loadHangar()
 
+def setCrystalPremium(isCrystalPremium):
+    appLoader = dependency.instance(IAppLoader)
+    hangarSpace = dependency.instance(IHangarSpace)
+    if hangarSpace.spaceInited:
+        lobby = appLoader.getDefLobbyApp()
+        if lobby and lobby.containerManager:
+            view = lobby.containerManager.getView(WindowLayer.WINDOW, {POP_UP_CRITERIA.VIEW_ALIAS: 'LegacyLobbyHeaderUI'})
+            if view is not None:
+                view.isCrystalPremium = isCrystalPremium
+                view._LegacyLobbyHeader__onPremiumExpireTimeChanged(None)
+
 def setLootboxesVisibillity(lb_value):
     appLoader = dependency.instance(IAppLoader)
     app = appLoader.getApp()
@@ -128,6 +131,7 @@ def apply_settings(settings):
         lootboxes_value = settings.get('enable_lootboxes')
         battlepass_value = settings.get('enable_battlepass')
         lobbyHeader_value = settings.get('enable_lobbyHeader', None)
+        crystalIsPremium_value = settings.get('set_crystalAsPremium', None)
         
         lootbox_visible = lootboxes_value
         header_visible = battlepass_value
@@ -136,7 +140,11 @@ def apply_settings(settings):
         restartSubView()
         
         if lobbyHeader_value is not None:
-            getGUIConfig(lobbyHeader_value)
+            getGUIConfig('isLegacyLobbyHeaderEnabled', lobbyHeader_value)
+        
+        if crystalIsPremium_value is not None:
+            getGUIConfig('isCrystalPremium', crystalIsPremium_value)
+            setCrystalPremium(crystalIsPremium_value)
 
     except:
         print "[WeK_old_lobby] Couldn't apply_settings"

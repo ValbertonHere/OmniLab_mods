@@ -34,11 +34,17 @@ from skeletons.gui.shared import IItemsCache
 from skeletons.gui.game_control import IManualController, IPlatoonController, IServerStatsController, IGameSessionController
 from skeletons.gui.goodies import IGoodiesCache
 from skeletons.gui.web import IWebController
+from skeletons.gui.impl import IGuiLoader
 
 from CurrentVehicle import g_currentVehicle, g_currentPreviewVehicle
 from helpers import i18n, time_utils, isPlayerAccount, dependency
 from PlayerEvents import g_playerEvents
 from frameworks.wulf import WindowLayer
+from gui.Scaleform.daapi.view.lobby.store.browser.shop_helpers import getBuyGoldUrl, getBuyPremiumUrl
+from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
+from gui.Scaleform.daapi.settings.views import VIEW_ALIAS
+
+from gui.legacy_gui.lobby_views import getGUIConfig
 
 from ..utils import restartAllView
 
@@ -48,6 +54,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
     connectionMgr = dependency.descriptor(IConnectionManager)
     gameSession = dependency.descriptor(IGameSessionController)
     manualController = dependency.descriptor(IManualController)
+    guiLoader = dependency.descriptor(IGuiLoader)
     platoonCtrl = dependency.descriptor(IPlatoonController)
     goodiesCache = dependency.descriptor(IGoodiesCache)
     webCtrl = dependency.descriptor(IWebController)
@@ -63,7 +70,56 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         super(LegacyLobbyHeader, self).__init__()
         self.__clanIconID = None
         self.__lobbyHeaderSrc = None
+        self.isCrystalPremium = getGUIConfig()['isCrystalPremium']
         return
+
+    def _populate(self):
+        super(LegacyLobbyHeader, self)._populate()
+        app = self.appLoader.getApp()
+        self.__lobbyHeaderSrc = app.containerManager.getContainer(WindowLayer.VIEW).getView().getComponent('lobbyHeader')
+        self._addListeners()
+        self.as_setInDevS(True)
+        self.as_setServerNameS()
+        self.as_setUserNicknameS(g_clanCache.clanInfo)
+        self.__getFormattedCurrency()
+        self.__onPremiumExpireTimeChanged(None)
+        self.onVehicleChanged()
+        self.as_setControlsEnabled()
+        self.onPrbEntitySwitched()
+
+    def _addListeners(self):
+        self.startGlobalListening()
+        self.addListener(events.FightButtonEvent.FIGHT_BUTTON_UPDATE, self.__updateLobbyHeaderButtons, scope=EVENT_BUS_SCOPE.LOBBY)
+        g_currentVehicle.onChanged += self.onVehicleChanged
+        g_currentVehicle.onChanged += self.__updateLobbyHeaderButtons
+        g_currentPreviewVehicle.onChanged += self.onVehicleChanged
+        g_currentPreviewVehicle.onChanged += self.__updateLobbyHeaderButtons
+        g_playerEvents.onEnqueued += self.__updateLobbyHeaderButtons
+        g_playerEvents.onDequeued += self.__updateLobbyHeaderButtons
+        self.gameSession.onPremiumNotify += self.onPremiumChanged
+        self.platoonCtrl.onMembersUpdate += self.__updateLobbyHeaderButtons
+        self.serverStats.onStatsReceived += self.__onStatsReceived
+        self.__onStatsReceived()
+        g_clientUpdateManager.addCurrencyCallback(Currency.CRYSTAL, self.as_setCrystalS)
+        g_clientUpdateManager.addCurrencyCallback(Currency.CREDITS, self.as_setCreditsS)
+        g_clientUpdateManager.addCurrencyCallback(Currency.GOLD, self.as_setGoldS)
+        g_clientUpdateManager.addCallbacks({'stats.freeXP': self.as_setFreeXPS,
+                                            'stats.clanInfo': self.as_setUserNicknameS,
+                                            'account.activePremiumExpiryTime': self.__onPremiumExpireTimeChanged})
+    
+    def _dispose(self):
+        self.stopGlobalListening()
+        self.removeListener(events.FightButtonEvent.FIGHT_BUTTON_UPDATE, self.__updateLobbyHeaderButtons, scope=EVENT_BUS_SCOPE.LOBBY)
+        g_currentVehicle.onChanged -= self.onVehicleChanged
+        g_currentVehicle.onChanged -= self.__updateLobbyHeaderButtons
+        g_playerEvents.onEnqueued -= self.__updateLobbyHeaderButtons
+        g_playerEvents.onDequeued -= self.__updateLobbyHeaderButtons
+        self.gameSession.onPremiumNotify -= self.onPremiumChanged
+        self.platoonCtrl.onMembersUpdate -= self.__updateLobbyHeaderButtons
+        self.serverStats.onStatsReceived -= self.__onStatsReceived
+        g_currentPreviewVehicle.onChanged -= self.onVehicleChanged
+        g_clientUpdateManager.removeObjectCallbacks(self)
+        super(LegacyLobbyHeader, self)._dispose()
 
     @adisp_process
     def fightClick(self, mmData, actionName):
@@ -81,6 +137,12 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
                     self.prbDispatcher.doAction(PrbAction(actionName, mmData))
             else:
                 LOG_ERROR('Prebattle dispatcher is not defined')
+
+    def as_setCrystal2Premium(self, isCrystalPremium, isPremium):
+        self.isCrystalPremium = isCrystalPremium
+
+        if self._isDAAPIInited():
+            self.flashObject.as_setCrystal2Premium(isCrystalPremium, isPremium)
 
     def as_setControlsEnabled(self):
         if self._isDAAPIInited():
@@ -130,7 +192,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         selected = items.update(state)
         squadSelected = squadItems.update(state)
         playerInfo = self.prbDispatcher.getPlayerInfo()
-        fightButtonLabel = selected.getFightButtonLabel(state, playerInfo)
+        # fightButtonLabel = selected.getFightButtonLabel(state, playerInfo)
         isSquad = self.prbDispatcher.getFunctionalState().isInUnit() and self.prbEntity.getEntityType() in PREBATTLE_TYPE.SQUAD_PREBATTLES
         battleType = '#menu:headerButtons/battle/types/%s' % squadSelected.getData() if isSquad else selected.getLabel()
         # self.flashObject.as_setFightButtonLabel(fightButtonLabel)
@@ -155,16 +217,21 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         shared_events.showResearchView(g_currentVehicle.item.intCD)
 
     def onMenuClick(self, _):
-        self.__lobbyHeaderSrc.showLobbyMenu()
+        self.fireEvent(events.LoadViewEvent(SFViewLoadParams(VIEW_ALIAS.LOBBY_MENU)), scope=EVENT_BUS_SCOPE.LOBBY)
     
     def onCrystalClick(self, _):
-        if CURRENT_REALM == 'RU':
-            shared_events.showCrystalWindow(HeaderMenuVisibilityState.ALL)
-        else: 
-            shared_events.showCrystalWindow()
+        if self.isCrystalPremium:
+            self.__closeWindowsWithTopSubViewLayer()
+            shared_events.showShop(getBuyPremiumUrl())
+        else:
+            if CURRENT_REALM == 'RU':
+                shared_events.showCrystalWindow(HeaderMenuVisibilityState.ALL)
+            else: 
+                shared_events.showCrystalWindow()
     
     def onGoldClick(self, _):
-        self.__lobbyHeaderSrc.onPayment()
+        self.__closeWindowsWithTopSubViewLayer()
+        shared_events.showShop(getBuyGoldUrl())
     
     def onTutorialClick(self, _):
         if self.manualController.isActivated():
@@ -192,54 +259,11 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
     
     def onInDevRestartClick(self, _):
         restartAllView()
-
-    def _populate(self):
-        super(LegacyLobbyHeader, self)._populate()
-        app = self.appLoader.getApp()
-        self.__lobbyHeaderSrc = app.containerManager.getContainer(WindowLayer.VIEW).getView().getComponent('lobbyHeader')
-        self._addListeners()
-        self.as_setInDevS(False)
-        self.as_setServerNameS()
-        self.as_setUserNicknameS(g_clanCache.clanInfo)
-        self.__getFormattedCurrency()
-        self.__onPremiumExpireTimeChanged(None)
-        self.onVehicleChanged()
-        self.as_setControlsEnabled()
-        self.onPrbEntitySwitched()
-
-    def _addListeners(self):
-        self.startGlobalListening()
-        self.addListener(events.FightButtonEvent.FIGHT_BUTTON_UPDATE, self.__updateLobbyHeaderButtons, scope=EVENT_BUS_SCOPE.LOBBY)
-        g_currentVehicle.onChanged += self.onVehicleChanged
-        g_currentVehicle.onChanged += self.__updateLobbyHeaderButtons
-        g_currentPreviewVehicle.onChanged += self.onVehicleChanged
-        g_currentPreviewVehicle.onChanged += self.__updateLobbyHeaderButtons
-        g_playerEvents.onEnqueued += self.__updateLobbyHeaderButtons
-        g_playerEvents.onDequeued += self.__updateLobbyHeaderButtons
-        self.gameSession.onPremiumNotify += self.onPremiumChanged
-        self.platoonCtrl.onMembersUpdate += self.__updateLobbyHeaderButtons
-        self.serverStats.onStatsReceived += self.__onStatsReceived
-        self.__onStatsReceived()
-        g_clientUpdateManager.addCurrencyCallback(Currency.CRYSTAL, self.as_setCrystalS)
-        g_clientUpdateManager.addCurrencyCallback(Currency.CREDITS, self.as_setCreditsS)
-        g_clientUpdateManager.addCurrencyCallback(Currency.GOLD, self.as_setGoldS)
-        g_clientUpdateManager.addCallbacks({'stats.freeXP': self.as_setFreeXPS,
-                                            'stats.clanInfo': self.as_setUserNicknameS,
-                                            'account.activePremiumExpiryTime': self.__onPremiumExpireTimeChanged})
     
-    def _dispose(self):
-        self.stopGlobalListening()
-        self.removeListener(events.FightButtonEvent.FIGHT_BUTTON_UPDATE, self.__updateLobbyHeaderButtons, scope=EVENT_BUS_SCOPE.LOBBY)
-        g_currentVehicle.onChanged -= self.onVehicleChanged
-        g_currentVehicle.onChanged -= self.__updateLobbyHeaderButtons
-        g_playerEvents.onEnqueued -= self.__updateLobbyHeaderButtons
-        g_playerEvents.onDequeued -= self.__updateLobbyHeaderButtons
-        self.gameSession.onPremiumNotify -= self.onPremiumChanged
-        self.platoonCtrl.onMembersUpdate -= self.__updateLobbyHeaderButtons
-        self.serverStats.onStatsReceived -= self.__onStatsReceived
-        g_currentPreviewVehicle.onChanged -= self.onVehicleChanged
-        g_clientUpdateManager.removeObjectCallbacks(self)
-        super(LegacyLobbyHeader, self)._dispose()
+    def __closeWindowsWithTopSubViewLayer(self):
+        windows = self.guiLoader.windowsManager.findWindows(lambda w: w.layer == WindowLayer.TOP_SUB_VIEW)
+        for window in windows:
+            window.destroy()
 
     def __updateLobbyHeaderButtons(self, *args, **kwargs):
         if not self.prbDispatcher:
@@ -286,6 +310,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
             accountType = '#wek:lobbyHeader/baseAcc/label'
 
         self.flashObject.as_setAccountType(accountType)
+        self.as_setCrystal2Premium(self.isCrystalPremium, isPremium)
 
     @adisp_async
     @future_async.wg_async

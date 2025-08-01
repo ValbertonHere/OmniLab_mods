@@ -95,8 +95,6 @@ class ClassicHangarOverrider(object):
             self.lockHangarOverride(self.hangar_config['current_hangar'], self.hangar_config['is_prem_sensetive'])
 
     def processSceneChange(self, hanLinkage, isPremSensetive):
-        self.hangarSwitchController._HangarSpaceSwitchController__isHangarOverridingLocked = False
-
         if hanLinkage.startswith('ps_'):
             for hangarName in self.PREM_SENSETIVE_HANGARS[hanLinkage].values():
                 if isDir('spaces/%s' % hangarName) != 1:
@@ -112,6 +110,8 @@ class ClassicHangarOverrider(object):
         self.hangarSwitchController.processPossibleSceneChange()
 
     def lockHangarOverride(self, hanLinkage, isPremiumSensetive=False):
+        self.hangarSwitchController._HangarSpaceSwitchController__isHangarOverridingLocked = False
+
         for name in self.hangarSwitchController._sceneSpaceParams.iterkeys():
             if name not in self.hangar_config['excepted_scenes']:
                 if isPremiumSensetive:
@@ -206,4 +206,7 @@ g_classicHangarOverrider = ClassicHangarOverrider()
 
 g_modsListApi.addModification(id='HangarSwitcherWindow', name='#wek_hangarSwitcher:modButton/title', description='#wek_hangarSwitcher:modButton/tooltip',
             icon='gui/maps/icons/quests/bonuses/small/slots.png', enabled=True, login=False, lobby=True, callback=callSwitcherWindow)
-g_entitiesFactories.addSettings(ViewSettings('HangarSwitcherWindow', HangarSwitcherWindow, 'WoTCHangarSwitchWindow.swf', WindowLayer.WINDOW, None, ScopeTemplates.VIEW_SCOPE))
+
+''' For external import '''
+if g_entitiesFactories.getSettings('HangarSwitcherWindow') is None:
+    g_entitiesFactories.addSettings(ViewSettings('HangarSwitcherWindow', HangarSwitcherWindow, 'WoTCHangarSwitchWindow.swf', WindowLayer.WINDOW, None, ScopeTemplates.VIEW_SCOPE))

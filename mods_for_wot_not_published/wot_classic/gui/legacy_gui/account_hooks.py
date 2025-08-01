@@ -9,6 +9,7 @@ from helpers.i18n import makeString
 
 from gui.impl.gen import R
 from gui.impl import backport
+from gui.impl.lobby.platoon.platoon_config import QUEUE_TYPE_TO_PREBATTLE_ACTION_NAME
 
 from gui.prb_control.dispatcher import g_prbLoader
 from gui.prb_control.entities.base.ctx import PrbAction
@@ -45,6 +46,7 @@ from gui.Scaleform.locale.TOOLTIPS import TOOLTIPS
 from skeletons.gui.app_loader import IAppLoader
 from skeletons.gui.game_control import IEpicBattleMetaGameController
 from skeletons.gui.shared import IItemsCache
+from skeletons.gui.game_control import IPlatoonController
 
 from lobby_views.legacy_ammopanel import setOnlyBattleAbilities, upgradeModule, installModule, setAutoRearm, onManageBattleAbilitiesClicked, getListOverlayData
 from lobby_views.legacy_ammopanel import _extendByArtefactData, _extendByBattleAbilityData, _extendByBattleBoosterData, _extendByOptionalDeviceData
@@ -430,6 +432,7 @@ LEGACY LOBBYHEADER OVERRIDES
 
 class LegacyLobbyHeaderHooks():
     appLoader = dependency.instance(IAppLoader)
+    platoonCtrl = dependency.descriptor(IPlatoonController)
 
     LEGACY_HEADER_TABS = (LobbyHeader.TABS.HANGAR, LobbyHeader.TABS.STORE, LobbyHeader.TABS.PROFILE, LobbyHeader.TABS.TECHTREE, LobbyHeader.TABS.BARRACKS, LobbyHeader.TABS.BROWSER, 
                         LobbyHeader.TABS.RESEARCH, LobbyHeader.TABS.PERSONAL_MISSIONS, LobbyHeader.TABS.PERSONAL_MISSIONS_PAGE)
@@ -467,7 +470,8 @@ class LegacyLobbyHeaderHooks():
     def _BattleTypeSelectPopover__selectFight(self, base, baseSelf, actionName):
         if actionName == 'squad':
             prbDispatcher = g_prbLoader.getDispatcher()
-            yield prbDispatcher.doSelectAction(PrbAction(PREBATTLE_ACTION_NAME.SQUAD))
+            prbActionName = QUEUE_TYPE_TO_PREBATTLE_ACTION_NAME[self.platoonCtrl.getQueueType()]
+            yield prbDispatcher.doSelectAction(PrbAction(prbActionName))
         else:
             base(baseSelf, actionName)
 
@@ -537,9 +541,7 @@ class LegacyLobbyHeaderHooks():
                 baseSelf._LobbyHeader__onOverrideHeaderMenuButtons()
                 return
         else:
-            buttonsToExclude = []
-            for i in baseSelf.BUTTONS.ALL():
-                buttonsToExclude.append(i)
+            buttonsToExclude = [button for button in baseSelf.BUTTONS.ALL()]
             baseSelf.as_setHeaderButtonsS(baseSelf._getAvailableButtons(buttonsToExclude))
             return
 

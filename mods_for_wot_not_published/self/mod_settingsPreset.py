@@ -1,4 +1,4 @@
-import BigWorld, Event, json, os, WGC
+import BigWorld, Event, json, os, LGC
 from account_helpers.settings_core import settings_constants
 from debug_utils import LOG_CURRENT_EXCEPTION, LOG_ERROR, LOG_WARNING
 from external_strings_utils import unicode_from_utf8
@@ -96,7 +96,7 @@ class SettingsPresetWindow(AbstractWindowView):
             self.onPresetStatusUpdate('applied')
             if isRestart:
                 BigWorld.savePreferences()
-                WGC.notifyRestart()
+                LGC.notifyRestart()
                 BigWorld.worldDrawEnabled(False)
                 BigWorld.restartGame()
         except IOError:

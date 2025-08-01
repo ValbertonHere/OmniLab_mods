@@ -269,17 +269,7 @@ class LegacyAmmoPanel(View, IGlobalListener):
         if event.isKeyDown() and (BigWorld.isKeyDown(Keys.KEY_LCONTROL) or BigWorld.isKeyDown(Keys.KEY_RCONTROL)) and BigWorld.isKeyDown(Keys.KEY_2):
             self.switchPostProgressionLayout(False)
 
-    def _getSuitableItems(self, typeId):
-        if g_currentVehicle.item is None:
-            return []
-        else:
-            criteria = REQ_CRITERIA.VEHICLE.SUITABLE([g_currentVehicle.item], [typeId]) | REQ_CRITERIA.EMPTY
-            data = self.itemsCache.items.getItems(typeId, criteria).values()
-            data.sort(reverse=True, key=None)
-            return data
-
     def as_setupSlots(self):
-        modulesList = {}
         ammunitionData = {}
         modules = []
         optionalDevices = []
@@ -348,10 +338,6 @@ class LegacyAmmoPanel(View, IGlobalListener):
                     data = self.itemsCache.items.getItems(GUI_ITEM_TYPE_INDICES[slotType], REQ_CRITERIA.CUSTOM(lambda item: item.isInstalled(vehicle))).values()
                     moduleSlot = HangarFittingSlotVO(data, vehicle, slotType, tooltipType=TOOLTIPS_CONSTANTS.HANGAR_MODULE)
                     modules.append(moduleSlot)
-
-                modulesList[slotType] = []
-                for item in self._getSuitableItems(slotType):
-                    modulesList[slotType].append({'title': item.userName, 'desc': })
 
             if len(shells) != 3:
                 emptySlots = 3 - len(shells)

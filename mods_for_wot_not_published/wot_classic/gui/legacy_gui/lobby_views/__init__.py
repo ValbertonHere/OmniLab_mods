@@ -3,12 +3,12 @@ import os, json
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates, ComponentSettings
 from frameworks.wulf import WindowLayer
 
-def getGUIConfig(isEnabled=None):
+def getGUIConfig(key=None, value=None):
     gui_config_file_path = 'mods/configs/wotclassic/gui_config.json'
     if os.path.isfile(gui_config_file_path):
-        if isEnabled is not None:
+        if key is not None:
             with open(gui_config_file_path, 'w') as f2w:
-                gui_config['isLegacyLobbyHeaderEnabled'] = isEnabled
+                gui_config[key] = value
                 json.dump(gui_config, f2w)
         else:
             with open(gui_config_file_path, 'r') as f2r:
@@ -25,7 +25,8 @@ def getGUIConfig(isEnabled=None):
         return gui_config
 
 gui_config = {
-    'isLegacyLobbyHeaderEnabled': True
+    'isLegacyLobbyHeaderEnabled': True,
+    'isCrystalPremium': False
 }
 
 from .bonds_window import BondsWindowUI
