@@ -26,7 +26,10 @@ def getGUIConfig(key=None, value=None):
 
 gui_config = {
     'isLegacyLobbyHeaderEnabled': True,
-    'isCrystalPremium': False
+    'isCrystalPremium': False,
+    'showPersonalQuests': True,
+    'showPersonalReserves': True,
+    'showTasks': True
 }
 
 from .bonds_window import BondsWindowUI

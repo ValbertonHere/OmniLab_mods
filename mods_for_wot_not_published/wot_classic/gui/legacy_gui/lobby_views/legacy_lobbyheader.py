@@ -26,6 +26,7 @@ from gui.clans.clan_cache import g_clanCache
 from gui.prb_control.dispatcher import EVENT_BUS_SCOPE
 from gui.prb_control.entities.listener import IGlobalListener
 from gui.prb_control.entities.base.ctx import PrbAction
+from gui.prb_control.settings import REQUEST_TYPE
 
 from skeletons.connection_mgr import IConnectionManager
 from skeletons.gui.lobby_context import ILobbyContext
@@ -71,6 +72,9 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         self.__clanIconID = None
         self.__lobbyHeaderSrc = None
         self.isCrystalPremium = getGUIConfig()['isCrystalPremium']
+        self.showPersonalQuests = getGUIConfig()['showPersonalQuests']
+        self.showPersonalReserves = getGUIConfig()['showPersonalReserves']
+        self.showTasks = getGUIConfig()['showTasks']
         return
 
     def _populate(self):
@@ -78,11 +82,14 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         app = self.appLoader.getApp()
         self.__lobbyHeaderSrc = app.containerManager.getContainer(WindowLayer.VIEW).getView().getComponent('lobbyHeader')
         self._addListeners()
-        self.as_setInDevS(True)
+        self.as_setInDevS(False)
         self.as_setServerNameS()
         self.as_setUserNicknameS(g_clanCache.clanInfo)
         self.__getFormattedCurrency()
         self.__onPremiumExpireTimeChanged(None)
+        self.as_showPersonalQuestsS(self.showPersonalQuests)
+        self.as_showPersonalReservesS(self.showPersonalReserves)
+        self.as_showTasksS(self.showTasks)
         self.onVehicleChanged()
         self.as_setControlsEnabled()
         self.onPrbEntitySwitched()
@@ -90,6 +97,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
     def _addListeners(self):
         self.startGlobalListening()
         self.addListener(events.FightButtonEvent.FIGHT_BUTTON_UPDATE, self.__updateLobbyHeaderButtons, scope=EVENT_BUS_SCOPE.LOBBY)
+        self.addListener(events.CoolDownEvent.PREBATTLE, self.__handleSetPrebattleCoolDown, scope=EVENT_BUS_SCOPE.LOBBY)
         g_currentVehicle.onChanged += self.onVehicleChanged
         g_currentVehicle.onChanged += self.__updateLobbyHeaderButtons
         g_currentPreviewVehicle.onChanged += self.onVehicleChanged
@@ -110,6 +118,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
     def _dispose(self):
         self.stopGlobalListening()
         self.removeListener(events.FightButtonEvent.FIGHT_BUTTON_UPDATE, self.__updateLobbyHeaderButtons, scope=EVENT_BUS_SCOPE.LOBBY)
+        self.removeListener(events.CoolDownEvent.PREBATTLE, self.__handleSetPrebattleCoolDown, scope=EVENT_BUS_SCOPE.LOBBY)
         g_currentVehicle.onChanged -= self.onVehicleChanged
         g_currentVehicle.onChanged -= self.__updateLobbyHeaderButtons
         g_playerEvents.onEnqueued -= self.__updateLobbyHeaderButtons
@@ -149,10 +158,12 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
             self.flashObject.as_disableHeaderButtons(False)
 
     def as_setInDevS(self, isInDev):
-        self.flashObject.as_setInDev(isInDev)
+        if self._isDAAPIInited():
+            self.flashObject.as_setInDev(isInDev)
 
     def as_setServerNameS(self):
-        self.flashObject.as_setServerName(i18n.makeString('#wek:lobbyHeader/serverInfo', serverName='"%s"' % self.connectionMgr.serverUserName))
+        if self._isDAAPIInited():
+            self.flashObject.as_setServerName(i18n.makeString('#wek:lobbyHeader/serverInfo', serverName='"%s"' % self.connectionMgr.serverUserName))
 
     def as_setUserNicknameS(self, clanInfo, diff=None):
         if isPlayerAccount():
@@ -161,22 +172,46 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
             if g_clanCache.clanDBID:
                 self.__removeClanIconFromMemory()
                 self.requestClanEmblem32x32(g_clanCache.clanDBID)
-            self.flashObject.as_setUserNickname(fullUserName, isTeamKiller)
+            if self._isDAAPIInited():
+                self.flashObject.as_setUserNickname(fullUserName, isTeamKiller)
 
     def as_setCrystalS(self, value):
-        self.flashObject.as_setCrystal(getBWFormatter(Currency.CRYSTAL)(value))
+        if self._isDAAPIInited():
+            self.flashObject.as_setCrystal(getBWFormatter(Currency.CRYSTAL)(value))
 
     def as_setGoldS(self, value):
-        self.flashObject.as_setGold(getBWFormatter(Currency.GOLD)(value))
+        if self._isDAAPIInited():
+            self.flashObject.as_setGold(getBWFormatter(Currency.GOLD)(value))
 
     def as_setCreditsS(self, value):
-        self.flashObject.as_setCredits(getBWFormatter(Currency.CREDITS)(value))
+        if self._isDAAPIInited():
+            self.flashObject.as_setCredits(getBWFormatter(Currency.CREDITS)(value))
 
     def as_setFreeXPS(self, value):
-        self.flashObject.as_setFreeXP(getBWFormatter(Currency.FREE_XP)(value))
+        if self._isDAAPIInited():
+            self.flashObject.as_setFreeXP(getBWFormatter(Currency.FREE_XP)(value))
+    
+    def as_showPersonalReservesS(self, showPR):
+        self.showPersonalReserves = showPR
+
+        if self._isDAAPIInited():
+            self.flashObject.as_showPersonalReserves(showPR)    
+    
+    def as_showTasksS(self, showTasks):
+        self.showTasks = showTasks
+
+        if self._isDAAPIInited():
+            self.flashObject.as_showTasks(showTasks)
+    
+    def as_showPersonalQuestsS(self, showPQ):
+        self.showPersonalQuests = showPQ
+
+        if self._isDAAPIInited():
+            self.flashObject.as_showPersonalQuests(showPQ)    
 
     def onClanEmblem32x32Received(self, _, emblem):
-        self.flashObject.as_setClanEmblem(self.getMemoryTexturePath(emblem))
+        if self._isDAAPIInited():
+            self.flashObject.as_setClanEmblem(self.getMemoryTexturePath(emblem))
 
     def onClose(self):
         self.destroy()
@@ -192,11 +227,12 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         selected = items.update(state)
         squadSelected = squadItems.update(state)
         playerInfo = self.prbDispatcher.getPlayerInfo()
-        # fightButtonLabel = selected.getFightButtonLabel(state, playerInfo)
         isSquad = self.prbDispatcher.getFunctionalState().isInUnit() and self.prbEntity.getEntityType() in PREBATTLE_TYPE.SQUAD_PREBATTLES
         battleType = '#menu:headerButtons/battle/types/%s' % squadSelected.getData() if isSquad else selected.getLabel()
-        # self.flashObject.as_setFightButtonLabel(fightButtonLabel)
-        self.flashObject.as_setBattleType(i18n.makeString(battleType))
+
+        if self._isDAAPIInited():
+            self.flashObject.as_setFightButtonLabel(self.__getFightButtonLabel(state, playerInfo))
+            self.flashObject.as_setBattleType(i18n.makeString(battleType))
 
     def onVehicleChanged(self):
         vehicle = g_currentVehicle.item
@@ -211,7 +247,8 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
             xps = self.itemsCache.items.stats.vehiclesXPs
             xp = xps.get(vehicle.intCD, 0)
             
-            self.flashObject.as_setVehInfo(vehName, vehType, getBWFormatter(Currency.FREE_XP)(xp), vehicle.isElite)
+            if self._isDAAPIInited():
+                self.flashObject.as_setVehInfo(vehName, vehType, getBWFormatter(Currency.FREE_XP)(xp), vehicle.isElite)
 
     def onResearchClick(self, _):
         shared_events.showResearchView(g_currentVehicle.item.intCD)
@@ -259,11 +296,25 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
     
     def onInDevRestartClick(self, _):
         restartAllView()
+
+    def __getFightButtonLabel(self, state, playerInfo):
+        label = '#wek:lobbyHeader/fightButton/battle'
+        if not playerInfo.isCreator and state.isReadyActionSupported():
+            label = '#wek:lobbyHeader/fightButton/notReady' if playerInfo.isReady else '#wek:lobbyHeader/fightButton/ready'
+        return label
     
     def __closeWindowsWithTopSubViewLayer(self):
         windows = self.guiLoader.windowsManager.findWindows(lambda w: w.layer == WindowLayer.TOP_SUB_VIEW)
         for window in windows:
             window.destroy()
+
+    def __handleSetPrebattleCoolDown(self, event):
+        if not self.prbDispatcher:
+            return
+        playerInfo = self.prbDispatcher.getPlayerInfo()
+        isCreator = playerInfo.isCreator
+        if event.requestID is REQUEST_TYPE.SET_PLAYER_STATE and not isCreator and self._isDAAPIInited():
+            self.flashObject.as_setCoolDownForReady(event.coolDown)
 
     def __updateLobbyHeaderButtons(self, *args, **kwargs):
         if not self.prbDispatcher:
@@ -274,10 +325,14 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
             state = self.prbDispatcher.getFunctionalState()
             selected = items.update(state)
             canDo = self.prbEntity.canPlayerDoAction().isValid
-            isFightDisabled = not canDo or selected.isLocked
+            isSquad = self.prbDispatcher.getFunctionalState().isInUnit() and self.prbEntity.getEntityType() in PREBATTLE_TYPE.SQUAD_PREBATTLES
+            playerInfo = self.prbDispatcher.getPlayerInfo()
+            isFightDisabled = not canDo or selected.isLocked if not isSquad and not playerInfo.isCreator else False
 
-            self.flashObject.as_setFightButtonDisabled(isFightDisabled)
-            self.flashObject.as_disableHeaderButtons(self.prbDispatcher.getFunctionalState().isNavigationDisabled())
+            if self._isDAAPIInited():
+                self.flashObject.as_setFightButtonLabel(self.__getFightButtonLabel(state, playerInfo))
+                self.flashObject.as_setFightButtonDisabled(isFightDisabled)
+                self.flashObject.as_disableHeaderButtons(self.prbDispatcher.getFunctionalState().isNavigationDisabled())
 
     def __getFormattedCurrency(self):
         money = self.itemsCache.items.stats.actualMoney
@@ -309,7 +364,8 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         else:
             accountType = '#wek:lobbyHeader/baseAcc/label'
 
-        self.flashObject.as_setAccountType(accountType)
+        if self._isDAAPIInited():
+            self.flashObject.as_setAccountType(accountType)
         self.as_setCrystal2Premium(self.isCrystalPremium, isPremium)
 
     @adisp_async
@@ -329,7 +385,8 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
     def __onStatsReceived(self):
         clusterUsers, regionUsers, _ = self.serverStats.getStats()
         clusterUsers = '%s / %s' % (clusterUsers, regionUsers)
-        self.flashObject.as_setOnline(clusterUsers)
+        if self._isDAAPIInited():
+            self.flashObject.as_setOnline(clusterUsers)
 
     def __removeClanIconFromMemory(self):
         if self.__clanIconID is not None:

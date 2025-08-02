@@ -28,6 +28,11 @@ def override(holder, name, wrapper=None, setter=None):
         setattr(holder, name, wrapped)
 
 def restartAllView():
+    
+    def __onLobbyLoaded(event):
+        g_eventDispatcher.loadHangar()
+        g_eventBus.removeListener(events.GUICommonEvent.LOBBY_VIEW_LOADED, __onLobbyLoaded)
+
     appLoader = dependency.instance(IAppLoader)
     lobby = appLoader.getDefLobbyApp()
     if lobby and lobby.containerManager:
@@ -46,7 +51,3 @@ def restartOnlyHangar():
             if view is not None:
                 view.destroy()
             g_eventDispatcher.loadHangar()
-
-def __onLobbyLoaded(event):
-    g_eventDispatcher.loadHangar()
-    g_eventBus.removeListener(events.GUICommonEvent.LOBBY_VIEW_LOADED, __onLobbyLoaded)

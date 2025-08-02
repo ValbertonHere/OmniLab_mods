@@ -3,7 +3,6 @@ from GUI import screenResolution
 from constants import PREBATTLE_TYPE, QUEUE_TYPE
 from debug_utils import LOG_CURRENT_EXCEPTION
 from helpers import dependency
-from realm import CURRENT_REALM
 from PlayerEvents import g_playerEvents
 from CurrentVehicle import g_currentVehicle
 from frameworks.wulf.gui_constants import WindowLayer
@@ -13,13 +12,7 @@ from gui.prb_control.entities.listener import IGlobalListener
 from gui.shared.event_dispatcher import showResearchView
 
 from gui.Scaleform.daapi.settings.views import VIEW_ALIAS
-from gui.Scaleform.daapi.view.meta.AmmunitionPanelMeta import AmmunitionPanelMeta
-from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPanel
-from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
-from gui.Scaleform.daapi.view.lobby.hangar.entry_points.event_entry_points_container import EventEntryPointsContainer
-from gui.Scaleform.daapi.view.lobby.hangar.ResearchPanel import ResearchPanel
 from gui.Scaleform.framework.entities.View import View
-from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.Scaleform.genConsts.PERSONAL_MISSIONS_ALIASES import PERSONAL_MISSIONS_ALIASES
 
 from skeletons.gui.app_loader import IAppLoader

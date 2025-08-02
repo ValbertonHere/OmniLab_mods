@@ -463,6 +463,7 @@ class LegacyLobbyHeaderHooks():
 
     def _BattleTypeSelectPopover_as_updateS(self, base, baseSelf, items, extraItems, isShowDemonstrator, demonstratorEnabled):
         squad = _SquadItem(text_styles.middleTitle(backport.text(_R_BATTLE_TYPES.simpleSquad())), PREBATTLE_ACTION_NAME.SQUAD, 0)
+        squad.setLocked(self.platoonCtrl.getQueueType() not in QUEUE_TYPE_TO_PREBATTLE_ACTION_NAME)
         items.insert(1, squad.getVO())
         base(baseSelf, items, extraItems, isShowDemonstrator, demonstratorEnabled)
 
@@ -497,8 +498,11 @@ class LegacyLobbyHeaderHooks():
             'tooltip': TOOLTIPS.HEADER_BUTTONS_STORAGE},
         {'label': MENU.HEADERBUTTONS_SHOP, 
             'value': baseSelf.TABS.STORE, 
-            'tooltip': TOOLTIPS.HEADER_BUTTONS_SHOP},
-        baseSelf._getPersonalMissionSelectorTabData()]
+            'tooltip': TOOLTIPS.HEADER_BUTTONS_SHOP}]
+        
+        if getGUIConfig()['showPersonalQuests']:
+            tabDataProvider.append(baseSelf._getPersonalMissionSelectorTabData())
+
         tabDataProvider.append({'label': MENU.HEADERBUTTONS_PROFILE, 
         'value': baseSelf.TABS.PROFILE, 
         'tooltip': TOOLTIPS.HEADER_BUTTONS_PROFILE})
@@ -508,11 +512,13 @@ class LegacyLobbyHeaderHooks():
         'isTooltipSpecial': False, 
         'subValues': [
                     baseSelf.TABS.RESEARCH]}
+        
         if baseSelf.techTreeEventsListener.actions:
             techTreeData['tooltip'] = TOOLTIPS_CONSTANTS.TECHTREE_DISCOUNT_INFO
             techTreeData['isTooltipSpecial'] = True
             if baseSelf.techTreeEventsListener.getNations(unviewed=True):
                 techTreeData['actionIcon'] = backport.image(R.images.gui.maps.icons.library.discountIndicator())
+
         tabDataProvider.extend([techTreeData])
         tabDataProvider.extend([
         {'label': MENU.HEADERBUTTONS_BARRACKS, 
@@ -520,6 +526,7 @@ class LegacyLobbyHeaderHooks():
             'tooltip': TOOLTIPS.HEADER_BUTTONS_BARRACKS}])
         tournamentsData = baseSelf._getTournamentsSelectorData()
         tournamentsData = None
+
         if tournamentsData is not None:
             tabDataProvider.append(tournamentsData)
         if CURRENT_REALM == 'RU':

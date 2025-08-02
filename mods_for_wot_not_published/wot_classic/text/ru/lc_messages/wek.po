@@ -58,8 +58,14 @@ msgstr ""
 msgid "lobbyHeader/serverInfo"
 msgstr "<h1>Сервер <p>%(serverName)s</p></h1>"
 
-msgid "lobbyHeader/fightButton/label"
+msgid "lobbyHeader/fightButton/battle"
 msgstr "В бой!"
+
+msgid "lobbyHeader/fightButton/ready"
+msgstr "Готов!"
+
+msgid "lobbyHeader/fightButton/notReady"
+msgstr "Не готов"
 
 msgid "lobbyHeader/creditsLabel"
 msgstr "ОБМЕН ЗОЛОТА"
@@ -283,3 +289,78 @@ msgstr "ОК"
 
 msgid "technicalMaintenanceConfirm/title"
 msgstr "Подтверждение покупки"
+
+msgid "settings/enableLootBoxes/label"
+msgstr "Отображать лутбоксы"
+
+msgid "settings/enableLootBoxes/tooltip/header"
+msgstr "Отображать лутбоксы"
+
+msgid "settings/enableLootBoxes/tooltip/body"
+msgstr "В ангаре будет показана/скрыта функциональность контейнеров."
+
+msgid "settings/enableBattlePass/label"
+msgstr "Отображать кнопки в верхней части окна ангара"
+
+msgid "settings/enableBattlePass/tooltip/header"
+msgstr "Отображать кнопки в верхней части окна ангара"
+
+msgid "settings/enableBattlePass/tooltip/body"
+msgstr "Включить/отключить кнопки в верхней части окна ангара (боевой пропуск, ЛБЗ и т. д.)."
+
+msgid "settings/enableLobbyHeader/label"
+msgstr "Включить старую шапку ангара"
+
+msgid "settings/enableLobbyHeader/tooltip/header"
+msgstr "Включить старую шапку ангара"
+
+msgid "settings/enableLobbyHeader/tooltip/body"
+msgstr "Включить/отключить старый вид шапки ангара (Требуется перезапуск клиента)."
+
+msgid "settings/crystalAsPremium/label"
+msgstr "Заменить боны на премиум аккаунт"
+
+msgid "settings/crystalAsPremium/tooltip/header"
+msgstr "Заменить боны на премиум аккаунт"
+
+msgid "settings/crystalAsPremium/tooltip/body"
+msgstr ""
+"Заменить кнопку информации о бонах"
+"на кнопку продления/покупки премиум аккаунта."
+
+msgid "settings/showPersonalQuests/label"
+msgstr "Включить кампании"
+
+msgid "settings/showPersonalQuests/tooltip/header"
+msgstr "Включить кампании"
+
+msgid "settings/showPersonalQuests/tooltip/body"
+msgstr ""
+"Добавить/убрать \"Кампании\" из меню шапки ангара.\n"
+"-----------------------------------------------------------------------------------\n"
+"<b>ВНИМАНИЕ!</b> Вы всё ещё можете перейти к ним, нажав на соответствующий флажок вверху ангара."
+
+msgid "settings/showPersonalReserves/label"
+msgstr "Включить личные резервы"
+
+msgid "settings/showPersonalReserves/tooltip/header"
+msgstr "Включить личные резервы"
+
+msgid "settings/showPersonalReserves/tooltip/body"
+msgstr ""
+"Включить/отключить информацию о личных резервах в ангаре.\n"
+"---------------------------------------------------------\n"
+"<b>ВНИМАНИЕ!</b> Вы всё ещё можете активировать их прямо в бою."
+
+msgid "settings/showTasks/label"
+msgstr "Включить задачи и акции"
+
+msgid "settings/showTasks/tooltip/header"
+msgstr "Включить задачи и акции"
+
+msgid "settings/showTasks/tooltip/body"
+msgstr ""
+"Включить/отключить кнопку перехода к задачам и акциям.\n"
+"------------------------------------------------------\n"
+"<b>ВНИМАНИЕ!</b> Вы всё ещё можете перейти к ним, нажав на соответствующий флажок вверху ангара."
+

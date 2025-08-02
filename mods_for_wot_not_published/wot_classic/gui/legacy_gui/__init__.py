@@ -1,6 +1,7 @@
 # TO DO: Переписать для устранения зависимости ангарного интерфейса от боевого.
 
 from debug_utils import LOG_CURRENT_EXCEPTION
+from .lobby_settings import *
 
 try:
     from .account_hooks import *
@@ -10,6 +11,7 @@ try:
         from .battle_views import *
     except:
         print '[OMNILAB R&D: Legacy GUI] Battle GUI not installed or has caused an exception. See lines below.'
+        LOG_CURRENT_EXCEPTION()
 
     from .lobby_views import *
     print '[OMNILAB R&D: Legacy GUI] LOBBY GUI INITIALIZED!'

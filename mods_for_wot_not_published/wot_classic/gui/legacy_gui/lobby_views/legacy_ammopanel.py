@@ -41,6 +41,7 @@ from skeletons.account_helpers.settings_core import ISettingsCore
 from skeletons.gui.app_loader import IAppLoader
 from skeletons.gui.shared import IItemsCache
 from skeletons.gui.game_control import IComp7Controller
+from skeletons.gui.lobby_context import ILobbyContext
 
 _MODULE_SLOTS = (GUI_ITEM_TYPE_NAMES[MODULE_ITEM_TYPES.vehicleGun],
  GUI_ITEM_TYPE_NAMES[MODULE_ITEM_TYPES.vehicleTurret],
@@ -104,7 +105,6 @@ class HangarFittingSlotVO(dict):
             self['id'] = vehicleModule.id.itemID
             self['moduleLabel'] = vehicleModule.name
             self['name'] = vehicleModule.userString
-            self['slotLocked'] = True
             return
         else:
             self['id'] = vehicleModule.intCD
@@ -185,6 +185,7 @@ class LegacyAmmoPanel(View, IGlobalListener):
     itemsCache = dependency.descriptor(IItemsCache)
     comp7Controller = dependency.descriptor(IComp7Controller)
     appLoader = dependency.instance(IAppLoader)
+    lobbyContext = dependency.descriptor(ILobbyContext)
     
     def __init__(self):
         super(LegacyAmmoPanel, self).__init__()
@@ -234,8 +235,11 @@ class LegacyAmmoPanel(View, IGlobalListener):
     def as_setModificationVisibleS(self, isVisible):
         self.flashObject.as_setModificationVisible(bool(isVisible))
 
-    def as_setBattleAbilitiesVisibleS(self):
-        isVisible = self.prbDispatcher is not None and self.prbDispatcher.getFunctionalState().isInPreQueue(QUEUE_TYPE.EPIC) or self.prbDispatcher.getFunctionalState().isInUnit(PREBATTLE_TYPE.EPIC)
+    def as_setBattleAbilitiesVisibleS(self, vehicle):
+        if vehicle.level in self.lobbyContext.getServerSettings().epicBattles.validVehicleLevels:
+            isVisible = self.prbDispatcher is not None and self.prbDispatcher.getFunctionalState().isInPreQueue(QUEUE_TYPE.EPIC) or self.prbDispatcher.getFunctionalState().isInUnit(PREBATTLE_TYPE.EPIC)
+        else:
+            isVisible = False
         self.flashObject.as_setBattleAbilitiesVisible(isVisible)
 
     def switchPostProgressionLayout(self, isOptDev):
@@ -362,7 +366,7 @@ class LegacyAmmoPanel(View, IGlobalListener):
             ammunitionData['battleAbilities'] = battleAbilities
             ammunitionData['modificator'] = modSlot
 
-            self.as_setBattleAbilitiesVisibleS()
+            self.as_setBattleAbilitiesVisibleS(vehicle)
             self.as_setModificationVisibleS(comp7Modificator or elevenLVLModificator)
             self.flashObject.setupSlots(ammunitionData)
 
