@@ -75,6 +75,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         self.showPersonalQuests = getGUIConfig()['showPersonalQuests']
         self.showPersonalReserves = getGUIConfig()['showPersonalReserves']
         self.showTasks = getGUIConfig()['showTasks']
+        self.showTutorial = getGUIConfig()['showTutorial']
         return
 
     def _populate(self):
@@ -90,6 +91,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         self.as_showPersonalQuestsS(self.showPersonalQuests)
         self.as_showPersonalReservesS(self.showPersonalReserves)
         self.as_showTasksS(self.showTasks)
+        self.as_showTutorialS(self.showTutorial)
         self.onVehicleChanged()
         self.as_setControlsEnabled()
         self.onPrbEntitySwitched()
@@ -195,7 +197,13 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         self.showPersonalReserves = showPR
 
         if self._isDAAPIInited():
-            self.flashObject.as_showPersonalReserves(showPR)    
+            self.flashObject.as_showPersonalReserves(showPR)
+    
+    def as_showPersonalQuestsS(self, showPQ):
+        self.showPersonalQuests = showPQ
+
+        if self._isDAAPIInited():
+            self.flashObject.as_showPersonalQuests(showPQ)
     
     def as_showTasksS(self, showTasks):
         self.showTasks = showTasks
@@ -203,11 +211,11 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         if self._isDAAPIInited():
             self.flashObject.as_showTasks(showTasks)
     
-    def as_showPersonalQuestsS(self, showPQ):
-        self.showPersonalQuests = showPQ
+    def as_showTutorialS(self, showTutorial):
+        self.showTutorial = showTutorial
 
         if self._isDAAPIInited():
-            self.flashObject.as_showPersonalQuests(showPQ)    
+            self.flashObject.as_showTutorial(showTutorial)
 
     def onClanEmblem32x32Received(self, _, emblem):
         if self._isDAAPIInited():

@@ -25,11 +25,14 @@ def getGUIConfig(key=None, value=None):
         return gui_config
 
 gui_config = {
+    'showLootBoxes': False,
+    'showBattlePass': False,
     'isLegacyLobbyHeaderEnabled': True,
     'isCrystalPremium': False,
     'showPersonalQuests': True,
     'showPersonalReserves': True,
-    'showTasks': True
+    'showTasks': True,
+    'showTutorial': True
 }
 
 from .bonds_window import BondsWindowUI

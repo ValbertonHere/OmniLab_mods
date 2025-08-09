@@ -30,19 +30,20 @@ header_visible = None
 
 modLinkage = 'wot_classic_lobby_gui'
 modDataVersion = 1.2
-default_settings = {'enabled': True, 'enable_lootboxes': False, 'enable_battlepass': False, 'enable_lobbyHeader': getGUIConfig()['isLegacyLobbyHeaderEnabled'], 
-                    'set_crystalAsPremium': getGUIConfig()['isCrystalPremium'], 'show_personalQuests': getGUIConfig()['showPersonalQuests'], 
-                    'show_personalReserves': getGUIConfig()['showPersonalReserves'], 'show_tasks': getGUIConfig()['showTasks']}
+default_settings = {'enabled': True, 'enable_lootboxes': getGUIConfig()['showLootBoxes'], 'enable_battlepass': getGUIConfig()['showBattlePass'], 
+                    'enable_lobbyHeader': getGUIConfig()['isLegacyLobbyHeaderEnabled'], 'set_crystalAsPremium': getGUIConfig()['isCrystalPremium'], 
+                    'show_personalQuests': getGUIConfig()['showPersonalQuests'], 'show_personalReserves': getGUIConfig()['showPersonalReserves'], 
+                    'show_tasks': getGUIConfig()['showTasks']}
 template = {'modDisplayName': 'Классический интерфейс ангара',
  'enabled': True,
  'column1': [{'type': 'CheckBox',
               'text': '#wek:settings/enableLootBoxes/label',
-              'value': False,
+              'value': getGUIConfig()['showLootBoxes'],
               'tooltip': '#wek:settings/enableLootBoxes/tooltip',
               'varName': 'enable_lootboxes'},
              {'type': 'CheckBox',
               'text': '#wek:settings/enableBattlePass/label',
-              'value': False,
+              'value': getGUIConfig()['showBattlePass'],
               'tooltip': '#wek:settings/enableBattlePass/tooltip',
               'varName': 'enable_battlepass'},
              {'type': 'CheckBox',
@@ -69,11 +70,16 @@ template = {'modDisplayName': 'Классический интерфейс ан�
               'text': '#wek:settings/showTasks/label',
               'value': getGUIConfig()['showTasks'],
               'tooltip': '#wek:settings/showTasks/tooltip',
-              'varName': 'show_tasks'}]}
+              'varName': 'show_tasks'},
+             {'type': 'CheckBox',
+              'text': '#wek:settings/showTutorial/label',
+              'value': getGUIConfig()['showTutorial'],
+              'tooltip': '#wek:settings/showTutorial/tooltip',
+              'varName': 'show_tutorial'}]}
 
 def setHangarHeaderVisible(self):
     header_base(self)
-    if not header_visible:
+    if not getGUIConfig()['showBattlePass']:
         self.headerComponent.destroy()
         self.headerComponent._currentVehicle = g_currentVehicle
         self.headerComponent._HangarHeader__widgets = {}
@@ -83,7 +89,7 @@ header_base = Hangar._populate
 Hangar._populate = setHangarHeaderVisible
 
 def setLootBoxesVisible(self, _):
-    lootbox_base(self, lootbox_visible)
+    lootbox_base(self, getGUIConfig()['showLootBoxes'])
 
 lootbox_base = Hangar.as_updateCarouselEventEntryStateS
 Hangar.as_updateCarouselEventEntryStateS = setLootBoxesVisible
@@ -120,7 +126,6 @@ def setShowPersonalQuests(pq_value):
         view = lobby.containerManager.getView(WindowLayer.WINDOW, {POP_UP_CRITERIA.VIEW_ALIAS: 'LegacyLobbyHeaderUI'})
         if view is not None:
             view.as_showPersonalQuestsS(pq_value)
-    
 
 def setShowPersonalReserves(pr_value):
     appLoader = dependency.instance(IAppLoader)
@@ -137,6 +142,14 @@ def setShowTasks(tasks_value):
         view = lobby.containerManager.getView(WindowLayer.WINDOW, {POP_UP_CRITERIA.VIEW_ALIAS: 'LegacyLobbyHeaderUI'})
         if view is not None:
             view.as_showTasksS(tasks_value)
+
+def setShowTutorial(tutorial_value):
+    appLoader = dependency.instance(IAppLoader)
+    lobby = appLoader.getDefLobbyApp()
+    if lobby and lobby.containerManager:
+        view = lobby.containerManager.getView(WindowLayer.WINDOW, {POP_UP_CRITERIA.VIEW_ALIAS: 'LegacyLobbyHeaderUI'})
+        if view is not None:
+            view.as_showTutorialS(tutorial_value)
 
 def onModSettingsChanged(linkage, newSettings):
     if linkage == modLinkage:
@@ -155,9 +168,6 @@ def onGameKeyDown(event):
 def apply_settings(settings):
     try:
 
-        global lootbox_visible
-        global header_visible
-
         lootboxes_value = settings.get('enable_lootboxes', None)
         battlepass_value = settings.get('enable_battlepass', None)
         lobbyHeader_value = settings.get('enable_lobbyHeader', None)
@@ -165,11 +175,14 @@ def apply_settings(settings):
         personalQuests_value = settings.get('show_personalQuests', None)
         personalReserves_value = settings.get('show_personalReserves', None)
         tasks_value = settings.get('show_tasks', None)
-        
-        lootbox_visible = lootboxes_value
-        header_visible = battlepass_value
+        tutorial_value = settings.get('show_tutorial', None)
 
-        setLootboxesVisibillity(lootboxes_value)
+        if lootboxes_value is not None:
+            getGUIConfig('showLootBoxes', lootboxes_value)
+            setLootboxesVisibillity(lootboxes_value)
+
+        if battlepass_value is not None:
+            getGUIConfig('showBattlePass', battlepass_value)
         
         if lobbyHeader_value is not None:
             getGUIConfig('isLegacyLobbyHeaderEnabled', lobbyHeader_value)
@@ -189,6 +202,10 @@ def apply_settings(settings):
         if tasks_value is not None:
             getGUIConfig('showTasks', tasks_value)
             setShowTasks(tasks_value)
+        
+        if tutorial_value is not None:
+            getGUIConfig('showTutorial', tutorial_value)
+            setShowTutorial(tutorial_value)
         
         restartSubView()
 
