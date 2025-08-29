@@ -7,12 +7,10 @@ from gui.modsSettingsApi import g_modsSettingsApi
 from helpers import dependency
 from skeletons.gui.app_loader import IAppLoader
 from CurrentVehicle import g_currentVehicle
-from skeletons.gui.shared.utils import IHangarSpace
 from gui.Scaleform.daapi.settings.views import VIEW_ALIAS
 from gui.Scaleform.framework.managers.containers import POP_UP_CRITERIA
 from gui.prb_control.events_dispatcher import g_eventDispatcher
 from lobby_views import getGUIConfig
-from account_hooks import g_lobbyHeaderHooks
 
 class ActiveWidgetsPlaceholder(object):
     LEFT = 1

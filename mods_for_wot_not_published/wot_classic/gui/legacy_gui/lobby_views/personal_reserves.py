@@ -1,5 +1,5 @@
 from helpers import dependency
-from realm import CURRENT_REALM
+# from realm import CURRENT_REALM
 from PlayerEvents import g_playerEvents
 
 from backports.functools_lru_cache import lru_cache
@@ -36,23 +36,21 @@ class PersonalReservesComponent(View):
            'cache.activeOrders': self._update})
         g_playerEvents.onClientUpdated += self._onClientUpdated
         self._boosters.onGameModeStatusChange += self._update
-        if CURRENT_REALM == 'RU':
-            self._boosters.onReserveTimerTick += self._update
-            self._boosters.onBoosterChangeNotify += self._update
-        else:
-            self._boosters.onPersonalReserveTick += self._update
-            self._boosters.onClanReserveTick += self._update
-            self._boosters.onBoostersDataUpdate += self._update
+        self._boosters.onReserveTimerTick += self._update
+        self._boosters.onBoosterChangeNotify += self._update
+        # else: (for not RU realm)
+        #     self._boosters.onPersonalReserveTick += self._update
+        #     self._boosters.onClanReserveTick += self._update
+        #     self._boosters.onBoostersDataUpdate += self._update
 
     
     def _dispose(self):
-        if CURRENT_REALM == 'RU':
-            self._boosters.onReserveTimerTick -= self._update
-            self._boosters.onBoosterChangeNotify -= self._update
-        else:
-            self._boosters.onPersonalReserveTick -= self._update
-            self._boosters.onClanReserveTick -= self._update
-            self._boosters.onBoostersDataUpdate -= self._update
+        self._boosters.onReserveTimerTick -= self._update
+        self._boosters.onBoosterChangeNotify -= self._update
+        # else: (for not RU realm)
+        #     self._boosters.onPersonalReserveTick -= self._update
+        #     self._boosters.onClanReserveTick -= self._update
+        #     self._boosters.onBoostersDataUpdate -= self._update
         self._boosters.onGameModeStatusChange -= self._update
         g_playerEvents.onClientUpdated -= self._onClientUpdated
         g_clientUpdateManager.removeObjectCallbacks(self)

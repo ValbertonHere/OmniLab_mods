@@ -7,7 +7,7 @@ from adisp import adisp_process, adisp_async
 
 from debug_utils import LOG_ERROR
 from constants import PREBATTLE_TYPE
-from realm import CURRENT_REALM
+# from realm import CURRENT_REALM
 
 from gui.impl import backport
 from gui.impl.gen import R
@@ -269,10 +269,10 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
             self.__closeWindowsWithTopSubViewLayer()
             shared_events.showShop(getBuyPremiumUrl())
         else:
-            if CURRENT_REALM == 'RU':
-                shared_events.showCrystalWindow(HeaderMenuVisibilityState.ALL)
-            else: 
-                shared_events.showCrystalWindow()
+            #if CURRENT_REALM != 'RU':
+            #   shared_events.showCrystalWindow()
+            #   return
+            shared_events.showCrystalWindow(HeaderMenuVisibilityState.ALL)
     
     def onGoldClick(self, _):
         self.__closeWindowsWithTopSubViewLayer()

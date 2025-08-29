@@ -13,7 +13,7 @@ from frameworks.wulf import WindowLayer
 from skeletons.gui.app_loader import IAppLoader
 
 class SettingsPresetWindow(AbstractWindowView):
-    SETTINGS_FILE = os.path.normpath(os.path.join(os.path.dirname(unicode_from_utf8(BigWorld.wg_getPreferencesFilePath())[1]), 'mods', 'omnilab', 'settings.preset'))
+    SETTINGS_FILE = os.path.normpath(os.path.join(os.path.dirname(unicode_from_utf8(BigWorld.getPreferencesFilePath())[1]), 'mods', 'omnilab', 'settings.preset'))
     SETTINGS_FOLDER = os.path.dirname(SETTINGS_FILE)
 
     def __init__(self):

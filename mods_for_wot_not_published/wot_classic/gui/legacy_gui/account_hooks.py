@@ -2,7 +2,7 @@ from adisp import adisp_process
 from CurrentVehicle import g_currentVehicle
 from debug_utils import LOG_CURRENT_EXCEPTION
 from items import getTypeInfoByName
-from realm import CURRENT_REALM
+# from realm import CURRENT_REALM
 
 from helpers import dependency
 from helpers.i18n import makeString
@@ -366,8 +366,8 @@ class LegacyHangarHooks():
         override(AmmunitionPanelMeta, 'as_updateVehicleStatusS', self._AmmunitionPanelMeta_as_updateVehicleStatusS)
         override(AmmunitionPanel, 'showRepairDialog', self._AmmunitionPanel_showRepairDialog)
         override(GraphicsOptimizationManager, 'switchOptimizationEnabled', self._GraphicsOptimizationManager__switchOptimizationEnabled)
-        if CURRENT_REALM != 'RU':
-            override(Hangar, 'as_setPrestigeWidgetVisibleS', self._Hangar_as_setPrestigeWidgetVisibleS)
+        # if CURRENT_REALM != 'RU':
+        #     override(Hangar, 'as_setPrestigeWidgetVisibleS', self._Hangar_as_setPrestigeWidgetVisibleS)
 
     def _Hangar__populate(self, base, baseSelf):
         base(baseSelf)
@@ -529,10 +529,10 @@ class LegacyLobbyHeaderHooks():
 
         if tournamentsData is not None:
             tabDataProvider.append(tournamentsData)
-        if CURRENT_REALM == 'RU':
-            override = baseSelf._tutorialLoader.gui.lastHangarMenuButtonsOverride
-            if override is not None:
-                tabDataProvider[:] = filter(lambda item: item['value'] in override, tabDataProvider)
+        # if CURRENT_REALM == 'RU':
+        override = baseSelf._tutorialLoader.gui.lastHangarMenuButtonsOverride
+        if override is not None:
+            tabDataProvider[:] = filter(lambda item: item['value'] in override, tabDataProvider)
         return tabDataProvider
 
     def _DailyQuestWidget__show(self, base, baseSelf):
@@ -543,7 +543,7 @@ class LegacyLobbyHeaderHooks():
         baseSelf._switchEnabled(False)
 
     def _LobbyHeader_populateButtons(self, base, baseSelf):
-        if CURRENT_REALM == 'RU' and hasattr(baseSelf, '_tutorialLoader'):
+        if hasattr(baseSelf, '_tutorialLoader'): # removed CURRENT_REALM == 'RU'
             if baseSelf._tutorialLoader.gui.lastHeaderMenuButtonsOverride is not None:
                 baseSelf._LobbyHeader__onOverrideHeaderMenuButtons()
                 return
