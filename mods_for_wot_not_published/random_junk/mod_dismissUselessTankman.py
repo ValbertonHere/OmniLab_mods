@@ -3,11 +3,14 @@ from CurrentVehicle import g_currentVehicle
 from gui.shared.gui_items.items_actions import factory
 from functools import partial
 
-def dissmisAction(tankman):
-    factory.doAction(factory.DISMISS_TANKMAN, tankman)
+tList = []
 
-for tankman in g_currentVehicle.itemsCache.items.getTankmen():
-    tankmanObj = g_currentVehicle.itemsCache.items.getTankman(tankman)
+def dissmisAction(tankmanList):
+    factory.doAction(factory.DISMISS_TANKMAN, tankmanList)
+
+for tankmanObj in g_currentVehicle.itemsCache.items.getTankmen().values():
     if not tankmanObj.isInTank and tankmanObj.earnedSkillsCount == 0:
-        BigWorld.callback(2, partial(dissmisAction, tankman))
+        tList.append(tankmanObj)
     else: continue
+
+dissmisAction(tList)

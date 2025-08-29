@@ -1,6 +1,6 @@
 import BigWorld
 import constants
-import wg_async as future_async
+import th_async as future_async
 
 from account_helpers.AccountSettings import ACTIVE_TEST_PARTICIPATION_CONFIRMED, AccountSettings
 from adisp import adisp_process, adisp_async
@@ -377,7 +377,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         self.as_setCrystal2Premium(self.isCrystalPremium, isPremium)
 
     @adisp_async
-    @future_async.wg_async
+    @future_async.th_async
     def __processMMActiveTestConfirm(self, prbEntity, callback):
         config = self.lobbyContext.getServerSettings().getActiveTestConfirmationConfig()
         toShow = bool(not AccountSettings.getSessionSettings(ACTIVE_TEST_PARTICIPATION_CONFIRMED) and config.get('enabled') and prbEntity.getQueueType() == constants.QUEUE_TYPE.RANDOMS and g_currentVehicle.item.level == 10)
