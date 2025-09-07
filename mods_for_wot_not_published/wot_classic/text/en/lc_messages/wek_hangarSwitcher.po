@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: WoT it's Classic\n"
+"Project-Id-Version: MT Origins\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -9,34 +9,61 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "hangar/title"
-msgstr "Базовый ангар первого поколения"
+msgstr "1st Gen Standard Garage"
 
 msgid "hangar_premium/title"
-msgstr "Премиум ангар первого поколения"
+msgstr "1st Gen Premium Garage"
 
 msgid "hangar_v2/title"
-msgstr "Базовый ангар второго поколения"
+msgstr "2nd Gen Standard Garage"
 
 msgid "hangar_premium_v2/title"
-msgstr "Премиум ангар второго поколения"
+msgstr "2nd Gen Premium Garage"
 
 msgid "lugansk_hangar/title"
 msgstr "Луганский ангар на 5-летие проекту"
 
+msgid "23feb_2014_hangar/title"
+msgstr "На 23 февраля 2014 года"
+
+msgid "hangar_premium_igr/title"
+msgstr "Ангар в пещере"
+
+msgid "hangar_premium_9may/title"
+msgstr "На День Победы 2014 года"
+
+msgid "prem_sense_hangars_v1/title"
+msgstr "1st Gen Garages"
+
+msgid "prem_sense_hangars_v2/title"
+msgstr "2st Gen Garages"
+
 msgid "loadError/hangarNotExists"
-msgstr "Ангар не установлен или установлен не правильно! Загрузка отменена."
+msgstr "The garage files are missing or installed incorrectly! Loading aborted."
 
 msgid "modButton/title"
-msgstr "WэК!: Выбор ангара"
+msgstr "«MTO»: Select garage"
 
 msgid "modButton/tooltip"
-msgstr "Выбор ангаров из двух поколений World of Tanks."
+msgstr "Choose a garage from one of the two generations of World of Tanks."
 
 msgid "window/title"
-msgstr "WoT это Классика! | Выбор ангара"
-
-msgid "window/birthdayCategory"
-msgstr "День рождения проекта:"
+msgstr "«MT: Origins» | Select garage"
 
 msgid "window/standartCategory"
-msgstr "Стандартные ангары:"
+msgstr "Regular garages:"
+
+msgid "window/specialCategory"
+msgstr "Event garages:"
+
+msgid "window/premSenseCategory"
+msgstr "Just like before:"
+
+msgid "premSenseToggle/label"
+msgstr "Premium account status tracking"
+
+msgid "premSenseToggle/tooltip/header"
+msgstr "Premium account status dependency"
+
+msgid "premSenseToggle/tooltip/body"
+msgstr "Switch the garages dynamically by respecting your premium account status."

@@ -26,7 +26,6 @@ class LegacyFragCorrelationBar(BaseDAAPIComponent, IBattleFieldListener):
         pass
 
     def updateDeadVehicles(self, aliveAllies, deadAllies, aliveEnemies, deadEnemies):
-        LOG_NOTE(aliveAllies, deadAllies, aliveEnemies, deadEnemies)
         if self._isDAAPIInited():
             self.flashObject.updateFrags(len(deadEnemies), len(deadAllies))
 

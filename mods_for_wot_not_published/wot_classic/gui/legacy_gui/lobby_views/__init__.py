@@ -4,7 +4,7 @@ from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemp
 from frameworks.wulf import WindowLayer
 
 def getGUIConfig(key=None, value=None):
-    gui_config_file_path = 'mods/configs/wotclassic/gui_config.json'
+    gui_config_file_path = './mods/configs/wotclassic/gui_config.json'
     if os.path.isfile(gui_config_file_path):
         if key is not None:
             with open(gui_config_file_path, 'w') as f2w:

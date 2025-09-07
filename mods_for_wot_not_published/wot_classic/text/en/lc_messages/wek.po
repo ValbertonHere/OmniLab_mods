@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: WoT it's Classic\n"
+"Project-Id-Version: MT Origins\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -9,201 +9,364 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 msgid "battleAbilityItemRenderer/notActivated"
-msgstr "Не активирован"
+msgstr "Not activated"
 
 msgid "boosterFittingSelect/buyButton"
-msgstr "Докупить"
+msgstr "Buy more"
 
 msgid "boosterFittingSelect/for_crew/title"
-msgstr "Для экипажа"
+msgstr "For crew"
 
 msgid "boosterFittingSelect/for_optDevice/title"
-msgstr "К оборудованию"
+msgstr "For equipment"
 
 msgid "boosterFittingSelect/removeButton"
-msgstr "Убрать"
+msgstr "Remove"
 
 msgid "boosterFittingSelect/title"
-msgstr "Предбоевые инструкции"
+msgstr "Directives"
 
 msgid "legacy_ammo_panel/battleBooster/empty/body"
 msgstr ""
-"(Используйте левый клик для вызова списка доступных предбоевых инструкций)"
+"(Click left mouse button to bring up the list of available Directives)"
 
 msgid "legacy_ammo_panel/battleBooster/empty/header"
-msgstr "Установить предбоевые инструкции"
+msgstr "Activate Directives"
 
 msgid "legacy_ammo_panel/equipment/empty/body"
-msgstr "(Используйте левый клик для вызова окна обслуживания танка)"
+msgstr "(Click left mouse button to bring up the maintenance window)"
 
 msgid "legacy_ammo_panel/equipment/empty/header"
-msgstr "Открыть обслуживание"
+msgstr "Open maintenance"
 
 msgid "legacy_ammo_panel/optionalDevice/empty/body"
-msgstr "(Используйте левый клик для вызова списка доступного оборудования)"
+msgstr "(Click left mouse button to bring up the list of available equipment)"
 
 msgid "legacy_ammo_panel/optionalDevice/empty/header"
-msgstr "Установить оборудование"
+msgstr "Install equipment"
 
-msgid "lobbyHeader/fightButton/label"
-msgstr "В бой!"
+msgid "legacy_ammo_panel/postProgression/opt_dev_boosters"
+msgstr "Equipment and directives preset has been switched."
 
-msgid "lobbyHeader/baseAcc/label"
-msgstr "Базовый аккаунт"
+msgid "legacy_ammo_panel/postProgression/shells_consumables"
+msgstr "Shells and consumables preset has been switched."
+
+msgid "legacy_ammo_panel/postProgression/switch_error"
+msgstr ""
+"Could not switch the preset. The alternative option is not available yet."
+
+msgid "lobbyHeader/serverInfo"
+msgstr "<h1>Server <p>%(serverName)s</p></h1>"
+
+msgid "lobbyHeader/fightButton/battle"
+msgstr "Battle!"
+
+msgid "lobbyHeader/fightButton/ready"
+msgstr "Ready!"
+
+msgid "lobbyHeader/fightButton/notReady"
+msgstr "Not ready"
 
 msgid "lobbyHeader/creditsLabel"
-msgstr "ОБМЕН ЗОЛОТА"
+msgstr "EXCHANGE GOLD"
 
 msgid "lobbyHeader/creditsTooltip/body"
-msgstr "Открыть окно перевода игрового золота в кредиты."
+msgstr "Open the Gold to Credits exchange window."
 
 msgid "lobbyHeader/creditsTooltip/header"
-msgstr "Обмен золота"
+msgstr "Exchange Gold"
 
 msgid "lobbyHeader/crystalLabel"
-msgstr "ЗАСЛУЖИТЬ БОНЫ"
+msgstr "EARN BONDS"
 
 msgid "lobbyHeader/crystalTooltip/body"
-msgstr "Открыть окно с условиями получения бон."
+msgstr "Show the Bonds acquirement tutorial."
 
 msgid "lobbyHeader/crystalTooltip/header"
-msgstr "Заслужить боны"
+msgstr "Earn Bonds"
+
+msgid "lobbyHeader/buyPremiumLabel"
+msgstr "PURCHASE PREMIUM"
+
+msgid "lobbyHeader/buyPremiumTooltip/body"
+msgstr "Open the Premium Account purchase window."
+
+msgid "lobbyHeader/buyPremiumTooltip/header"
+msgstr "Purchase Premium Account"
+
+msgid "lobbyHeader/extendPremiumLabel"
+msgstr "EXTEND PREMIUM"
+
+msgid "lobbyHeader/extendPremiumTooltip/body"
+msgstr "Open the Premium Account renewing window."
+
+msgid "lobbyHeader/extendPremiumTooltip/header"
+msgstr "Extend Premium Account"
 
 msgid "lobbyHeader/freeXPLabel"
-msgstr "ПЕРЕВОД ОПЫТА"
+msgstr "CONVERT EXPERIENCE"
 
 msgid "lobbyHeader/freeXPTooltip/body"
-msgstr "Открыть окно перевода опыта в свободный."
+msgstr "Convert to Free Experience."
 
 msgid "lobbyHeader/freeXPTooltip/header"
-msgstr "Перевод опыта"
+msgstr "Convert Experience"
 
 msgid "lobbyHeader/goldLabel"
-msgstr "КУПИТЬ ЗОЛОТО"
+msgstr "GET GOLD"
 
 msgid "lobbyHeader/goldTooltip/body"
 msgstr ""
-"Перейти на страницу\n"
-"покупки игрового золота на сайте."
+"Go to the Store\n"
+"webpage to buy some Gold."
 
 msgid "lobbyHeader/goldTooltip/header"
-msgstr "Купить золото"
+msgstr "Get Gold"
 
 msgid "lobbyHeader/inDev/text"
-msgstr ""
-"Предварительная версия\n"
-"© 2024 OmniLab R&D\n"
-"© 2024 Mr.Bendy"
+msgstr "Dev version | © 2025 OmniLab R&D | © 2025 Mr.Bendy"
 
 msgid "lobbyHeader/personalReserves"
 msgstr ""
-"Личные\n"
-"резервы"
+"Directives"
 
-msgid "lobbyHeader/premiumAcc/days"
-msgstr "(дней: %(days)s)"
+msgid "lobbyHeader/baseAcc/label"
+msgstr "<b1>Standard account<b1>"
 
-msgid "lobbyHeader/premiumAcc/hours"
-msgstr "(часов: %(hours)s)"
+msgid "lobbyHeader/premiumAcc/labelDays"
+msgstr "<p>Premium account <h1>(days: %(days)s)</h1></p>"
 
-msgid "lobbyHeader/premiumAcc/label"
-msgstr "Премиум аккаунт "
+msgid "lobbyHeader/premiumAcc/labelHours"
+msgstr "<p>Premium account <h1>(hours: %(hours)s)</h1></p>"
 
 msgid "lobbyHeader/tasks"
 msgstr ""
-"Боевые\n"
-"задачи и акции"
+"Missions\n"
+"and Specials"
 
 msgid "lobbyHeader/tasks/tooltip/body"
 msgstr ""
-"Здесь вы увидите действующие боевые задачи и акции и проследите прогресс\n"
-"по ним, а также узнаете о предстоящих боевых задачах."
+"Here you can see the current missions and specials and track their progress,\n"
+"as well as the upcoming ones."
 
 msgid "lobbyHeader/tasks/tooltip/header"
-msgstr "Боевые задачи и акции"
+msgstr "Missions and Specials"
 
 msgid "lobbyHeader/tutorial"
 msgstr ""
-"Боевое\n"
-"обучение"
+"Battle\n"
+"Tutorial"
+
+msgid "vehicleParams/maxHealth"
+msgstr "<h1>Hit Points <p></p></h1>"
+
+msgid "vehicleParams/vehicleWeight"
+msgstr "<h1>Weight <p>(tons)</p></h1>"
+
+msgid "vehicleParams/enginePower"
+msgstr "<h1>Engine Power <p>(h.p.)</p></h1>"
+
+msgid "vehicleParams/speedLimits"
+msgstr "<h1>Speed Limit <p>(km/h)</p></h1>"
+
+msgid "vehicleParams/chassisRotationSpeed"
+msgstr "<h1>Traverse Speed <p>(deg/sec)</p></h1>"
+
+msgid "vehicleParams/hullArmor"
+msgstr "<h1>Hull Armor <p>(front/sides/rear mm)</p></h1>"
+
+msgid "vehicleParams/turretArmor"
+msgstr "<h1>Turret Armor <p>(front/sides/rear mm)</p></h1>"
+
+msgid "vehicleParams/damage"
+msgstr "<h1>Standard Shell Damage <p></p></h1> "
+
+msgid "vehicleParams/piercingPower"
+msgstr "<h1>Standard Shell Penetration <p>(mm)</p></h1>"
+
+msgid "vehicleParams/clipFireRate"
+msgstr "<h1>Load <p>(magazine/shell/number of shells)</p></h1>"
+
+msgid "vehicleParams/reloadTime"
+msgstr "<h1>Rate of Fire <p>(rounds/min)</p></h1>"
+
+msgid "vehicleParams/reloadTimeSecs"
+msgstr "<h1>Reload Time <p>(sec)</p></h1>"
+
+msgid "vehicleParams/reloadTimePerSecond"
+msgstr "<h1>Rate of Fire <p>(round/sec)</p></h1>"
+
+msgid "vehicleParams/turretRotationSpeed"
+msgstr "<h1>Turret Traverse Speed <p>(deg/sec)</p></h1>"
+
+msgid "vehicleParams/gunRotationSpeed"
+msgstr "<h1>Gun Traverse Speed <p>(deg/sec)</p></h1>"
+
+msgid "vehicleParams/circularVisionRadius"
+msgstr "<h1>View Range <p>(m)</p></h1>"
+
+msgid "vehicleParams/radioDistance"
+msgstr "<h1>Signal Range <p>(m)</p></h1>"
 
 msgid "optDeviceFittingSelect/deluxe/title"
-msgstr "Улучшенное"
+msgstr "Improved"
 
 msgid "optDeviceFittingSelect/modernized/title"
-msgstr "Пробное"
+msgstr "Modernized"
 
 msgid "optDeviceFittingSelect/regular/title"
-msgstr "Штатное"
+msgstr "Regular"
 
 msgid "optDeviceFittingSelect/title"
-msgstr "Выбор оборудования"
+msgstr "Select equipment"
 
 msgid "optDeviceFittingSelect/trophy/title"
-msgstr "Трофейное"
+msgstr "Awarded"
 
 msgid "shellListItemRenderer/replace"
-msgstr "Поменять снаряды местами"
+msgstr "Swap shell types"
 
 msgid "shellListItemRenderer/setAsDefault"
-msgstr "Назначить снаряд базовым"
+msgstr "Mark as default"
 
 msgid "technicalMaintenance/ammo/auto/body"
 msgstr ""
-"При необходимости боекомплект будет пополняться\n"
-"автоматически после выхода машины из боя."
+"The ammunition will refill automatically after\n"
+"every battle."
 
 msgid "technicalMaintenance/ammo/auto/header"
-msgstr "Пополнять автоматически"
+msgstr "Refill automatically"
 
 msgid "technicalMaintenance/ammoTitleEx"
-msgstr "(кассеты по %d шт.)"
+msgstr "(shell containers for %d items)"
 
 msgid "technicalMaintenance/equipment/auto/body"
 msgstr ""
-"Снаряжение будет пополняться автоматически, если это необходимо,\n"
-"после выхода машины из боя."
+"The equipment will refill automatically if needed\n"
+"after every battle."
 
 msgid "technicalMaintenance/equipment/auto/header"
-msgstr "Пополнять автоматически"
+msgstr "Refill automatically"
 
 msgid "technicalMaintenance/repair/auto/body"
 msgstr ""
-"Ремонт будет выполняться автоматически, если это необходимо,\n"
-"после выхода машины из боя."
+"The vehicle will be repaired automatically if needed\n"
+"after every battle."
 
 msgid "technicalMaintenance/repair/auto/header"
-msgstr "Ремонтировать автоматически"
+msgstr "Repair automatically"
 
 msgid "technicalMaintenanceConfirm/cancel"
-msgstr "Отменить"
+msgstr "Cancel"
 
 msgid "technicalMaintenanceConfirm/message"
 msgstr "%(content)s"
 
 msgid "technicalMaintenanceConfirm/msg_order_change"
-msgstr "Поменять снаряжение местами?"
+msgstr "Swap consumables?"
 
 msgid "technicalMaintenanceConfirm/msg_populate"
-msgstr "Пополнить снаряжение?"
+msgstr "Refill consumables?"
 
 msgid "technicalMaintenanceConfirm/msg_repair"
-msgstr "Отремонтировать машину?"
+msgstr "Repair the vehicle?"
 
 msgid "technicalMaintenanceConfirm/msg_repair_order_change"
-msgstr "Отремонтировать машину и поменять снаряжение местами?"
+msgstr "Repair the vehicle and swap consumables?"
 
 msgid "technicalMaintenanceConfirm/msg_repair_populate"
-msgstr "Отремонтировать машину и пополнить снаряжение?"
+msgstr "Repair the vehicle and refill consumables?"
 
 msgid "technicalMaintenanceConfirm/msg_repair_unload"
-msgstr "Отремонтировать машину и выгрузить снаряжение?"
+msgstr "Repair the vehicle and unload consumables?"
 
 msgid "technicalMaintenanceConfirm/msg_unload"
-msgstr "Выгрузить снаряжение?"
+msgstr "Unload consumables?"
 
 msgid "technicalMaintenanceConfirm/submit"
 msgstr "ОК"
 
 msgid "technicalMaintenanceConfirm/title"
-msgstr "Подтверждение покупки"
+msgstr "Confirm purchase"
+
+msgid "settings/enableLootBoxes/label"
+msgstr "Display lootboxes"
+
+msgid "settings/enableLootBoxes/tooltip/header"
+msgstr "Display lootboxes"
+
+msgid "settings/enableLootBoxes/tooltip/body"
+msgstr "Lootboxes will be shown/hidden in the garage UI."
+
+msgid "settings/enableBattlePass/label"
+msgstr "Display buttons in the upper side of the garage UI"
+
+msgid "settings/enableBattlePass/tooltip/header"
+msgstr "Display buttons in the upper side of the garage UI"
+
+msgid "settings/enableBattlePass/tooltip/body"
+msgstr "Toggle buttons in the upper side of the garage UI (Battle Pass, missions, etc.)"
+
+msgid "settings/enableLobbyHeader/label"
+msgstr "Enable classic garage UI header"
+
+msgid "settings/enableLobbyHeader/tooltip/header"
+msgstr "Enable classic garage UI header"
+
+msgid "settings/enableLobbyHeader/tooltip/body"
+msgstr "Toggle classic garage UI header (game client restart is required)."
+
+msgid "settings/crystalAsPremium/label"
+msgstr "Replace Bonds with Premium status"
+
+msgid "settings/crystalAsPremium/tooltip/header"
+msgstr "Replace Bonds with Premium status"
+
+msgid "settings/crystalAsPremium/tooltip/body"
+msgstr ""
+"Replace the Bonds information"
+"with the Premium Account management button."
+
+msgid "settings/showPersonalQuests/label"
+msgstr "Display campaigns"
+
+msgid "settings/showPersonalQuests/tooltip/header"
+msgstr "Display campaigns"
+
+msgid "settings/showPersonalQuests/tooltip/body"
+msgstr ""
+"Toggle the \"Campaigns\" display in the garage UI header.\n\n"
+"<font color='#F26522'><b>ATTENTION!</b></font> You are still able to access them by clicking the corresponding button in the garage UI header."
+
+msgid "settings/showPersonalReserves/label"
+msgstr "Display Directions"
+
+msgid "settings/showPersonalReserves/tooltip/header"
+msgstr "Display Directions"
+
+msgid "settings/showPersonalReserves/tooltip/body"
+msgstr ""
+"Toggle the Directions information in the garage UI.\n\n"
+"<font color='#F26522'><b>ATTENTION!</b></font> You are still able to activate them in battle."
+
+msgid "settings/showTasks/label"
+msgstr "Display tasks and events"
+
+msgid "settings/showTasks/tooltip/header"
+msgstr "Display tasks and events"
+
+msgid "settings/showTasks/tooltip/body"
+msgstr ""
+"Toggle the tasks and events button in the garage UI.\n\n"
+"<font color='#F26522'><b>ATTENTION!</b></font> You are still able to access them by clicking the corresponding button in the garage UI header."
+
+msgid "settings/showTutorial/label"
+msgstr "Display battle tutorial"
+
+msgid "settings/showTutorial/tooltip/header"
+msgstr "Display battle tutorial"
+
+msgid "settings/showTutorial/tooltip/body"
+msgstr ""
+"Toggle the tutorial button."
+

@@ -88,9 +88,9 @@ class LegacyBattlePage(View):
 
     def _handleGUIToggled(self, event):
         if self._isDAAPIInited():
-            self.flashObject.as_setComponentsVisibility('LegacyBattleTimerUI', not event.ctx['isDown'])
-            self.flashObject.as_setComponentsVisibility('LegacyPreBattleTimerUI', not event.ctx['isDown'])
-            self.flashObject.as_setComponentsVisibility('LegacyFragCorrelationBarUI', not event.ctx['isDown'])
+            self.flashObject.as_setComponentsVisibility('LegacyBattleTimerUI', not event.ctx['visible'])
+            self.flashObject.as_setComponentsVisibility('LegacyPreBattleTimerUI', not event.ctx['visible'])
+            self.flashObject.as_setComponentsVisibility('LegacyFragCorrelationBarUI', not event.ctx['visible'])
 
     def _handleHelpEvent(self, event):
         if self._isDAAPIInited():

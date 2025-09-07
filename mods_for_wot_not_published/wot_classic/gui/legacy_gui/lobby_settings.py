@@ -3,7 +3,6 @@
 from debug_utils import LOG_CURRENT_EXCEPTION
 from frameworks.wulf.gui_constants import WindowLayer
 from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
-from gui.modsSettingsApi import g_modsSettingsApi
 from helpers import dependency
 from skeletons.gui.app_loader import IAppLoader
 from CurrentVehicle import g_currentVehicle
@@ -11,6 +10,13 @@ from gui.Scaleform.daapi.settings.views import VIEW_ALIAS
 from gui.Scaleform.framework.managers.containers import POP_UP_CRITERIA
 from gui.prb_control.events_dispatcher import g_eventDispatcher
 from lobby_views import getGUIConfig
+
+try:
+    from gui.modsSettingsApi import g_modsSettingsApi
+except ImportError:
+    print '[MTO_lobby_settings] ModsSettingsAPI not found or loaded incorrectly. See lines below.'
+    print '                     Config will be able to edit only directly through the file.'
+    LOG_CURRENT_EXCEPTION()
 
 class ActiveWidgetsPlaceholder(object):
     LEFT = 1
