@@ -478,11 +478,15 @@ class LegacyLobbyHeaderHooks():
 
     def _LobbyHeader__setCounter(self, base, baseSelf, alias, counter=None):
         if alias in self.LEGACY_HEADER_TABS:
+            if alias in (LobbyHeader.TABS.PERSONAL_MISSIONS, LobbyHeader.TABS.PERSONAL_MISSIONS_PAGE) and not getGUIConfig()['showPersonalQuests']:
+                return
             base(baseSelf, alias, counter)
         else: pass
 
     def _LobbyHeader__hideCounter(self, base, baseSelf, alias):
         if alias in self.LEGACY_HEADER_TABS:
+            if alias in (LobbyHeader.TABS.PERSONAL_MISSIONS, LobbyHeader.TABS.PERSONAL_MISSIONS_PAGE) and not getGUIConfig()['showPersonalQuests']:
+                return
             base(baseSelf, alias)
         else: pass
 

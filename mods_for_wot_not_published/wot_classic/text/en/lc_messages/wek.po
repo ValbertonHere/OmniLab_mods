@@ -126,10 +126,6 @@ msgstr "Get Gold"
 msgid "lobbyHeader/inDev/text"
 msgstr "Dev version | © 2025 OmniLab R&D | © 2025 Mr.Bendy"
 
-msgid "lobbyHeader/personalReserves"
-msgstr ""
-"Directives"
-
 msgid "lobbyHeader/baseAcc/label"
 msgstr "<b1>Standard account<b1>"
 
@@ -339,25 +335,25 @@ msgstr ""
 "<font color='#F26522'><b>ATTENTION!</b></font> You are still able to access them by clicking the corresponding button in the garage UI header."
 
 msgid "settings/showPersonalReserves/label"
-msgstr "Display Directions"
+msgstr "Display Personal Reserves"
 
 msgid "settings/showPersonalReserves/tooltip/header"
-msgstr "Display Directions"
+msgstr "Display Personal Reserves"
 
 msgid "settings/showPersonalReserves/tooltip/body"
 msgstr ""
-"Toggle the Directions information in the garage UI.\n\n"
+"Toggle the Personal Reserves information in the garage UI.\n\n"
 "<font color='#F26522'><b>ATTENTION!</b></font> You are still able to activate them in battle."
 
 msgid "settings/showTasks/label"
-msgstr "Display tasks and events"
+msgstr "Display Missions and Specials"
 
 msgid "settings/showTasks/tooltip/header"
-msgstr "Display tasks and events"
+msgstr "Display Missions and Specials"
 
 msgid "settings/showTasks/tooltip/body"
 msgstr ""
-"Toggle the tasks and events button in the garage UI.\n\n"
+"Toggle the Missions and Specials button in the garage UI.\n\n"
 "<font color='#F26522'><b>ATTENTION!</b></font> You are still able to access them by clicking the corresponding button in the garage UI header."
 
 msgid "settings/showTutorial/label"
