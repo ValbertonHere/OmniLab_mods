@@ -209,4 +209,4 @@ g_modsListApi.addModification(id='HangarSwitcherWindow', name='#wek_hangarSwitch
 
 ''' For external import '''
 if g_entitiesFactories.getSettings('HangarSwitcherWindow') is None:
-    g_entitiesFactories.addSettings(ViewSettings('HangarSwitcherWindow', HangarSwitcherWindow, 'WoTCHangarSwitchWindow.swf', WindowLayer.WINDOW, None, ScopeTemplates.VIEW_SCOPE))
+    g_entitiesFactories.addSettings(ViewSettings('HangarSwitcherWindow', HangarSwitcherWindow, 'MTOHangarSwitchWindow.swf', WindowLayer.WINDOW, None, ScopeTemplates.VIEW_SCOPE))

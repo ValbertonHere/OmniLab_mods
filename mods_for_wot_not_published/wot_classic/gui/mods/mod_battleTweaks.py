@@ -37,8 +37,8 @@ class LegacyFlashBangEffect(_FlashBangEffectDesc):
             self._duration = 0.0
         return
 
-def onOwnVehicleDamaged(self, attackerID, points, effectsIndex, damageFactor, lastMaterialIsShield):
-    base(self, attackerID, points, effectsIndex, damageFactor, lastMaterialIsShield)
+def onOwnVehicleDamaged(self, attackerID, points, effectsIndex, damageFactor, lastMaterialIsShield, damageCausedByDiscreteFactor):
+    base(self, attackerID, points, effectsIndex, damageFactor, lastMaterialIsShield, damageCausedByDiscreteFactor)
     if self.id == BigWorld.player().playerVehicleID:
         maxComponentIdx = self.calcMaxComponentIdx()
         decodedPoints = DamageFromShotDecoder.decodeHitPoints(points, self.appearance.collisions, maxComponentIdx, self.typeDescriptor)

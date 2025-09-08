@@ -42,13 +42,13 @@ msgid "loadError/hangarNotExists"
 msgstr "Ангар не установлен или установлен не правильно! Загрузка отменена."
 
 msgid "modButton/title"
-msgstr "WэК!: Выбор ангара"
+msgstr "«МТО»: Выбор ангара"
 
 msgid "modButton/tooltip"
 msgstr "Выбор ангаров из двух поколений Мира Танков."
 
 msgid "window/title"
-msgstr "Мир Танков: Истоки | Выбор ангара"
+msgstr "«Мир Танков: Истоки» | Выбор ангара"
 
 msgid "window/standartCategory"
 msgstr "Стандартные ангары:"
