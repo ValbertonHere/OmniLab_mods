@@ -46,6 +46,7 @@ package omnilab.wotclassic.controls.test
 		override protected function configUI() : void {
 			super.configUI();
 			preventAutosizing = true;
+			mouseEnabled = false;
 		}
 		
 		override protected function draw() : void {

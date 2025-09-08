@@ -6,8 +6,7 @@ package omnilab.wotclassic.controls
 	import omnilab.wotclassic.data.PersonalReservesVO;
 	import net.wg.data.constants.generated.TOOLTIPS_CONSTANTS;
 	import net.wg.infrastructure.base.BaseDAAPIComponent;
-	import net.wg.gui.interfaces.ISoundButtonEx;
-	import scaleform.clik.core.UIComponent;
+	import net.wg.data.constants.Cursors;
 	
 	public class PersonalReservesComponent extends BaseDAAPIComponent
 	{
@@ -24,6 +23,8 @@ package omnilab.wotclassic.controls
 		
 		override protected function configUI():void {
 			super.configUI();
+
+			this.reservesTF.autoSize = 'left';
 			
 			this.addEventListener(MouseEvent.ROLL_OVER, this.onRollOver);
 			this.addEventListener(MouseEvent.ROLL_OUT, this.onRollOut);
@@ -62,10 +63,12 @@ package omnilab.wotclassic.controls
 		
 		private function onRollOver(e: MouseEvent): void {
 			App.toolTipMgr.showWulfTooltip(TOOLTIPS_CONSTANTS.PERSONAL_RESERVES_WIDGET, null);
+			App.cursor.as_setCursor(Cursors.BUTTON);
 		}
 		
 		private function onRollOut(e: MouseEvent): void {
 			App.toolTipMgr.hide();
+			App.cursor.as_setCursor(Cursors.ARROW);
 		}
 		
 		private function onClick(e: MouseEvent): void {

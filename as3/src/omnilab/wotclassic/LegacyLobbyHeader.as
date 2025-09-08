@@ -13,6 +13,7 @@
 	
 	import net.wg.infrastructure.base.AbstractView;
 	import net.wg.infrastructure.events.LoaderEvent;
+	import net.wg.infrastructure.events.VoiceChatEvent;
 	import net.wg.infrastructure.interfaces.IView;
 	import net.wg.infrastructure.interfaces.IPopOverCaller;
 	import net.wg.infrastructure.interfaces.IManagedContent;
@@ -24,19 +25,18 @@
 	import net.wg.gui.components.controls.IconText;
 	import net.wg.gui.components.controls.IconTextButton;
 	import net.wg.gui.components.controls.SoundButtonEx;
+	import net.wg.gui.components.controls.VoiceWave;
 	
 	import net.wg.gui.lobby.LobbyPage;
 	import net.wg.gui.lobby.header.LobbyHeader;
-	
-	import net.wg.gui.tutorial.components.TutorialClip;
 	
 	import omnilab.wotclassic.controls.LegacyTasksButton;
 	import omnilab.wotclassic.controls.LegacyTutorialButton;
 	import omnilab.wotclassic.controls.LegacyBattleTypeSelectorButton;
 	import omnilab.wotclassic.controls.PersonalReservesComponent;
 	import omnilab.wotclassic.controls.LegacyFightButton;
-	
-	import net.wg.gui.lobby.header.vo.HBC_PersonalReservesVO;
+	import net.wg.utils.IScheduler;
+	import net.wg.utils.IUtils;
 	
 	public class LegacyLobbyHeader extends AbstractView implements IPopOverCaller {
 
@@ -49,6 +49,7 @@
 		public var userNickButt: SoundButtonEx;
 		public var battSelectPopCaller: SoundButtonEx;
 		public var clanButt: SoundButtonEx;
+		public var voiceWave: VoiceWave;
 		
 		public var lobbyHeaderView: LobbyHeader;
 		
@@ -92,116 +93,48 @@
 		public var onInDevRestartClick: Function;
 		public var fightClick: Function;
 
+		private var _scheduler: IScheduler = null;
+		private var _isCrystalPremium: Boolean = false;
+      	private var _actualEnabledVal:Boolean;
+      	private var _isInCoolDown:Boolean = false;
+
 		public function LegacyLobbyHeader() {
 			super();
+			var paramStyle = new StyleSheet();      
+			paramStyle.setStyle("b1", {color:"#7F7D6A"});
+			paramStyle.setStyle("h1", {color:"#CED9D9"});
+			paramStyle.setStyle("p", {color:"#FBCE86"});
+			this.serverName.styleSheet = paramStyle;
+			this.accountType.styleSheet = paramStyle;
+			this._scheduler = App.utils.scheduler;
 		}
 		
-		override protected function onPopulate():void {
-			super.onPopulate();
-			registerFlashComponentS(this.personalReservesComp, "PersonalReservesComponentUI");
-				
-			this.menuButt.addEventListener(ButtonEvent.CLICK, this.onMenuClick);
-			this.crystalButt.addEventListener(ButtonEvent.CLICK, this.onCrystalClick);
-			this.goldButt.addEventListener(ButtonEvent.CLICK, this.onGoldClick);
-			this.creditsButt.addEventListener(ButtonEvent.CLICK, this.onCreditsClick);
-			this.freeXPButt.addEventListener(ButtonEvent.CLICK, this.onFreeXPClick);
-			this.tutorialButt.addEventListener(ButtonEvent.CLICK, this.onTutorialClick);
-			this.userNickButt.addEventListener(ButtonEvent.CLICK, this.onNickClick);
-			this.tasksButt.addEventListener(ButtonEvent.CLICK, this.onTasksClickS);
-			this.battleSelector.addEventListener(ButtonEvent.CLICK, this.onBattleSelectorClick);
-			this.clanButt.addEventListener(ButtonEvent.CLICK, this.onClanClicked);
-			this.inDevRestart.addEventListener(ButtonEvent.CLICK, this.onInDevRestartClick);
-			this.fightBtn.addEventListener(ButtonEvent.CLICK,this.onFightBtnClick);
-			App.stage.addEventListener(Event.RESIZE, this.guiReplace);
-			
-			guiReplace()
-		}
-		
-		override protected function configUI():void {
-			super.configUI();
-			
-			this.userNickButt.width = userNickname.textWidth
-			this.userNickButt.alpha = 0;
-			
-			this.clanButt.width = 32;
-			this.clanButt.height = 32;
-			this.clanButt.alpha = 0;
-			
-			this.battSelectPopCaller.width = 149
-			this.battSelectPopCaller.alpha = 0
-			
-			try{
-				var viewContainer:MainViewContainer = _getContainer(LAYER_NAMES.VIEWS) as MainViewContainer;
-				if (viewContainer != null)
-				{
-					var num:int = viewContainer.numChildren;
-					for (var idx:int = 0; idx < num; ++idx)
-					{
-						var view:IView = viewContainer.getChildAt(idx) as IView;
-						if (view != null)
-						{
-							processView(view);
-						}
-					}
-					var topmostView:IManagedContent = viewContainer.getTopmostView();
-					if (topmostView != null)
-					{
-						viewContainer.setFocusedView(topmostView);
-					}
-				}
+		public function as_setCrystal2Premium(isCrystalPremium: Boolean, isPremium: Boolean) {
+			var textFormat: TextFormat = this.accountType.getTextFormat()
 
-			(App.containerMgr as ContainerManagerBase).loader.addEventListener(LoaderEvent.VIEW_LOADED, this.onViewLoaded, false, 0, true);
-			} catch (e: Error) {
-				DebugUtils.LOG_ERROR(e.getStackTrace())
+			this._isCrystalPremium = isCrystalPremium
+			this.crystalMoney.visible = !isCrystalPremium;
+
+			if (isCrystalPremium) {
+				textFormat.align = "right";
+
+				this.crystalButt.label = isPremium ? "#wek:lobbyHeader/extendPremiumLabel" : "#wek:lobbyHeader/buyPremiumLabel";
+				this.crystalButt.tooltip = isPremium ? "#wek:lobbyHeader/extendPremiumTooltip" : "#wek:lobbyHeader/buyPremiumTooltip";
+				this.crystalButt.icon = "premium.png";
+				this.accountType.y = 5;
+			} else {
+				textFormat.align = "left";
+
+				this.crystalButt.label = "#wek:lobbyHeader/crystalLabel";
+				this.crystalButt.tooltip = "#wek:lobbyHeader/crystalTooltip";
+				this.crystalButt.icon = "wotc_ui_crystal.png";
+				this.accountType.y = 60,5;
 			}
-		}
-		
-		private function guiReplace(param1:Event = null): void {
-			var app_width: Number = Number(App.appWidth)
-			var app_height: Number = Number(App.appHeight)
 			
-			this.legacyResizeBg.width = app_width;
-			this.legacyCenterBg.x = app_width / 2 - 512;
-			this.userNickname.x = (app_width / 2) + 155;
-			this.userNickButt.x = (app_width / 2) + 155;
-			this.accountType.x = (app_width / 2) + 155;
-			this.clanEmblem.x = (app_width / 2) + 124;
-			this.clanButt.x = (app_width / 2) + 124;
-			this.fightBtn.x = (app_width / 2) - 128;
-			this.battleSelector.x = (app_width / 2) - 6;
-			this.battSelectPopCaller.x = (app_width / 2) - 80;
-			this.tankName.x = (app_width / 2) - 419;
-			this.tankType.x = (app_width / 2) - 293;
-			this.eliteStatus.x = (app_width / 2) - 215;
-			this.serverName.x = (app_width / 2) - 91;
-			this.crystalButt.x = app_width - 203;
-			this.crystalMoney.x = app_width - 423;
-			this.goldButt.x = app_width - 203;
-			this.goldMoney.x = app_width - 423;
-			this.creditsButt.x = app_width - 203
-			this.creditsMoney.x = app_width - 423;
-			this.freeXPButt.x = app_width - 203;
-			this.freeXPMoney.x = app_width - 423;
+			this.accountType.setTextFormat(textFormat)
+			this.guiReplace();
 		}
-		
-		override protected function onDispose():void {
-			this.menuButt.removeEventListener(ButtonEvent.CLICK, this.onMenuClick);
-			this.crystalButt.removeEventListener(ButtonEvent.CLICK, this.onCrystalClick);
-			this.goldButt.removeEventListener(ButtonEvent.CLICK, this.onGoldClick);
-			this.creditsButt.removeEventListener(ButtonEvent.CLICK, this.onCreditsClick);
-			this.freeXPButt.removeEventListener(ButtonEvent.CLICK, this.onFreeXPClick);
-			this.tutorialButt.removeEventListener(ButtonEvent.CLICK, this.onTutorialClick);
-			this.userNickButt.removeEventListener(ButtonEvent.CLICK, this.onNickClick);
-			this.tasksButt.removeEventListener(ButtonEvent.CLICK, this.onTasksClickS);
-			this.battleSelector.removeEventListener(ButtonEvent.CLICK, this.onBattleSelectorClick);
-			this.clanButt.removeEventListener(ButtonEvent.CLICK, this.onClanClicked);
-			this.inDevRestart.removeEventListener(ButtonEvent.CLICK, this.onInDevRestartClick);
-			this.fightBtn.removeEventListener(ButtonEvent.CLICK, this.onFightBtnClick);
-			App.stage.removeEventListener(Event.RESIZE, this.guiReplace);
-			
-			super.onDispose();
-		}
-		
+
 		public function as_setOnline(usersStr: String):void {
 			this.legacyOnlineCounter.textField.text = usersStr
 		}
@@ -211,7 +144,8 @@
 		}
 		
 		public function as_setFightButtonDisabled(isDisabled: Boolean): void {
-			this.fightBtn.enabled = !isDisabled;
+			this._actualEnabledVal = !isDisabled;
+			this.fightBtn.enabled = !this._isInCoolDown ? Boolean(this._actualEnabledVal) : Boolean(!this._isInCoolDown);
 		}
 		
 		public function as_disableHeaderButtons(isDisabled: Boolean):void {
@@ -276,14 +210,31 @@
 		public function as_setFreeXP(curr: String):void {
 			this.freeXPMoney.text = curr;
 		}
-		
-		private function onTasksClickS(param1:ButtonEvent):void {
-			try {
-				this.onTasksClick();
-			}
-			catch (e:Error){
-				DebugUtils.LOG_ERROR(e.getStackTrace())
-			}
+
+		public function as_setCoolDownForReady(param1:uint) : void
+      	{
+         	this._isInCoolDown = true;
+         	this._scheduler.cancelTask(this.stopReadyCoolDown);
+         	this.fightBtn.enabled = false;
+         	this._scheduler.scheduleTask(this.stopReadyCoolDown,param1 * 1000);
+      	}
+
+		public function as_showPersonalQuests(showPQ: Boolean): void {
+			this.legacyCenterBg.menuBg.width = showPQ ? 676 : 575;
+			this.legacyCenterBg.menuBg.x = showPQ ? 175 : 225;
+		}
+
+		public function as_showPersonalReserves(showPR: Boolean): void {
+			this.personalReservesComp.visible = showPR;
+		}
+
+		public function as_showTasks(showTasks: Boolean): void {
+			this.tasksButt.visible = showTasks;
+			this.tutorialButt.x = showTasks ? -330 : -465;
+		}
+
+		public function as_showTutorial(showTutorial: Boolean): void {
+			this.tutorialButt.visible = showTutorial;
 		}
 		
 		public function onBattleSelectorClick(param1:ButtonEvent):void {
@@ -310,6 +261,72 @@
 		public function as_setBattleType(bType: String):void {
 			this.battleSelector.battleType.text = bType;
 			this.battleSelector.battleType.invalidate("InvPosition");
+		}
+
+		private function stopReadyCoolDown() : void
+      	{
+        	this.fightBtn.enabled = this._actualEnabledVal;
+        	this._isInCoolDown = false;
+      	}
+		
+		private function onStartSpeaking(param1: VoiceChatEvent): void {
+			if (param1.isHimself()) {
+				this.voiceWave.setSpeaking(true);
+			}
+		}
+		
+		private function onStopSpeaking(param1: VoiceChatEvent): void {
+			if (param1.isHimself()) {
+				this.voiceWave.setSpeaking(false);
+			}
+		}
+		
+		private function guiReplace(param1:Event = null): void {
+			var app_width: Number = Number(App.appWidth)
+			var app_height: Number = Number(App.appHeight)
+			
+			this.legacyResizeBg.width = app_width;
+			this.voiceWave.x = app_width / 2 - 155;
+			this.legacyCenterBg.x = app_width / 2 - 512;
+			this.userNickname.x = (app_width / 2) + 155;
+			this.userNickButt.x = (app_width / 2) + 155;
+			this.accountType.x = this._getAccountTypeXPosition();
+			this.clanEmblem.x = (app_width / 2) + 124;
+			this.clanButt.x = (app_width / 2) + 124;
+			this.fightBtn.x = (app_width / 2) - 128;
+			this.battleSelector.x = (app_width / 2) - 6;
+			this.battSelectPopCaller.x = (app_width / 2) - 80;
+			this.tankName.x = (app_width / 2) - 419;
+			this.tankType.x = (app_width / 2) - 353;
+			this.eliteStatus.x = (app_width / 2) - 215;
+			this.serverName.x = (app_width / 2) - 91;
+			this.crystalButt.x = app_width - 203;
+			this.crystalMoney.x = app_width - 423;
+			this.goldButt.x = app_width - 203;
+			this.goldMoney.x = app_width - 423;
+			this.creditsButt.x = app_width - 203
+			this.creditsMoney.x = app_width - 423;
+			this.freeXPButt.x = app_width - 203;
+			this.freeXPMoney.x = app_width - 423;
+		}
+		
+		private function _getAccountTypeXPosition(): int {
+			var app_width: Number = Number(App.appWidth)
+			
+			if (this._isCrystalPremium) {
+				return app_width - 562;
+			} else {
+				return (app_width / 2) + 155;
+			}
+		}
+		
+		private function onTasksClickS(param1:ButtonEvent):void {
+			try {
+				this.onTasksClick();
+			}
+			catch (e:Error){
+				DebugUtils.LOG_ERROR(e.getStackTrace())
+			}
 		}
 
 		private function _getContainer(containerName:String) : ISimpleManagedContainer
@@ -342,6 +359,93 @@
 				lobbyHeaderView.constraints.addElement("LegacyLobbyHeaderUI", DisplayObject(this), Constraints.LEFT);
 				lobbyHeaderView.swapChildren(lobbyHeaderView.mainMenuButtonBar, DisplayObject(this));
 			}
+		}
+		
+		override protected function onPopulate():void {
+			super.onPopulate();
+			registerFlashComponentS(this.personalReservesComp, "PersonalReservesComponentUI");
+				
+			this.voiceWave.visible = App.voiceChatMgr.isVOIPEnabledS();
+			this.menuButt.addEventListener(ButtonEvent.CLICK, this.onMenuClick);
+			this.crystalButt.addEventListener(ButtonEvent.CLICK, this.onCrystalClick);
+			this.goldButt.addEventListener(ButtonEvent.CLICK, this.onGoldClick);
+			this.creditsButt.addEventListener(ButtonEvent.CLICK, this.onCreditsClick);
+			this.freeXPButt.addEventListener(ButtonEvent.CLICK, this.onFreeXPClick);
+			this.tutorialButt.addEventListener(ButtonEvent.CLICK, this.onTutorialClick);
+			this.userNickButt.addEventListener(ButtonEvent.CLICK, this.onNickClick);
+			this.tasksButt.addEventListener(ButtonEvent.CLICK, this.onTasksClickS);
+			this.battleSelector.addEventListener(ButtonEvent.CLICK, this.onBattleSelectorClick);
+			this.clanButt.addEventListener(ButtonEvent.CLICK, this.onClanClicked);
+			this.inDevRestart.addEventListener(ButtonEvent.CLICK, this.onInDevRestartClick);
+			this.fightBtn.addEventListener(ButtonEvent.CLICK,this.onFightBtnClick);
+			App.stage.addEventListener(Event.RESIZE, this.guiReplace);
+			App.voiceChatMgr.addEventListener(VoiceChatEvent.START_SPEAKING,this.onStartSpeaking);
+			App.voiceChatMgr.addEventListener(VoiceChatEvent.STOP_SPEAKING, this.onStopSpeaking);
+		}
+		
+		override protected function configUI():void {
+			super.configUI();
+
+			this.inDev.autoSize = "left";
+			
+			this.userNickButt.width = userNickname.textWidth
+			this.userNickButt.alpha = 0;
+			
+			this.clanButt.width = 32;
+			this.clanButt.height = 32;
+			this.clanButt.alpha = 0;
+			
+			this.battSelectPopCaller.width = 149;
+			this.battSelectPopCaller.alpha = 0;
+			
+			guiReplace();
+			
+			try{
+				var viewContainer:MainViewContainer = _getContainer(LAYER_NAMES.VIEWS) as MainViewContainer;
+				if (viewContainer != null)
+				{
+					var num:int = viewContainer.numChildren;
+					for (var idx:int = 0; idx < num; ++idx)
+					{
+						var view:IView = viewContainer.getChildAt(idx) as IView;
+						if (view != null)
+						{
+							processView(view);
+						}
+					}
+					var topmostView:IManagedContent = viewContainer.getTopmostView();
+					if (topmostView != null)
+					{
+						viewContainer.setFocusedView(topmostView);
+					}
+				}
+
+			(App.containerMgr as ContainerManagerBase).loader.addEventListener(LoaderEvent.VIEW_LOADED, this.onViewLoaded, false, 0, true);
+			} catch (e: Error) {
+				DebugUtils.LOG_ERROR(e.getStackTrace())
+			}
+		}
+		
+		override protected function onDispose():void {
+         	this._scheduler.cancelTask(this.stopReadyCoolDown);
+
+			this.menuButt.removeEventListener(ButtonEvent.CLICK, this.onMenuClick);
+			this.crystalButt.removeEventListener(ButtonEvent.CLICK, this.onCrystalClick);
+			this.goldButt.removeEventListener(ButtonEvent.CLICK, this.onGoldClick);
+			this.creditsButt.removeEventListener(ButtonEvent.CLICK, this.onCreditsClick);
+			this.freeXPButt.removeEventListener(ButtonEvent.CLICK, this.onFreeXPClick);
+			this.tutorialButt.removeEventListener(ButtonEvent.CLICK, this.onTutorialClick);
+			this.userNickButt.removeEventListener(ButtonEvent.CLICK, this.onNickClick);
+			this.tasksButt.removeEventListener(ButtonEvent.CLICK, this.onTasksClickS);
+			this.battleSelector.removeEventListener(ButtonEvent.CLICK, this.onBattleSelectorClick);
+			this.clanButt.removeEventListener(ButtonEvent.CLICK, this.onClanClicked);
+			this.inDevRestart.removeEventListener(ButtonEvent.CLICK, this.onInDevRestartClick);
+			this.fightBtn.removeEventListener(ButtonEvent.CLICK, this.onFightBtnClick);
+			App.stage.removeEventListener(Event.RESIZE, this.guiReplace);
+			App.voiceChatMgr.removeEventListener(VoiceChatEvent.START_SPEAKING,this.onStartSpeaking);
+			App.voiceChatMgr.removeEventListener(VoiceChatEvent.STOP_SPEAKING,this.onStopSpeaking);
+			
+			super.onDispose();
 		}
 	}
 }

@@ -1,6 +1,5 @@
 package omnilab.wotclassic 
 {
-	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import net.wg.gui.lobby.hangar.VehicleParameters;
@@ -8,22 +7,13 @@ package omnilab.wotclassic
 	import omnilab.wotclassic.controls.test.LegacyVehicleParams;
 	
 	import net.wg.data.Aliases;
-	import net.wg.data.constants.IconsTypes;
 	import net.wg.data.constants.generated.LAYER_NAMES;
 	import net.wg.gui.components.controls.SoundButtonEx;
 	
 	import net.wg.gui.lobby.hangar.Hangar;
-	import net.wg.gui.lobby.hangar.ResearchPanel;
-	import net.wg.gui.lobby.hangar.HangarHeader;
-	import net.wg.gui.lobby.hangar.CrewPanelInject;
 	import net.wg.gui.lobby.modulesPanel.FittingSelectPopover;
 	import net.wg.gui.lobby.hangar.ammunitionPanel.AmmunitionPanel;
-	import net.wg.gui.lobby.hangar.ammunitionPanelInject.AmmunitionPanelInject;
-	import net.wg.gui.lobby.storage.StorageView;
-	import net.wg.gui.tutorial.components.TutorialClip;
 	import net.wg.gui.components.containers.MainViewContainer;
-	import net.wg.gui.components.controls.IconTextButton;
-	import net.wg.gui.components.controls.IconText;
 	
 	import net.wg.infrastructure.base.AbstractView;
 	import net.wg.infrastructure.managers.impl.ContainerManagerBase;
@@ -31,8 +21,6 @@ package omnilab.wotclassic
 	import net.wg.infrastructure.interfaces.IView;
 	import net.wg.infrastructure.interfaces.ISimpleManagedContainer;
 	import net.wg.infrastructure.events.LoaderEvent;
-	
-	import scaleform.clik.constants.InvalidationType;
 	
 	import omnilab.wotclassic.controls.LegacyResearchPanel;
 	import omnilab.wotclassic.legacyAmmoPanel.LegacyAmmoPanel;
@@ -114,10 +102,10 @@ package omnilab.wotclassic
 			
 			registerFlashComponentS(this.legacyAmmoPanel, "LegacyAmmoPanelUI");
 			registerFlashComponentS(this.legacyResearchPanel, "LegacyResearchPanelUI");
-			registerFlashComponentS(this.legacyVehicleParams, "LegacyVehicleParamsUI");
+			// registerFlashComponentS(this.legacyVehicleParams, "LegacyVehicleParamsUI");
 			
 			this.legacyResearchPanel.x = Number(App.appWidth) - 67;
-			this.legacyVehicleParams.x = Number(App.appWidth) - 341;
+			// this.legacyVehicleParams.x = Number(App.appWidth) - 341;
 			this.reloadViewBtn.addEventListener(MouseEvent.CLICK, this.reloadViewS)
 			this.legacyResearchPanel.researchBtn.addEventListener(MouseEvent.CLICK, this.showResearchS)
 			App.stage.addEventListener(Event.RESIZE, this.appResized);
@@ -154,18 +142,11 @@ package omnilab.wotclassic
 				_hangarView.removeChild(_hangarView.bottomBg);
 				_hangarView.removeChild(_hangarView.vehResearchBG);
 				_hangarView.removeChild(_hangarView.vehResearchPanel);
-				_hangarView.removeChild(_hangarView.vehicleParametersContainer);
+				// _hangarView.removeChild(_hangarView.vehicleParametersContainer);
 				
 				_hangarView.addChild(this.legacyResearchPanel);
-				_hangarView.addChild(this.legacyVehicleParams);
+				// _hangarView.addChild(this.legacyVehicleParams);
 				_ammoPanel.addChild(this.legacyAmmoPanel);
-				
-			} else if (alias == "vehiclePreviewPage") {
-				_vehiclePreview = view as VehiclePreviewPage;
-				
-				_vehiclePreview.fadingPanels.removeChild(_vehiclePreview.fadingPanels.vehParams);
-				
-				_vehiclePreview.fadingPanels.addChild(this.legacyVehicleParams);
 			}
 		}
 	}

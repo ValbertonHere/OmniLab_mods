@@ -19,6 +19,7 @@
 		public function LegacyBattleTypeSelectorButton()
 		{
 			super();
+			preventAutosizing = true;
 		}
 		
 		override protected function configUI():void {
@@ -30,12 +31,10 @@
 		
 		internal function onRollOver(param1:MouseEvent):void {
 			gotoAndPlay("over");
-			this.width = 204;
 		}
 		
 		internal function onRollOut(param1:MouseEvent):void {
 			gotoAndPlay("out");
-			this.width = 204;
 		}
 		
 		public function onPopoverOpen(): void {

@@ -168,7 +168,6 @@ package omnilab.wotclassic.legacyAmmoPanel
 				}
 			booster.update(_boosterData);
 			
-			modificator.enabled = false;
 			_modificatorData = new DeviceSlotVO(param0["modificator"]);
 			modificator.update(_modificatorData);
 			
@@ -206,7 +205,7 @@ package omnilab.wotclassic.legacyAmmoPanel
 				var _loc1_: int = SLOT_GROUPS_SPACING + SLOT_WIDTH
 				this.x = -268 - (_loc1_/2);
 			} else {
-				this.x = -268
+				this.x = -268;
 			}
 		}
 		
@@ -215,10 +214,10 @@ package omnilab.wotclassic.legacyAmmoPanel
 				battleAbility.visible = isVisible;
 			}
 			if (isVisible){
-				var _loc1_: int = SLOT_GROUPS_SPACING + (SLOT_WIDTH*3) + (SLOT_SPACING*2)
+				var _loc1_: int = SLOT_GROUPS_SPACING + (SLOT_WIDTH*3) + (SLOT_SPACING*2) + (SLOT_WIDTH*3) + (SLOT_WIDTH*3);
 				this.x = -268 - (_loc1_/2);
 			} else {
-				this.x = -268
+				this.x = -268;
 			}
 		}
 		
