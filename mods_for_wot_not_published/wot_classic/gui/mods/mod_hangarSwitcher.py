@@ -183,16 +183,16 @@ class HangarSwitcherWindow(AbstractWindowView):
                 for hangarName in psHangarsSetValue.values():
                     if hangarName == currHangar:
                         self.flashObject.as_setPremSensetive(True)
-                        self.flashObject.PremSenseHanButtBar.selectedIndex = g_classicHangarOverrider.PREM_SENSETIVE_HANGARS.keys().index(psHangarsSetName)
+                        self.flashObject.premSenseHanButtBar.selectedIndex = g_classicHangarOverrider.PREM_SENSETIVE_HANGARS.keys().index(psHangarsSetName)
                         return
 
         if currHangar in g_classicHangarOverrider.CLASSIC_HANGARS:
             self.flashObject.as_setPremSensetive(False)
-            self.flashObject.StandardHanButtBar.selectedIndex = g_classicHangarOverrider.CLASSIC_HANGARS.index(currHangar)
+            self.flashObject.standardHanButtBar.selectedIndex = g_classicHangarOverrider.CLASSIC_HANGARS.index(currHangar)
             return
         elif currHangar in g_classicHangarOverrider.SPECIAL_HANGARS:
             self.flashObject.as_setPremSensetive(False)
-            self.flashObject.SpecialHanButtBar.selectedIndex = g_classicHangarOverrider.SPECIAL_HANGARS.index(currHangar)
+            self.flashObject.specialHanButtBar.selectedIndex = g_classicHangarOverrider.SPECIAL_HANGARS.index(currHangar)
             return
         else:
             self.flashObject.as_setPremSensetive(False)
