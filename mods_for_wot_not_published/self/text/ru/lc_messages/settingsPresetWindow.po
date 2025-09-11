@@ -40,6 +40,12 @@ msgstr "Удалить пресет настроек"
 msgid "updateDeleteBtn/delete/tooltip/body"
 msgstr "Нажмите, чтобы удалить файл пресета настроек."
 
+msgid "renamePresetBtn/tooltip/header"
+msgstr "Переименовать пресет"
+
+msgid "renamePresetBtn/tooltip/body"
+msgstr "Нажмите, чтобы переименовать выбранный пресет."
+
 msgid "showFolderBtn/delete/tooltip/header"
 msgstr "Открыть папку с пресетами"
 
@@ -69,3 +75,9 @@ msgstr "Ошибка! Пресет настроек повреждён."
 
 msgid "presetStatus/deleted"
 msgstr "Пресет настроек удалён."
+
+msgid "presetsList/emptySlot"
+msgstr "Слот %(slotID)s"
+
+msgid "presetsList/presetWithoutName"
+msgstr "Пресет %(slotID)s"
