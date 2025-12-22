@@ -12,6 +12,7 @@ class LegacyVehicleParams(BaseDAAPIComponent):
         super(LegacyVehicleParams, self).__init__()
         g_currentVehicle.onChanged += self._update
         g_currentPreviewVehicle.onChanged += self._update
+        g_currentPreviewVehicle.onComponentInstalled += self._update
         
     def rebuildParams(self):
         normalizeValue = lambda v: (Decimal(str(round(v, 2))).normalize() + Decimal(0)).to_eng_string()

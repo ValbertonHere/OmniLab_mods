@@ -38,6 +38,12 @@ msgstr "1st Gen Garages"
 msgid "prem_sense_hangars_v2/title"
 msgstr "2st Gen Garages"
 
+msgid "hangar_premium/title"
+msgstr "Halloween 1st Gen Premium Garage"
+
+msgid "hangar_v2/title"
+msgstr "Halloween 2nd Gen Standard Garage"
+
 msgid "loadError/hangarNotExists"
 msgstr "The garage files are missing or installed incorrectly! Loading aborted."
 

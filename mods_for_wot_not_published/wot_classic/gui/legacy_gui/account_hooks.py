@@ -64,11 +64,17 @@ class LegacyAmmoPanelHooks():
     itemsCache = dependency.instance(IItemsCache)
     appLoader = dependency.instance(IAppLoader)
 
-    _TAB_IDS = (0, 1)
+    _TAB_IDS = (0, 1, 2)
     _OPTDEV_TABS = [{'label': '#tank_setup:tabs/simple', 'id': 'simpleOptDevices'}, 
-            {'label': '#tank_setup:tabs/deluxe', 'id': 'deluxeOptDevices'}]
+                    {'label': '#tank_setup:tabs/deluxe', 'id': 'deluxeOptDevices'}]
+    
     _BOOST_TABS = [{'label': '#tank_setup:tabs/optDevice', 'id': 'boostersForAmmunition'}, 
-    {'label': '#tank_setup:tabs/crew', 'id': 'boostersForCrew'}]
+                   {'label': '#tank_setup:tabs/crew', 'id': 'boostersForCrew'}, 
+                   {'label': '#tank_setup:tabs/economic', 'id': 'economicDirectives'}]
+    
+    __BOOST_TAB_IDX_TO_CRITERIA = {0: REQ_CRITERIA.BATTLE_BOOSTER.OPTIONAL_DEVICE_EFFECT,
+                                   1: REQ_CRITERIA.BATTLE_BOOSTER.CREW_EFFECT,
+                                   2: REQ_CRITERIA.BATTLE_BOOSTER.ECONOMIC_DIRECTIVES}
 
     def __init__(self):
         self._initload = True
@@ -218,7 +224,7 @@ class LegacyAmmoPanelHooks():
 
     def _HangarLogicProvider_getSpecificCriteria(self, base, baseSelf, typeID):
         if typeID == GUI_ITEM_TYPE.BATTLE_BOOSTER:
-            criteria = REQ_CRITERIA.BATTLE_BOOSTER.OPTIONAL_DEVICE_EFFECT if baseSelf._tabIndex == _POPOVER_FIRST_TAB_IDX else REQ_CRITERIA.BATTLE_BOOSTER.CREW_EFFECT
+            criteria = self.__BOOST_TAB_IDX_TO_CRITERIA[baseSelf._tabIndex]
         elif typeID == GUI_ITEM_TYPE.OPTIONALDEVICE:
             criteria = REQ_CRITERIA.CUSTOM(lambda item: not item.isDeluxe and not ((item.isTrophy or item.isModernized) and item.inventoryCount == 0 and not item.isInstalled(baseSelf._vehicle))) if baseSelf._tabIndex == _POPOVER_FIRST_TAB_IDX else REQ_CRITERIA.OPTIONAL_DEVICE.DELUXE
         elif typeID == GUI_ITEM_TYPE.BATTLE_ABILITY:

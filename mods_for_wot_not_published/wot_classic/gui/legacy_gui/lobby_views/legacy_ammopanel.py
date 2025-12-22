@@ -403,12 +403,16 @@ def _extendByBattleBoosterData(targetData, module, vehicle):
         targetData['desc'] = text_styles.main(desc)
         highlight = SLOT_HIGHLIGHT_TYPES.BATTLE_BOOSTER if skillLearnt else SLOT_HIGHLIGHT_TYPES.BATTLE_BOOSTER_CREW_REPLACE
         _extendHighlightData(targetData, highlight, overlay)
-    else:
+    elif module.isEquipmentBooster():
         if getattr(BigWorld.player(), 'isLongDisconnectedFromCenter', False):
             targetData['notAffectedTTC'] = False
         else:
             targetData['notAffectedTTC'] = not module.isAffectsOnVehicle(vehicle)
         targetData['desc'] = text_styles.main(module.getOptDeviceBoosterDescription(vehicle, text_styles.bonusAppliedText))
+        _extendHighlightData(targetData, SLOT_HIGHLIGHT_TYPES.BATTLE_BOOSTER, overlay)
+    else:
+        targetData['notAffectedTTC'] = False
+        targetData['desc'] = text_styles.main(module.getEconomicDirectivesDescription())
         _extendHighlightData(targetData, SLOT_HIGHLIGHT_TYPES.BATTLE_BOOSTER, overlay)
         
     targetData['count'] = module.inventoryCount

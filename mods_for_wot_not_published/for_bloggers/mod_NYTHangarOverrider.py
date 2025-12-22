@@ -11,7 +11,7 @@ from skeletons.gui.game_control import IHangarSpaceSwitchController
 
 class NYTHangarOverrider():
     hangarSwitchController = dependency.descriptor(IHangarSpaceSwitchController)
-    EXCEPT_THIS_SCENES = ['ARMORY_YARD', 'hb_offence', 'hb_defence'] # Исключение для запуска ивент-зависимых ангаров.
+    EXCEPT_THIS_SCENES = ['WHITE_TIGER', 'ARMORY_YARD', 'hb_offence', 'hb_defence'] # Исключение для запуска ивент-зависимых ангаров.
 
     def __init__(self):
         ServicesLocator.appLoader.onGUISpaceEntered += self.onGUISpaceEntered

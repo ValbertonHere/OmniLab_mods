@@ -414,6 +414,7 @@ tcvo_callbacks = []
 combat_callbacks = []
 shell_change_first = True
 welcomeMessageSeen = False
+battle_started = False
 
 print '[OMNILAB: WTSM] INIT START!'
 

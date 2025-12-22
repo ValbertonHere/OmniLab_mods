@@ -10,6 +10,7 @@ from frameworks.wulf.gui_constants import WindowLayer
 from gui.game_loading.resources.consts import Milestones
 from gui.prb_control.entities.listener import IGlobalListener
 from gui.shared.event_dispatcher import showResearchView
+from gui.shared import events, EVENT_BUS_SCOPE
 
 from gui.Scaleform.daapi.settings.views import VIEW_ALIAS
 from gui.Scaleform.framework.entities.View import View
@@ -29,6 +30,7 @@ class LegacyHangar(View, IGlobalListener):
 
     def _populate(self):
         super(LegacyHangar, self)._populate()
+        self.addListener(events.GameEvent.CHANGE_APP_RESOLUTION, self.as_appResizedS, scope=EVENT_BUS_SCOPE.GLOBAL)
         self.__appWidth = screenResolution()[0]
         self.__appHeight = screenResolution()[1]
 
@@ -55,6 +57,10 @@ class LegacyHangar(View, IGlobalListener):
     def vehicleParams(self):
         return self.getComponent('LegacyVehicleParamsUI')
     
+    def as_appResizedS(self, _):
+        if self._isDAAPIInited():
+            self.flashObject.as_appResized(None)
+
     def onAppResized(self, appWidth, appHeight):
         if getGUIConfig()['isLegacyLobbyHeaderEnabled']:
             self.__appWidth = appWidth
@@ -62,12 +68,15 @@ class LegacyHangar(View, IGlobalListener):
 
             self.guiSubViewsReplace(None, self._getHangarSrc())
 
+    # 400 - Historic battles?
+    # 301 - White Tiger
     def onPrbEntitySwitched(self):
         if self.prbDispatcher is not None:
             state = self.prbDispatcher.getFunctionalState()
-            isInCorrectPreQueue = state.isInPreQueue(QUEUE_TYPE.BATTLE_ROYALE) or state.isInPreQueue(400)
-            isInCorrectUnit =  state.isInUnit(PREBATTLE_TYPE.BATTLE_ROYALE) or state.isInUnit(400)
+            isInCorrectPreQueue = state.isInPreQueue(QUEUE_TYPE.BATTLE_ROYALE) or state.isInPreQueue(400) or state.isInPreQueue(301)
+            isInCorrectUnit = state.isInUnit(PREBATTLE_TYPE.BATTLE_ROYALE) or state.isInUnit(400) or state.isInPreQueue(301)
             self.researchPanel.flashObject.visible = not (isInCorrectPreQueue or isInCorrectUnit)
+            self.vehicleParams.flashObject.visible = not (state.isInPreQueue(QUEUE_TYPE.BATTLE_ROYALE) or state.isInUnit(PREBATTLE_TYPE.BATTLE_ROYALE))
 
     def reloadView(self):
         restartOnlyHangar()

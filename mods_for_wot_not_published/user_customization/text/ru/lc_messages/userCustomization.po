@@ -1,0 +1,189 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: MT Origins\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "dialog/title"
+msgstr "Внешний вид машины"
+
+msgid "dialog/messageInfo"
+msgstr "Перейти к окну внешнего вида для сервера или к агрегатору стилей?"
+
+msgid "dialog/messageWarning"
+msgstr ""
+"На вашем танке нет применённого стиля или камуфляжа, который даёт бонус к маскировке.\n"
+"Настоятельно рекомендуется его установить перед использованием агрегатора стилей."
+
+msgid "dialog/serverOutfitBtn/label"
+msgstr "Перейти к стандартному внешнему виду"
+
+msgid "dialog/userOutfitBtn/label"
+msgstr "Перейти к агрегатору стилей"
+
+msgid "button/goToUserCustomization/label"
+msgstr "Агрегатор стилей"
+
+msgid "button/goToUserCustomization/tooltip/header"
+msgstr "Агрегатор стилей"
+
+msgid "button/goToUserCustomization/tooltip/body"
+msgstr ""
+"Выбор стандартного внешнего вида недоступен.\n"
+"Нажмите, чтобы перейти к окну агрегатора стилей."
+
+msgid "notification/header"
+msgstr "Агрегатор стилей"
+
+msgid "notification/outfitSaved"
+msgstr ""
+"Стиль сохранён в конфиге мода.\n"
+"Теперь он будет отображаться и в бою."
+
+msgid "notification/reloadCacheStarted"
+msgstr ""
+"Идёт обновление кэша кастомизации\n"
+"и повторное внедрение элементов. Пожалуйста, подождите.\n\n"
+"После этой процедуры вы будете возвращены в окно агрегатора."
+
+msgid "notification/reloadCacheEnded"
+msgstr "Кэш кастомизации обновлён, изменения в файлах формата XML применены, модель танка перезагружена."
+
+msgid "notification/reloadCacheFailed"
+msgstr "Обновление кэша кастомизации провалено, проверьте логи. Внешний вид машины сброшен. Рекомендуется перезапуск клиента."
+
+msgid "notification/noVehicleToEdit"
+msgstr "В данный момент отредактировать внешний вид машины невозможно."
+
+msgid "notification/outfitResetByForbiddenStyle"
+msgstr ""
+"Нанесённый на этот танк стиль был закрыт к просмотру и применению в рамках мода по определённым причинам.\n\n"
+"Стиль на текущем танке был сброшен и удалён из конфига."
+
+msgid "notification/outfitResetByConfigError"
+msgstr ""
+"В конфиге мода для стиля на этом танке обнаружено несовместимое значение. Запись недействительна. Если вы не считаете это нормальным - сообщите разработчику мода.\n\n"
+"Стиль на текущем танке был сброшен и удалён из конфига."
+
+msgid "notification/outfitResetByConfigUpdate"
+msgstr ""
+"В одном из обновлений мода был переработан механизм сохранения стилей. Из-за этого записи о сохранённых стилях с дополнительными элементами несовместимы.\n\n"
+"Стиль на текущем танке был сброшен и удалён из конфига."
+
+msgid "waiting/userCustomizationInject"
+msgstr "Чтение и внедрение элементов пользовательской кастомизации..."
+
+msgid "waiting/stylesDataCollect"
+msgstr "Сбор данных о стилях..."
+
+msgid "waiting/itemsSync"
+msgstr "Синхронизация предметов..."
+
+msgid "window/alternateItemsCarousel/header"
+msgstr "ДОПОЛНИТЕЛЬНЫЕ ЭЛЕМЕНТЫ СТИЛЯ"
+
+msgid "window/alternateItemsCarousel/noItems"
+msgstr "Выберите тип элемента"
+
+msgid "window/noAlternateItems"
+msgstr "У стиля нет дополнительных элементов"
+
+msgid "window/styleNotInstalled"
+msgstr "Пользовательский стиль не установлен"
+
+msgid "window/styleInstalled"
+msgstr ""
+"Установлен пользовательский стиль\n"
+"%(styleName)s"
+
+msgid "window/devMode"
+msgstr "Для разработчиков"
+
+msgid "window/createTemplateBtn/label"
+msgstr "Создать шаблон"
+
+msgid "window/createTemplateBtn/tooltip/header"
+msgstr "Создать шаблон стиля"
+
+msgid "window/createTemplateBtn/tooltip/body"
+msgstr ""
+"Нажмите, чтобы создать по пути <font color='#bbbbbb'>res_mods/номер_патча/valberton/user_customization</font> шаблон пользовательского стиля <font color='#bbbbbb'>template</font>.\n"
+"После этого клиент перезагрузится автоматически."
+
+msgid "window/reloadModelBtn/label"
+msgstr "Перезагрузить модель"
+
+msgid "window/reloadModelBtn/tooltip/header"
+msgstr "Перезагрузить модель танка"
+
+msgid "window/reloadModelBtn/tooltip/body"
+msgstr ""
+"Если вы меняете только текстуру элементов кастомизации - просто перезагрузите модель для применения изменений."
+
+msgid "window/reloadCacheBtn/label"
+msgstr "Перезагрузить кэш"
+
+msgid "window/reloadCacheBtn/tooltip/header"
+msgstr "Перезагрузить кэш кастомизации"
+
+msgid "window/reloadCacheBtn/tooltip/body"
+msgstr ""
+"Для того, чтобы применить изменения в XML-файлах кастомизации, вы должны перезагрузить её кэш."
+
+msgid "window/applyBtn/label"
+msgstr "Применить и выйти"
+
+msgid "window/applyBtn/tooltip/header"
+msgstr "Применить стиль и выйти"
+
+msgid "window/applyBtn/tooltip/body"
+msgstr ""
+"Нажмите, для того, чтобы применить выбранный стиль на машину."
+
+msgid "window/exitBtn/label"
+msgstr "Выйти"
+
+msgid "window/exitBtn/tooltip/header"
+msgstr "Выйти из окна агрегатора"
+
+msgid "window/exitBtn/tooltip/body"
+msgstr ""
+"Нажмите, для того, чтобы выйти без применения выбранного стиля."
+
+msgid "view/label"
+msgstr "АГРЕГАТОР СТИЛЕЙ ДЛЯ"
+
+msgid "view/styleTypeTabs/2d"
+msgstr "2D-стили"
+
+msgid "view/styleTypeTabs/3d"
+msgstr "3D-стили"
+
+msgid "view/styleSourceTabs/user"
+msgstr "Пользовательские"
+
+msgid "view/styleSourceTabs/ingame"
+msgstr "Игровые"
+
+msgid "view/filter/default"
+msgstr "Фильтр по названию стиля"
+
+msgid "view/stylesCarousel/noItems"
+msgstr ""
+"По текущим фильтрам стилей не найдено.\n"
+"Попробуйте другие фильтры."
+
+msgid "view/stylesCarousel/styleWithoutName"
+msgstr ""
+"Стиль без названия\n"
+"#%(styleID)s"
+
+msgid "style/name"
+msgstr "Пример для подражания"
+
+msgid "style/description"
+msgstr "Стиль шаблона стиля для мода \"Агрегатор стилей\"."

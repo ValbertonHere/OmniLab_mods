@@ -32,6 +32,15 @@ msgstr "Ангар в пещере"
 msgid "hangar_premium_9may/title"
 msgstr "На День Победы 2014 года"
 
+msgid "hangar_premium_halloween/title"
+msgstr "Хэллоунский премиум ангар первого поколения"
+
+msgid "hangar_halloween_v2/title"
+msgstr "Хэллоунский базовый ангар второго поколения"
+
+msgid "hangar_lugansk_6years/title"
+msgstr "Луганский ангар на 6-летие проекту"
+
 msgid "prem_sense_hangars_v1/title"
 msgstr "Ангары первого поколения"
 

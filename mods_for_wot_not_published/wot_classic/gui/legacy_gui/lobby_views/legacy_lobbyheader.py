@@ -18,12 +18,11 @@ from gui.Scaleform.framework.entities.View import View
 
 from gui.shared.view_helpers.emblems import ClanEmblemsHelper
 from gui.shared.formatters.currency import getBWFormatter
-from gui.shared import event_dispatcher as shared_events, events
+from gui.shared import event_dispatcher as shared_events, events, EVENT_BUS_SCOPE
 from gui.shared.money import Currency
 
 from gui.ClientUpdateManager import g_clientUpdateManager
 from gui.clans.clan_cache import g_clanCache
-from gui.prb_control.dispatcher import EVENT_BUS_SCOPE
 from gui.prb_control.entities.listener import IGlobalListener
 from gui.prb_control.entities.base.ctx import PrbAction
 from gui.prb_control.settings import REQUEST_TYPE
@@ -36,6 +35,7 @@ from skeletons.gui.game_control import IManualController, IPlatoonController, IS
 from skeletons.gui.goodies import IGoodiesCache
 from skeletons.gui.web import IWebController
 from skeletons.gui.impl import IGuiLoader
+# from skeletons.prebattle_vehicle import IPrebattleVehicle | Удалён в 1.38, возможно вернётся.
 
 from CurrentVehicle import g_currentVehicle, g_currentPreviewVehicle
 from helpers import i18n, time_utils, isPlayerAccount, dependency
@@ -60,6 +60,7 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
     goodiesCache = dependency.descriptor(IGoodiesCache)
     webCtrl = dependency.descriptor(IWebController)
     serverStats = dependency.descriptor(IServerStatsController)
+    # prbVehicle = dependency.descriptor(IPrebattleVehicle)
 
     appLoader = dependency.instance(IAppLoader)
 
@@ -98,12 +99,15 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
 
     def _addListeners(self):
         self.startGlobalListening()
+        self.addListener(events.GameEvent.CHANGE_APP_RESOLUTION, self.as_guiReplaceS, scope=EVENT_BUS_SCOPE.GLOBAL)
         self.addListener(events.FightButtonEvent.FIGHT_BUTTON_UPDATE, self.__updateLobbyHeaderButtons, scope=EVENT_BUS_SCOPE.LOBBY)
         self.addListener(events.CoolDownEvent.PREBATTLE, self.__handleSetPrebattleCoolDown, scope=EVENT_BUS_SCOPE.LOBBY)
         g_currentVehicle.onChanged += self.onVehicleChanged
         g_currentVehicle.onChanged += self.__updateLobbyHeaderButtons
         g_currentPreviewVehicle.onChanged += self.onVehicleChanged
         g_currentPreviewVehicle.onChanged += self.__updateLobbyHeaderButtons
+        # self.prbVehicle.onChanged += self.onVehicleChanged
+        # self.prbVehicle.onChanged += self.__updateLobbyHeaderButtons
         g_playerEvents.onEnqueued += self.__updateLobbyHeaderButtons
         g_playerEvents.onDequeued += self.__updateLobbyHeaderButtons
         self.gameSession.onPremiumNotify += self.onPremiumChanged
@@ -216,6 +220,10 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
 
         if self._isDAAPIInited():
             self.flashObject.as_showTutorial(showTutorial)
+    
+    def as_guiReplaceS(self, _):
+        if self._isDAAPIInited():
+            self.flashObject.as_guiReplace(None)
 
     def onClanEmblem32x32Received(self, _, emblem):
         if self._isDAAPIInited():
@@ -245,9 +253,13 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
     def onVehicleChanged(self):
         vehicle = g_currentVehicle.item
         vehicle_preview = g_currentPreviewVehicle.item
+        # preBattle_vehicle = self.prbVehicle.item
 
         if vehicle_preview is not None:
             vehicle = vehicle_preview
+
+        # if preBattle_vehicle is not None:
+        #     vehicle = preBattle_vehicle
 
         if vehicle is not None:
             vehName = vehicle.userName

@@ -37,8 +37,8 @@ class LegacyFlashBangEffect(_FlashBangEffectDesc):
             self._duration = 0.0
         return
 
-def onOwnVehicleDamaged(self, attackerID, points, effectsIndex, damageFactor, lastMaterialIsShield, damageCausedByDiscreteFactor):
-    base(self, attackerID, points, effectsIndex, damageFactor, lastMaterialIsShield, damageCausedByDiscreteFactor)
+def onOwnVehicleDamaged(self, attackerID, points, effectsIndex, damageFactor, lastMaterialIsShield): # Разработчик, который подумал, что добавлять в одной обнове и удалять в следующей один аргумент, https://youtu.be/BL3_cLKxLOI?si=svKE6AaguHpLDPxS
+    base(self, attackerID, points, effectsIndex, damageFactor, lastMaterialIsShield)
     if self.id == BigWorld.player().playerVehicleID:
         maxComponentIdx = self.calcMaxComponentIdx()
         decodedPoints = DamageFromShotDecoder.decodeHitPoints(points, self.appearance.collisions, maxComponentIdx, self.typeDescriptor)

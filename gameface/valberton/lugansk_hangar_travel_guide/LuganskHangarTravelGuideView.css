@@ -1,0 +1,253 @@
+p {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.App {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.closeBtn {
+    position: fixed;
+    right: 0px;
+    top: 12px;
+    width: 32px;
+    height: 32px;
+    background-image: url(img://gui/maps/icons/wotclassic/travel_guide/close.png);
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.25s ease;
+}
+
+.closeBtn:hover {
+    opacity: 1;
+}
+
+.header {
+    color: white;
+    font-size: 24px;
+    margin-top: 50px;
+    text-align: center;
+    text-shadow: 0px 0px 50px #2491bd;
+}
+
+.header_description {
+    text-align: left;
+    margin-left: 30px;
+}
+
+.title {
+    font-size: 72px;
+    font-family: Warhelios;
+    font-weight: bold;
+}
+
+.title_description {
+    font-size: 48px;
+}
+
+.POIs {
+    width: 45vw;
+    height: 100%;
+}
+
+.buttons {
+    margin-top: 10px;
+    text-align: center;
+    display: inline;
+}
+
+.POI_text {
+    color: white;
+    margin-left: 30px;
+    text-shadow: 0px 0px 20px #2491bd;
+    overflow-y: scroll;
+    transition: opacity 0.5s ease;
+}
+
+.POI_text_big {
+    font-size: 24px;
+    margin-top: 20px;
+}
+
+.POI_text_small {
+    font-size: 12px;
+}
+
+.POI_text_small p {
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+.POI_text_showed {
+    opacity: 0.5;
+}
+
+.POI_text_hidden {
+    opacity: 1;
+}
+
+.descr_button {
+    color: #F26522;
+    background-color: #242424;
+    text-shadow: 0px 0px 20px #F26522;
+    border: 1px solid transparent;
+    vertical-align: middle;
+    font-size: 14px;
+    width: 60px;
+    height: 25px;
+    cursor: pointer;
+    transition: border 0.2s ease, opacity 0.5s ease;
+}
+
+.descr_button:hover {
+    border: 1px solid #F26522;
+}
+
+.descr_button_showed {
+    opacity: 0.5;
+}
+
+.descr_button_hidden {
+    opacity: 1;
+}
+
+.descr_button_show {
+    display: block;
+}
+
+.descr_button_hide {
+    display: none;
+}
+
+.POI_description {
+    text-align: justify;
+}
+
+.POI_description_big {
+    font-size: 20px;
+}
+
+.POI_description_small {
+    font-size: 14px;
+}
+
+.POI_description_showed {
+    opacity: 0.5;
+}
+
+.POI_description_hidden {
+    opacity: 1;
+}
+
+.POIs_arrow {
+    position: absolute;
+    left: 50vw;
+    bottom: 50px;
+    transform: translate(-50%, 0);
+    transition: opacity 0.5s ease;
+    width: 80px;
+    height: 26px;
+    background-image: url(img://gui/maps/icons/wotclassic/travel_guide/arrow.png);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.POIs_arrow_showed {
+    opacity: 0;
+}
+
+.POIs_arrow_hidden {
+    opacity: 0.5;
+}
+
+.POIs_tabmenu {
+    position: absolute;
+    left: 50vw;
+    bottom: 50px;
+    transform: translate(-50%, 0);
+    color: white;
+    display: inline;
+    transition: opacity 0.5s ease, bottom 0.5s ease;
+}
+
+.POIs_tabmenu_showed {
+    opacity: 1;
+    bottom: 50px;
+}
+
+.POIs_tabmenu_hidden {
+    opacity: 0;
+    bottom: -200px;
+}
+
+.POIs_tab {
+    z-index: 0;
+    margin: 10px;
+    background-position: center;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: box-shadow 0.5s ease;
+}
+
+.POIs_tab_big {
+    width: 400px;
+    height: 150px;
+}
+
+.POIs_tab_small {
+    width: 283px;
+    height: 106px;
+}
+
+.POIs_tab_active {
+    display: none;
+}
+
+.POIs_tab .tabTitle {
+    z-index: -1;
+    font-size: 24px;
+    font-family: Warhelios;
+    font-weight: bold;
+    position: relative;
+    bottom: 0px;
+    text-align: center;
+    transition: bottom 0.5s ease;
+    text-shadow: 0px 0px 20px #2491bd;
+    pointer-events: none;
+}
+
+.POIs_tab:hover {
+    box-shadow: 0px 0px 20px #2491bd;
+}
+
+.POIs_tab:hover .tabTitle {
+    bottom: 37px;
+}
+
+#graphics {
+    background-image: url(img://gui/maps/icons/wotclassic/travel_guide/graphics.png);
+    background-repeat: no-repeat;
+}
+
+#ui_hngr {
+    background-image: url(img://gui/maps/icons/wotclassic/travel_guide/ui_hngr.png);
+    background-repeat: no-repeat;
+}
+
+#sounds {
+    background-image: url(img://gui/maps/icons/wotclassic/travel_guide/sounds.png);
+    background-repeat: no-repeat;
+}
+
+footer {
+    position: fixed;
+    bottom: 20px;
+    left: 50vw;
+    transform: translate(-50%, 0);
+    color: #b1b2b2;
+    font-size: 18px;
+    text-shadow: 0px 0px 20px #2491bd
+}

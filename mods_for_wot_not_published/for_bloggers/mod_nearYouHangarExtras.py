@@ -233,21 +233,21 @@ class NearYouHangarExtras():
         return True
     
     def __onNearTVClicked(self):
-        BigWorld.wg_openWebBrowser('https://www.youtube.com/@NearYouHR')
+        BigWorld.openWebBrowser('https://www.youtube.com/@NearYouHR')
 
     def __onDyffTVClicked(self):
-        BigWorld.wg_openWebBrowser('https://www.youtube.com/channel/UCmPzycVuPeuYM3sbPw2AvFw')
+        BigWorld.openWebBrowser('https://www.youtube.com/channel/UCmPzycVuPeuYM3sbPw2AvFw')
         
     def __onClymbaTVClicked(self):
-        BigWorld.wg_openWebBrowser('https://www.youtube.com/@C1ymba')
+        BigWorld.openWebBrowser('https://www.youtube.com/@C1ymba')
         
     def __onIIomidopTVClicked(self):
-        BigWorld.wg_openWebBrowser('https://www.youtube.com/c/IIomudopMSK')
+        BigWorld.openWebBrowser('https://www.youtube.com/c/IIomudopMSK')
         
     def __onGuitmanTVClicked(self):
-        BigWorld.wg_openWebBrowser('https://www.twitch.tv/guit88man')
+        BigWorld.openWebBrowser('https://www.twitch.tv/guit88man')
     
     def __onNYShopClicked(self):
-        BigWorld.wg_openWebBrowser('https://nearyou-shop.ru/')
-    
+        BigWorld.openWebBrowser('https://nearyou-shop.ru/')
+
 g_nearYouHangarExtras = NearYouHangarExtras()

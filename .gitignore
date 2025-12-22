@@ -1,6 +1,35 @@
 .vscode/*
 sources/*
+sources-js/*
 sources-as3/*
 sources-userAPIs/*
 
+gameface/valberton/val_lh_inject
+mods_for_wot_not_published/gameface/mod_lobby_header_inject.py
+mods_for_wot_not_published/user_customization/gui/mods/omni_user_customization/api.py
+
 OmniLab_PyMods.code-workspace
+
+# vite
+
+gameface/logs
+gameface/*.log
+gameface/npm-debug.log*
+gameface/yarn-debug.log*
+gameface/yarn-error.log*
+gameface/pnpm-debug.log*
+gameface/lerna-debug.log*
+
+gameface/node_modules
+gameface/dist
+gameface/dist-ssr
+gameface/*.local
+
+gameface/!.vscode/extensions.json
+gameface/.idea
+gameface/.DS_Store
+gameface/*.suo
+gameface/*.ntvs*
+gameface/*.njsproj
+gameface/*.sln
+gameface/*.sw?

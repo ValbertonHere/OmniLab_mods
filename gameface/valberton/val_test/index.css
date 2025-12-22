@@ -1,0 +1,126 @@
+#root {
+    font-size: 24px;
+    color: #FFFFFF;
+}
+
+/* Game Buttons */
+
+.ButtonWidth_170 {
+    width: 170rem;
+}
+.ButtonWidth_75 {
+    width: 75rem;
+}
+
+.CButton_base_40 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 2rem;
+    box-shadow: 0 0 0 1rem rgba(0,0,0, .6);
+    position: relative;
+    cursor: pointer;
+}
+
+    .CButton_base__main_42,
+    .CButton_base__primary_7f,
+    .CButton_base__primaryGreen_6f,
+    .CButton_base__primaryRed_ec,
+    .CButton_base__secondary_50 {
+        background-size: 100% 100%;
+    }
+
+    .CButton_base__main_42 {
+        background-image: url('R.images.gui.maps.icons.components.button.back_main');
+    }
+
+    .CButton_base__primary_7f {
+        background-image: url('R.images.gui.maps.icons.components.button.back_primary');
+    }
+
+    .CButton_base__primaryGreen_6f {
+        background-image: url('R.images.gui.maps.icons.components.button.back_primary_green');
+    }
+
+    .CButton_base__primaryRed_ec {
+        background-image: url('R.images.gui.maps.icons.components.button.back_primary_red');
+    }
+
+    .CButton_base__secondary_50 {
+        background-image: url('R.images.gui.maps.icons.components.button.back_secondary');
+    }
+
+    .CButton_base__ghost_ed {
+        border-radius: 3rem;
+        box-shadow: 0 0 0 1rem rgba(0,0,0, .3),
+            0 0 0 1rem rgba(255,255,255, .15) inset;
+        background-color: rgba(0,0,0, .15);
+    }
+
+    .CButton_base__extraSmall_27 {
+        min-height: 17rem;
+        padding: 0 16rem;
+    }
+
+    .CButton_base__small_df,
+    .CButton_base__medium_74 {
+        padding: 0 20rem;
+    }
+
+    .CButton_base__small_df {
+        min-height: 18rem;
+    }
+
+    .CButton_base__medium_74 {
+        min-height: 32rem;
+    }
+
+    .CButton_base__disabled_d9 {
+        cursor: default;
+    }
+
+
+/* end game butt */
+
+
+
+.testButton {
+    display: block;
+    width: 80rem;
+    height: 80rem;
+    position: relative;
+    top: 35px;
+    /*left: 50%;*/
+    cursor: pointer;
+}
+
+.testButton .testButtonText {
+    position: relative;
+    top: 25px;
+    left: 100px;
+    box-shadow: 10px 10px 10px black;
+}
+
+.testButton .testButtonIcon {
+    opacity: 0.7;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    width: 80px;
+    height: 80px;
+    background-image: url(img://gui/maps/icons/omnilab/userCustomization.png);
+    background-size: auto;
+    background-repeat: no-repeat;
+}
+
+.testButton:hover .testButtonIcon {
+    opacity: 1;
+}
+
+
+.testButton:active .testButtonIcon {
+    opacity: 0.5;
+}
