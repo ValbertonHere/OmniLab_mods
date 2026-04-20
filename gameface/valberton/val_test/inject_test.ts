@@ -1,5 +1,6 @@
 import { playSound } from 'gameface:sound';
 import { ModelObserver } from 'gameface:model';
+// @ts-nocheck
 
 type Model = {
   request: string | null;

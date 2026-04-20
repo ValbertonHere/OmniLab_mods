@@ -39,10 +39,23 @@ msgstr ""
 msgid "notification/header"
 msgstr "Агрегатор стилей"
 
+msgid "notification/dev_header"
+msgstr ""
+"Агрегатор стилей\n"
+"Режим разработчика"
+
+msgid "notification/devModeWarn"
+msgstr "В данный момент мод допускает использование стиля без маскировки на сервере, будьте бдительны!"
+
 msgid "notification/outfitSaved"
 msgstr ""
 "Стиль сохранён в конфиге мода.\n"
 "Теперь он будет отображаться и в бою."
+msgid "notification/noOutfitOnServer"
+msgstr "Для того, чтобы у этого танка был постоянный бонус к маскировке, <font color='#bbbbbb'>на него или на его корпус на всех типах карт</font> необходимо поставить камуфляж или стиль в стандартном экране кастомизации."
+
+msgid "notification/outfitRemoved"
+msgstr "Запись о применённом стиле удалена из конфига мода."
 
 msgid "notification/reloadCacheStarted"
 msgstr ""
@@ -51,7 +64,7 @@ msgstr ""
 "После этой процедуры вы будете возвращены в окно агрегатора."
 
 msgid "notification/reloadCacheEnded"
-msgstr "Кэш кастомизации обновлён, изменения в файлах формата XML применены, модель танка перезагружена."
+msgstr "Кэш кастомизации обновлён, изменения в файлах формата JSON применены, модель танка перезагружена."
 
 msgid "notification/reloadCacheFailed"
 msgstr "Обновление кэша кастомизации провалено, проверьте логи. Внешний вид машины сброшен. Рекомендуется перезапуск клиента."
@@ -132,7 +145,8 @@ msgstr "Перезагрузить кэш кастомизации"
 
 msgid "window/reloadCacheBtn/tooltip/body"
 msgstr ""
-"Для того, чтобы применить изменения в XML-файлах кастомизации, вы должны перезагрузить её кэш."
+"Для того, чтобы применить изменения в JSON-файлах \n"
+"пользовательской кастомизации, вы должны перезагрузить её кэш."
 
 msgid "window/applyBtn/label"
 msgstr "Применить и выйти"
@@ -144,15 +158,26 @@ msgid "window/applyBtn/tooltip/body"
 msgstr ""
 "Нажмите, для того, чтобы применить выбранный стиль на машину."
 
-msgid "window/exitBtn/label"
-msgstr "Выйти"
+msgid "window/removeOutfitBtn/tooltip/header"
+msgstr "Снять стиль с танка"
 
-msgid "window/exitBtn/tooltip/header"
-msgstr "Выйти из окна агрегатора"
-
-msgid "window/exitBtn/tooltip/body"
+msgid "window/removeOutfitBtn/tooltip/body"
 msgstr ""
-"Нажмите, для того, чтобы выйти без применения выбранного стиля."
+"Нажмите, для того, чтобы снять стиль с танка и удалить его из конфига модификации."
+
+msgid "window/closeBtn/label"
+msgstr "НАЗАД"
+
+msgid "window/closeBtn/descrLabel"
+msgstr "К АНГАРУ"
+
+msgid "window/switchOutfitBtn/tooltip/header"
+msgstr "Переключить пользовательский/стандартный стили"
+
+msgid "window/switchOutfitBtn/tooltip/body"
+msgstr ""
+"<font color='#bbbbbb'>Нажато:</font> отображается пользовательский стиль.\n"
+"<font color='#bbbbbb'>Не нажато:</font> отображается стандартный (серверный) внешний вид танка."
 
 msgid "view/label"
 msgstr "АГРЕГАТОР СТИЛЕЙ ДЛЯ"
@@ -186,4 +211,25 @@ msgid "style/name"
 msgstr "Пример для подражания"
 
 msgid "style/description"
-msgstr "Стиль шаблона стиля для мода \"Агрегатор стилей\"."
+msgstr "Стиль-шаблон для мода \"Агрегатор стилей\"."
+
+msgid "serialNumberView/header"
+msgstr "СЕРИЙНЫЙ НОМЕР СТИЛЯ"
+
+msgid "serialNumberView/header/description"
+msgstr "Наберите на клавиатуре серийный номер стиля и нажмите клавишу ENTER"
+
+msgid "serialNumberView/hint/onlyIntegers"
+msgstr "ВВОДИТЬ МОЖНО ТОЛЬКО ЦИФРЫ ОТ 0 ДО 9."
+
+msgid "serialNumberView/hint/prohibbenNumber"
+msgstr ""
+"ЭТОТ НОМЕР ЗАПРЕЩЁН\n"
+"К ИСПОЛЬЗОВАНИЮ,\n"
+"ВЫБЕРИТЕ ДРУГОЙ."
+
+msgid "serialNumberView/closeBtn/label"
+msgstr "НАЗАД"
+
+msgid "serialNumberView/closeBtn/descrLabel"
+msgstr "К АГРЕГАТОРУ СТИЛЕЙ"

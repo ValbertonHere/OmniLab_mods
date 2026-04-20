@@ -70,9 +70,13 @@ class ClassicHangarOverrider(object):
 
     # Halloween
     # CLASSIC_HANGARS = ('hangar', 'hangar_premium_Halloween', 'hangar_Halloween_v2', 'hangar_premium_v2')
-    CLASSIC_HANGARS = ('hangar', 'hangar_premium', 'hangar_v2', 'hangar_premium_v2')
-    SPECIAL_HANGARS = ('hangar_lugansk_6years', 'hangar_premium_9may', 'hangar_premium_23feb_v2', 'Luganks_5years_hangar', 'hangar_premium_igr')
-    PREM_SENSETIVE_HANGARS = {'ps_v1': {'basic': 'hangar', 'premium': 'hangar_premium'},
+    #
+    # New Year
+    # CLASSIC_HANGARS = ('hangar_ny_0.6.2', 'hangar_premium_ny', 'hangar_v2', 'hangar_premium_v2')
+    CLASSIC_HANGARS = ('hangar_basic_082', 'hangar_premium_082', 'hangar_v2', 'hangar_premium_v2')
+    SPECIAL_HANGARS = ('hangar_23feb_0811', 'hangar_ny_0.7.1', 'hangar_premium_ny_0.7.1', 'hangar_premium_ny_0.6.2', 'hangar_lugansk_6years', 
+                       'hangar_premium_9may', 'hangar_premium_23feb_v2', 'Luganks_5years_hangar', 'hangar_premium_igr')
+    PREM_SENSETIVE_HANGARS = {'ps_v1': {'basic': 'hangar_basic_082', 'premium': 'hangar_premium_082'},
                               'ps_v2': {'basic': 'hangar_v2', 'premium': 'hangar_premium_v2'}}
 
     def __init__(self):

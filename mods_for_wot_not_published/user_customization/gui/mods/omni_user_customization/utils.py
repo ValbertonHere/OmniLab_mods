@@ -6,6 +6,10 @@ import types
 import BigWorld
 import ResMgr
 
+from CurrentVehicle import g_currentVehicle
+
+from debug_utils import LOG_CURRENT_EXCEPTION
+
 from gui.Scaleform.daapi.settings.views import VIEW_ALIAS
 from gui.Scaleform.framework.entities.View import ViewKey
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
@@ -16,6 +20,8 @@ from gui.impl.gen import R
 from gui.impl.pub.dialog_window import DialogButtons
 
 from helpers import dependency
+
+from items.components.c11n_constants import ApplyArea
 
 from serializable_types.customizations import CUSTOMIZATION_CLASSES
 from serialization import parseCompDescr
@@ -28,6 +34,9 @@ from th_async import th_async, th_await
 from vehicle_outfit.outfit import Outfit
 from vehicle_systems.tankStructure import TankPartNames
 from vehicle_systems.model_assembler import loadAppearancePrefab
+from vehicle_systems.camouflages import SeasonType
+
+from ._constants import DEV_MODE_FILE
 
 __all__ = ('byteify', 'override', 'vfs_file_read', 'vfs_dir_list_files', 'getFashionValue', 'getHangarVehicle',
         'parse_localization_file', 'cache_result', 'getIconPatch', 'readBrandingItem', 'isBattleRestricted',
@@ -64,9 +73,32 @@ def vfs2realfs(vfs_from, realfs_to):
         with open(realfs_to, 'wb') as realfs_file:
             realfs_file.write(vfs_data)
 
+def getDevModeState():
+    return os.path.exists(DEV_MODE_FILE)
+    
+def raiseJsonWrong(msg):
+    logger.critical('--------------- CUSTOMIZATION JSON WRONG! ---------------')
+    LOG_CURRENT_EXCEPTION()
+    print msg
+    BigWorld.crash(1)
+
+# Взято из https://github.com/wotstat/wotstat-analytics/blob/main/WOTSTAT/res/scripts/client/gui/mods/wot_stat/common/exceptionSending.py
+def reader_exception_handler(func):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except:
+            raiseJsonWrong('Something went wrong while JSON reading process. See lines below.')
+
+    return wrapper
+
 def loadOUCWindow():
     app = dependency.instance(IAppLoader).getApp()
     app.loadView(SFViewLoadParams('UserCustomizationWindowUI'))
+
+def loadUCSerialNumberView():
+    app = dependency.instance(IAppLoader).getApp()
+    app.loadView(SFViewLoadParams('UserCustomizationSerialNumberViewUI'))
 
 def isInCustomization():
     app = dependency.instance(IAppLoader).getApp()
@@ -108,28 +140,26 @@ def getVehicleOutfitFromDict(outfitDict, vehicleDescriptor, season):
     return outfitComponent
 
 @th_async
-def showCustomizationDialog(isServerCamoApplied, callback):
-    if isServerCamoApplied:
-        builder = InfoDialogBuilder()
-        builder.setFormattedMessage('#userCustomization:dialog/messageInfo')
-        builder.setIcon(R.images.gui.maps.icons.customization.customization_items.c_600x450.icon_style())
-    else:
-        builder = WarningDialogBuilder()
-        builder.setFormattedMessage('#userCustomization:dialog/messageWarning')
-    
+def showCustomizationDialog(callback):
+    builder = InfoDialogBuilder()
+    builder.setFormattedMessage('#userCustomization:dialog/messageInfo')
+    builder.setIcon(R.images.gui.maps.icons.customization.customization_items.c_600x450.icon_style())
     builder.setFormattedTitle('#userCustomization:dialog/title')
-    builder.addButton(DialogButtons.SUBMIT if isServerCamoApplied else DialogButtons.PURCHASE, None, False, rawLabel='#userCustomization:dialog/serverOutfitBtn/label')
+    builder.addButton(DialogButtons.SUBMIT, None, False, rawLabel='#userCustomization:dialog/serverOutfitBtn/label')
     builder.addButton(DialogButtons.RESEARCH, None, False, rawLabel='#userCustomization:dialog/userOutfitBtn/label')
     result = yield th_await(dialogs.show(builder.buildInLobby()))
     callback(result.result)
 
-def readUserCustomItem(itemCls, itemType, itemName, dataSection, cache, storage):
-    from items.readers.c11n_readers import _readItems
-    itemsFileName = 'valberton/user_customization/xml/%s' % itemName
-    try:
-        _readItems(cache, itemCls, (None, 'ouc_%s' % itemName), dataSection, itemType, storage, {})
-    except:
-        logger.exception("Failed to read custom item, id's conflict? (xml: %s)" % itemsFileName)
-        BigWorld.crash(1)
-    finally:
-        ResMgr.purge(itemsFileName)
+def checkCurrentVehicleServerOutfit():
+    if getDevModeState():
+        return True
+    
+    # Ищем, где на танке для разного типа карт есть камуфляж на всём танке или только на корпусе (именно в этом случае даётся маскировка).
+    camoAffectedOutfits = 0
+    for season in SeasonType.COMMON_SEASONS:
+        for camo in g_currentVehicle.item.getOutfitComponent(season).camouflages: 
+            if camo.appliedTo & ApplyArea.HULL:
+                camoAffectedOutfits += 1
+                break
+    
+    return camoAffectedOutfits == len(SeasonType.COMMON_SEASONS)

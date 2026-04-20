@@ -1,15 +1,16 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 
-// game paths
-// mt_ruby = 'C:/Games/Tanki/res_mods/1.39.0.0/gui/gameface/mods'
+// Пути к играм.
+// mt_ruby = '/home/valberton/Games/Tanki/res_mods/1.40.0.0/gui/gameface/mods/'
 // wot_eu = 'C:/Program Files (x86)/SteamLibrary/steamapps/common/World of Tanks/ru/res_mods/2.0.1.1/gui/gameface/mods'
+// my_git_folder = '/home/valberton/HDD/HDD1/CodeWORK/JavaScript/mto_gameface/valberton/mto_legacy_lobby_header/build/'
 
-const cgf_mods_folder = 'C:/Games/Tanki/res_mods/1.39.0.0/gui/gameface/mods/'
+const cgf_mods_folder = './valberton/user_customization_test/build/'
 
-// mod name
-const mod_folder = 'valberton/lugansk_hangar_travel_guide/'
-const mod_file = 'LuganskHangarTravelGuideView'
+// Название папки в репозитории и название мода (HTML-файла).
+const mod_folder = 'valberton/user_customization_test/'
+const mod_file = 'UserCustomizationTestView'
 
 function virtualExternal(spec = 'virtual:model', target = '../../libs/model.js') {
     return {

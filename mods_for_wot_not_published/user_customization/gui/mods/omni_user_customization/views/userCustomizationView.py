@@ -2,6 +2,7 @@ import logging
 
 from CurrentVehicle import g_currentVehicle
 
+from gui import g_tankActiveCamouflage
 from gui.Scaleform.framework.entities.DAAPIDataProvider import SortableDAAPIDataProvider, ListDAAPIDataProvider
 from gui.Scaleform.framework.entities.View import View
 
@@ -24,8 +25,10 @@ from skeletons.gui.shared.utils import IHangarSpace
 
 from vehicle_outfit.outfit import Outfit
 
+from .userCustomizationWindow import UserCustomizationWindow
 from ..cache import g_oucCache
 from ..config import g_oucConfig
+from ..utils import getDevModeState
 
 logger = logging.getLogger(__name__)
 
@@ -134,7 +137,7 @@ class UserCustomizationView(UserCustomizationViewMeta):
     def __init__(self):
         super(UserCustomizationView, self).__init__()
         self.vehicle = g_currentVehicle.item
-        self.__outfit = g_oucConfig.getVehicleOutfit(self.vehicle.descriptor, SeasonType.SUMMER)
+        self.__outfit = g_oucConfig.getVehicleOutfit(self.vehicle.descriptor, self.getVehicleActiveSeason())
         self.__filterText = ''
         self.__selectedStyleTabs = ['2d', 'user']
         self.__selectedAITab = None
@@ -156,6 +159,10 @@ class UserCustomizationView(UserCustomizationViewMeta):
     def outfit(self):
         return self.__outfit
 
+    @property
+    def mainWindow(self):
+        return UserCustomizationWindow.mainWindow
+
     def _populate(self):
         super(UserCustomizationView, self)._populate()
         self._stylesDP = UserCustomizationStylesDataProvider()
@@ -163,7 +170,7 @@ class UserCustomizationView(UserCustomizationViewMeta):
         self._stylesDP.setFlashObject(self.as_getDPS())
         self._alternateItemsDP.setFlashObject(self.as_getAIDPS())
         self.as_setVehicleTitleS(self.__setVehicleTitle())
-        self.py_selectItem(None, SeasonType.SUMMER)
+        self.py_selectItem(None, self.getVehicleActiveSeason())
 
     def __setVehicleTitle(self):
         return {'tankTierStr': text_styles.grandTitle(int2roman(self.vehicle.level)), 
@@ -183,6 +190,11 @@ class UserCustomizationView(UserCustomizationViewMeta):
 
         styleType, styleSource = self.__selectedStyleTabs
         for styleID, styleInfo in STYLE_SOURCE_ID_TO_CACHE[styleSource]['styles'][styleType].items():
+
+            if styleSource == 'user':
+                styleID = styleInfo[0]
+                styleInfo = styleInfo[1]
+
             if self.__selectedStyleTabs[0] == '3d' and not styleInfo.mayInstall(self.vehicle):
                 continue
             styleInfoDict = {'id': styleID,
@@ -248,24 +260,12 @@ class UserCustomizationView(UserCustomizationViewMeta):
     def __updateView(self):
         # Проверям, есть ли танк в конфиге мода.
         isOutfitInConfig = g_oucConfig.isOutfitInConfig(self.vehicle.descriptor.name)
-
-        if isOutfitInConfig:
-            styleString = i18n.makeString('#userCustomization:window/styleInstalled', styleName=self.__outfit.style.userString)
-            isOutfitForAllSeasons = True
-
-            # Мега-тупая система, но она лучше всего помогает понять, есть ли у стиля разные варианты для сезонов.
-            for season, outfit in self.__outfit.style.outfits.items():
-                if season in SeasonType.COMMON_SEASONS:
-                    if outfit != self.__outfit.style.outfits[1]:
-                       isOutfitForAllSeasons = False
-                       break
-            
-            self.as_setSeasonBarEnabledS(not isOutfitForAllSeasons)
-        else:
-            styleString = '#userCustomization:window/styleNotInstalled'
-            self.as_setSeasonBarEnabledS(False)
-
+        styleString = i18n.makeString('#userCustomization:window/styleInstalled', styleName=self.__outfit.style.userString) if isOutfitInConfig else '#userCustomization:window/styleNotInstalled'
+        isStyleWithSerialNumber = self.__outfit.style.isWithSerialNumber
+        
+        self.as_setSeasonBarEnabledS(not self.checkVehicleOutfitForAllSeasons())
         self.as_setStyleInstalledS(isOutfitInConfig, styleString)
+        self.mainWindow.as_setBigButtonVisibillityS('serialNumber', isStyleWithSerialNumber)
         self.__updateSelectedTab()
         self.__updateStyleTabContentData()
         self.__updateAITabContentData()
@@ -313,6 +313,21 @@ class UserCustomizationView(UserCustomizationViewMeta):
     #     
     #     return Outfit(component=CustomizationOutfit(paints=paints), vehicleCD=self.vehicle.strCD)
 
+    def getVehicleActiveSeason(self):
+        return g_tankActiveCamouflage.get(self.vehicle.intCD, self.vehicle.getAnyOutfitSeason())
+    
+    def checkVehicleOutfitForAllSeasons(self, isCalledFromWindow=False, isUserCustomVisible=False):
+        condition = isUserCustomVisible if isCalledFromWindow else self.__outfit # Не хочу копировать код проверки.
+        outfits = self.__outfit.style.outfits if condition else self.vehicle.outfits
+
+        # Мега-тупая система, но она лучше всего помогает понять, есть ли у стиля разные варианты для сезонов.
+        for season, outfit in outfits.items():
+            if season in SeasonType.COMMON_SEASONS:
+                if outfit != outfits[1]:
+                   return False
+        
+        return True
+    
     def py_getOutfitID(self):
         if self.__outfit:
             return self.__outfit.id
@@ -337,7 +352,7 @@ class UserCustomizationView(UserCustomizationViewMeta):
             
             self.__outfit = outfit
             self.hangarSpace.updateVehicleOutfit(self.__outfit)
-            if g_oucConfig.getDevModeState():
+            if getDevModeState():
                 logger.info('Applied styleID: %s' % itemID)
         except:
             self.hangarSpace.updateVehicle(self.vehicle)

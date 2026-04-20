@@ -6,8 +6,11 @@ import BigWorld, CGF, LGC, Math, ResMgr
 
 from CurrentVehicle import g_currentVehicle
 from cgf_components.hangar_camera_manager import HangarCameraManager
+from collections import namedtuple
 
+from gui import g_tankActiveCamouflage
 from gui.customization.shared import C11nId
+from gui.impl.common.fade_manager import useDefaultFade
 from gui.hangar_cameras.hangar_camera_common import CameraRelatedEvents
 from gui.Scaleform.daapi.view.lobby.customization.shared import CustomizationSlotUpdateVO
 from gui.Scaleform.framework.entities.View import View
@@ -20,6 +23,7 @@ from items.components.c11n_constants import SLOT_DEFAULT_ALLOWED_MODEL
 from skeletons.gui.customization import ICustomizationService
 from skeletons.gui.game_control import IOverlayController
 from skeletons.gui.shared.utils import IHangarSpace
+from frameworks.wulf import WindowLayer
 
 from vehicle_outfit.outfit import Area
 from vehicle_systems.tankStructure import TankPartNames
@@ -27,11 +31,21 @@ from vehicle_systems.tankStructure import TankPartNames
 from .._constants import TEMPLATE_FOLDER, TEMPLATE_FILES
 from ..config import g_oucConfig
 from ..cache import g_oucCache
-from ..utils import vfs2realfs
+from ..utils import vfs2realfs, getDevModeState, loadUCSerialNumberView
 
 logger = logging.getLogger(__name__)
 
+CustomizationSlotUpdateVO = namedtuple('CustomizationSlotUpdateVO', ('slotId', 'itemIntCD', 'uid'))
+
 class UserCustomizationWindowMeta(View):
+    def as_setVisibleS(self, isVisible):
+        if self._isDAAPIInited():
+            self.flashObject.as_setVisible(isVisible)
+
+    def as_setBigButtonVisibillityS(self, buttonName, isVisible):
+        if self._isDAAPIInited():
+            self.flashObject.as_setBigButtonVisibillity(buttonName, isVisible)
+
     def as_resetSizeS(self, appWidth, appHeight):
         if self._isDAAPIInited():
             self.flashObject.as_resetSize(appWidth, appHeight)
@@ -39,8 +53,24 @@ class UserCustomizationWindowMeta(View):
     def as_setDevBtnVisibleS(self, isVisible):
         if self._isDAAPIInited():
             self.flashObject.as_setDevBtnVisible(isVisible)
+            
+    def as_setSeasonBarEnabledS(self, isEnabled):
+        if self._isDAAPIInited():
+            self.flashObject.as_setSeasonBarEnabled(isEnabled)
+
+    def as_setSeasonBarSelectS(self, value):
+        if value not in (1, 2, 4):
+            value = 2 # SUMMER
+            
+        if self._isDAAPIInited():
+            self.flashObject.as_setSeasonBarSelect(str(value))
+    
+    def as_setRemOutfitEnabledS(self, isOutfitInConfig):
+        if self._isDAAPIInited():
+            self.flashObject.as_setRemOutfitBtnEnabled(isOutfitInConfig)
 
 class UserCustomizationWindow(UserCustomizationWindowMeta):
+    mainWindow = None
     c11nService = dependency.descriptor(ICustomizationService)
     hangarSpace = dependency.descriptor(IHangarSpace)
     overlayController = dependency.descriptor(IOverlayController)
@@ -49,6 +79,7 @@ class UserCustomizationWindow(UserCustomizationWindowMeta):
         super(UserCustomizationWindow, self).__init__()
         self.vEntity = None
         self.cameraGameObject = None
+        UserCustomizationWindow.mainWindow = self
 
     @property
     def view(self):
@@ -58,12 +89,15 @@ class UserCustomizationWindow(UserCustomizationWindowMeta):
         super(UserCustomizationWindow, self)._populate()
         self.vEntity = self.hangarSpace.getVehicleEntity()
         self.__initAndLocateCameraToUCView()
-        self.as_setDevBtnVisibleS(g_oucConfig.getDevModeState())
+        self.as_setSeasonBarSelectS(self.view.getVehicleActiveSeason())
+        self.as_setDevBtnVisibleS(getDevModeState())
+        self.as_setRemOutfitEnabledS(g_oucConfig.isOutfitInConfig(self.view.vehicle.name))
         self.addListener(events.GameEvent.CHANGE_APP_RESOLUTION, self.__onAppResized, scope=EVENT_BUS_SCOPE.GLOBAL)
     
     def _dispose(self):
         self.removeListener(events.GameEvent.CHANGE_APP_RESOLUTION, self.__onAppResized, scope=EVENT_BUS_SCOPE.GLOBAL)
         self.__removeAndResetCamera()
+        UserCustomizationWindow.mainWindow = None
         super(UserCustomizationWindow, self)._dispose()
 
     def py_reloadModel(self):
@@ -90,9 +124,31 @@ class UserCustomizationWindow(UserCustomizationWindowMeta):
             g_oucConfig.saveVehicleOutfit(self.view.vehicle.name, self.view.outfit)
         self.destroy()
     
+    def py_switchTankOutfit(self, isUserCustomVisible):
+        self.as_setSeasonBarEnabledS(not self.view.checkVehicleOutfitForAllSeasons(True, isUserCustomVisible))
+        g_currentVehicle.refreshModel(self.view.outfit if isUserCustomVisible else g_currentVehicle.item.outfits[self.view.getVehicleActiveSeason()])
+
+    def py_removeOutfitFromConfig(self):
+        g_oucConfig.removeOutfitFromConfig(self.view.vehicle.name)
+        g_currentVehicle.refreshModel()
+        self.destroy()
+    
     def py_exitWithoutSave(self):
         g_currentVehicle.refreshModel()
         self.destroy()
+    
+    def py_goToSerialNumberView(self):
+        # Сделаем так, чтобы отображались 5 пустых ячеек номера.
+        outfit = self.view.outfit
+        outfit.setSerialNumber('     ')
+        g_currentVehicle.refreshModel(self.c11nService.getEmptyOutfit())
+        g_currentVehicle.refreshModel(outfit)
+
+        self.goToSerialNumberView()
+
+    @useDefaultFade(layer=WindowLayer.OVERLAY, fadeInDuration=.5, fadeOutDuration=.5)
+    def goToSerialNumberView(self):
+        loadUCSerialNumberView()
 
     def py_moveSpace(self, dx, dy, dz):
         self.fireEvent(CameraRelatedEvents(CameraRelatedEvents.LOBBY_VIEW_MOUSE_MOVE, ctx={'dx': dx, 'dy': dy, 'dz': dz}))
@@ -103,6 +159,10 @@ class UserCustomizationWindow(UserCustomizationWindowMeta):
 
     def py_notifyCursorDragging(self, isDragging):
         self.fireEvent(events.LobbySimpleEvent(events.LobbySimpleEvent.NOTIFY_CURSOR_DRAGGING, ctx={'isDragging': isDragging}))
+
+    def setOutfitSerialNumber(self, number):
+        self.view.outfit.setSerialNumber(number)
+        g_currentVehicle.refreshModel(self.view.outfit)
 
     def __onAppResized(self, event):
         self.as_resetSizeS(event.ctx['width']/event.ctx['scale'], event.ctx['height']/event.ctx['scale'])
@@ -144,9 +204,7 @@ class UserCustomizationWindow(UserCustomizationWindowMeta):
                 return
             self.overlayController.setOverlayState(True)
             appearance = self.vEntity.appearance
-            # position = appearance.getVehicleCentralPoint()
             m = Math.Matrix(appearance.compoundModel.node(TankPartNames.HULL))
-            # targetPos = m.applyPoint(position)
             targetPos = m.translation
             CGF.loadGameObject('content/HangarPrefabs/UserCustomizationCamera.prefab', self.hangarSpace.spaceID, targetPos, onCameraInit)
             return

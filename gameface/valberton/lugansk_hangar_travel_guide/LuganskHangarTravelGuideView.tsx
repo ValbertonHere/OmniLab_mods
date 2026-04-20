@@ -1,5 +1,6 @@
 /// <reference types="wot-gameface-types" />
 /// <reference types="wot-gameface-types/types/gameface-libs.d.ts" />
+// @ts-nocheck
 
 import cls from "classnames";
 import React from "react";

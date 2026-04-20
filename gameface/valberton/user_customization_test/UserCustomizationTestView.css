@@ -1,0 +1,95 @@
+@font-face {
+    font-family: 'Warhelios'; /* A name you choose to use later in your CSS */
+    src: url('fonts/Warhelios-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-display: swap; /* Helps optimize font loading behavior */
+}
+
+@font-face {
+    font-family: 'WarheliosBold'; /* A name you choose to use later in your CSS */
+    src: url('fonts/Warhelios-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-display: swap; /* Helps optimize font loading behavior */
+}
+
+@keyframes zoominText {
+    from {
+        font-size: 14px;
+    };
+    to {
+        font-size: 20px;
+    }
+    
+}
+
+body {
+    margin: 0;
+    font-size: 14rem;
+    line-height: 1.2;
+    overflow: hidden;
+}
+
+.App {
+    width: 100%;
+    height: 100%;
+}
+
+.placeholder {
+    width: 535px;
+    height: 100vh;
+    background-color: #33333366;
+    float: right;
+}
+
+.viewLabel {
+    line-height: 20px;
+    font-family: Warhelios;
+    font-weight: bold;
+    margin-top: 18px;
+    text-align: center;
+    font-size: 26px;
+    color: white;
+}
+
+.carousel {
+    scrollbar-color: #00000066 #00000000;
+    scrollbar-width: thin;
+    overflow-y: auto;
+    display: grid;
+    padding-top: 18px;
+    padding-left: 32px;
+    grid-template-columns: 250px 226px;
+    grid-auto-rows: 120px;
+    position: absolute;
+    bottom: 0px;
+    width: 535px;
+    height: calc(100vh - 200px);
+    background-color: #03030366;
+    box-sizing: border-box;
+}
+
+.stylesCarouselItem {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center; /*Для многострочных названий.*/
+    font-size: 20px;
+    font-family: Warhelios;
+    font-weight: normal;
+    width: 226px;
+    height: 102px;
+    cursor: pointer;
+    opacity: .5;
+    transition: opacity 0.25s ease, font-size 0.15s ease;
+    background-image: url(img:/../img/template.png);
+    background-size: 226px 102px;
+    background-repeat: no-repeat;
+    color:#FFFFFF;
+    border: #999999 1px solid;
+    text-shadow: black 0 0 10px;
+}
+
+.stylesCarouselItem:hover {
+    font-size: 22px;
+    opacity: 1;
+}

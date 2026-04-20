@@ -23,7 +23,7 @@ msgstr "Премиум ангар второго поколения"
 msgid "lugansk_hangar/title"
 msgstr "Луганский ангар на 5-летие проекту"
 
-msgid "23feb_2014_hangar/title"
+msgid "hangar_23feb_0811/title"
 msgstr "На 23 февраля 2014 года"
 
 msgid "hangar_premium_igr/title"
@@ -40,6 +40,21 @@ msgstr "Хэллоунский базовый ангар второго поко
 
 msgid "hangar_lugansk_6years/title"
 msgstr "Луганский ангар на 6-летие проекту"
+
+msgid "hangar_ny_0.6.2/title"
+msgstr "Новогодний ангар 2010"
+
+msgid "hangar_ny_0.7.1/title"
+msgstr "Новогодний ангар 2011"
+
+msgid "hangar_premium_ny/title"
+msgstr "Премиумный новогодний ангар 2012"
+
+msgid "hangar_premium_ny_0.7.1/title"
+msgstr "Премиумный новогодний ангар 2011"
+
+msgid "hangar_premium_ny_0.6.2/title"
+msgstr "Премиумный новогодний ангар 2010"
 
 msgid "prem_sense_hangars_v1/title"
 msgstr "Ангары первого поколения"
