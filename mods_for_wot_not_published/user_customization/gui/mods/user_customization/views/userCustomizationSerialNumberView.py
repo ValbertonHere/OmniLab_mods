@@ -1,60 +1,41 @@
 import logging
-import os
-import struct
 
-import BigWorld, CGF, LGC, Math, ResMgr
+import BigWorld, CGF, Math, ResMgr
+
+from AvatarInputHandler.cameras import FovExtended
 
 from CurrentVehicle import g_currentVehicle
+from cgf_components import serial_number_component
 from cgf_components.hangar_camera_manager import HangarCameraManager
 from collections import namedtuple
 
-from gui import g_tankActiveCamouflage
-from gui.customization.shared import C11nId
-from gui.hangar_cameras.hangar_camera_common import CameraRelatedEvents
-from gui.Scaleform.daapi.view.lobby.customization.shared import CustomizationSlotUpdateVO
+from GenericComponents import TransformComponent, DynamicModelComponent
+from gui import InputHandler
 from gui.Scaleform.framework.entities.View import View
 from gui.shared import EVENT_BUS_SCOPE, events
+from gui.shared.utils.key_mapping import getBigworldNameFromKey
 
 from helpers import dependency
 
-from items.components.c11n_constants import SLOT_DEFAULT_ALLOWED_MODEL
-
 from skeletons.gui.customization import ICustomizationService
-from skeletons.gui.game_control import IOverlayController
 from skeletons.gui.shared.utils import IHangarSpace
 
-from vehicle_outfit.outfit import Area
-from vehicle_systems.tankStructure import TankPartNames
 from gui.impl.common.fade_manager import useDefaultFade
 from frameworks.wulf import WindowLayer
 
-from .._constants import TEMPLATE_FOLDER, TEMPLATE_FILES
-from ..config import g_oucConfig
-from ..cache import g_oucCache
-from ..utils import vfs2realfs, getDevModeState
-
-
-import CGF
-from cgf_components import serial_number_component
-from CurrentVehicle import g_currentVehicle
-from helpers import dependency
-from skeletons.gui.shared.utils import IHangarSpace
-from GenericComponents import TransformComponent, DynamicModelComponent
-from cgf_components.hangar_camera_manager import HangarCameraManager
-import Math, ResMgr
-from AvatarInputHandler.cameras import FovExtended
-import BigWorld, Keys, ResMgr
-from gui import InputHandler
-from gui.shared.utils.key_mapping import getBigworldNameFromKey
-import SoundGroups
-
 from .userCustomizationWindow import UserCustomizationWindow
+from ..cache import g_ucCache
+from ..utils import playSound
 
 logger = logging.getLogger(__name__)
 
 CustomizationSlotUpdateVO = namedtuple('CustomizationSlotUpdateVO', ('slotId', 'itemIntCD', 'uid'))
 
 class UserCustomizationSerialNumberViewMeta(View):
+    def as_setForbiddenNumbersS(self, array):
+        if self._isDAAPIInited():
+            self.flashObject.as_setForbiddenNumbers(array)
+
     def as_showHintS(self, type, msg):
         if self._isDAAPIInited():
             self.flashObject.as_showHint(type, msg)
@@ -65,6 +46,7 @@ class UserCustomizationSerialNumberViewMeta(View):
 
 class UserCustomizationSerialNumberView(UserCustomizationSerialNumberViewMeta):
     hangarSpace = dependency.descriptor(IHangarSpace)
+    c11nService = dependency.descriptor(ICustomizationService)
 
     def __init__(self):
         super(UserCustomizationSerialNumberView, self).__init__()
@@ -78,6 +60,7 @@ class UserCustomizationSerialNumberView(UserCustomizationSerialNumberViewMeta):
 
     def _populate(self):
         super(UserCustomizationSerialNumberView, self)._populate()
+        self.as_setForbiddenNumbersS(g_ucCache.forbiddenContent['numbers'])
         self.vEntity = self.hangarSpace.getVehicleEntity()
         self.__initAndLocateCameraToUCSNView()
         self.addListener(events.GameEvent.CHANGE_APP_RESOLUTION, self.__onAppResized, scope=EVENT_BUS_SCOPE.GLOBAL)
@@ -89,18 +72,21 @@ class UserCustomizationSerialNumberView(UserCustomizationSerialNumberViewMeta):
         self.__removeAndResetCamera()
         super(UserCustomizationSerialNumberView, self)._dispose()
 
-    def py_playSound(self, eventName):
-        SoundGroups.g_instance.playSound2D(eventName)
+    def py_playSound(self, *args):
+        playSound(*args)
 
     def py_reloadModel(self):
         g_currentVehicle.refreshModel(self.c11nService.getEmptyOutfit())
         BigWorld.callback(0.2, lambda: g_currentVehicle.refreshModel(self.view.outfit)) # https://youtu.be/LZNw8t1k1rI?si=RKiYaxToafDS5Wap&t=27
     
-    @useDefaultFade(layer=WindowLayer.OVERLAY, fadeInDuration=.5, fadeOutDuration=.5)
-    def py_exitWithoutSave(self):
+    def exitView(self):
         g_currentVehicle.refreshModel(self.c11nService.getEmptyOutfit())
         g_currentVehicle.refreshModel(self.mainWindow.view.outfit)
         self.destroy()
+    
+    @useDefaultFade(layer=WindowLayer.OVERLAY, fadeInDuration=.5, fadeOutDuration=.5)
+    def py_exitWithoutSave(self):
+        self.exitView()
     
     def py_setSerialNumber(self, number):
         self.serialNumber = number
@@ -114,6 +100,14 @@ class UserCustomizationSerialNumberView(UserCustomizationSerialNumberViewMeta):
 
     @useDefaultFade(layer=WindowLayer.OVERLAY, fadeInDuration=.5, fadeOutDuration=.5)
     def __applySerialNumber(self):
+        numberLength = len(self.serialNumber)
+
+        if numberLength == 0:
+            self.exitView()
+            return
+        elif numberLength < 3:
+            self.serialNumber = '0'*(3-numberLength) + self.serialNumber
+
         self.mainWindow.setOutfitSerialNumber(self.serialNumber)
         self.destroy()
 
@@ -144,6 +138,8 @@ class UserCustomizationSerialNumberView(UserCustomizationSerialNumberViewMeta):
         serialNumberWorldMatrix = serialNumberTransform.worldTransform
         serialNumberWorldMatrix.setTranslate(serialNumberWorldMatrix.applyPoint(serialNumberLocalPos))
 
+        # Штурмпидр из-за своего короткого, но мощного пиструна не имеет на нём номера, а второе табло, из-за чего матрица путается.
+        # Поэтому камера крепится к верхушке кармы, а не прям на табло.
         if g_currentVehicle.item.name == 'germany:G178_Sturmtiger_V1':
             matrix = Math.Matrix(self.vEntity.matrix)
             pos = serialNumberWorldMatrix.translation
@@ -172,6 +168,8 @@ class UserCustomizationSerialNumberView(UserCustomizationSerialNumberViewMeta):
     def onKeyDown(self, event):
         key = getBigworldNameFromKey(event.key)
         if key == 'KEY_ESCAPE':
+            self.py_playSound('cust_choise_esc')
             self.py_exitWithoutSave()
         elif key == 'KEY_RETURN':
+            self.py_playSound('cust_select_double', 'radial_big_close')
             self.__applySerialNumber()

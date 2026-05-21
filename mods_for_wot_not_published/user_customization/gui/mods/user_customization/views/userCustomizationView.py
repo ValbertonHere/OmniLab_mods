@@ -5,7 +5,6 @@ from CurrentVehicle import g_currentVehicle
 from gui import g_tankActiveCamouflage
 from gui.Scaleform.framework.entities.DAAPIDataProvider import SortableDAAPIDataProvider, ListDAAPIDataProvider
 from gui.Scaleform.framework.entities.View import View
-
 from gui.shared.gui_items import GUI_ITEM_TYPE
 from gui.shared.formatters import text_styles
 from gui.shared.gui_items.Vehicle import getTypeBigIconPath
@@ -18,7 +17,6 @@ from items.components.c11n_constants import ApplyArea, CustomizationType, Season
 from items.vehicles import makeIntCompactDescrByID
 
 from serializable_types.customizations import CamouflageComponent, DecalComponent, CustomizationOutfit, PaintComponent, PersonalNumberComponent
-
 from skeletons.gui.customization import ICustomizationService
 from skeletons.gui.shared import IItemsCache
 from skeletons.gui.shared.utils import IHangarSpace
@@ -26,13 +24,12 @@ from skeletons.gui.shared.utils import IHangarSpace
 from vehicle_outfit.outfit import Outfit
 
 from .userCustomizationWindow import UserCustomizationWindow
-from ..cache import g_oucCache
-from ..config import g_oucConfig
-from ..utils import getDevModeState
+from ..cache import g_ucCache
+from ..config import g_ucConfig
+from ..utils import getDevModeState, playSound
 
 logger = logging.getLogger(__name__)
 
-STYLE_SOURCE_ID_TO_CACHE = {'user': g_oucCache.mod_cache, 'ingame': g_oucCache.game_cache}
 
 class UserCustomizationStylesDataProvider(SortableDAAPIDataProvider):
     def __init__(self):
@@ -137,7 +134,7 @@ class UserCustomizationView(UserCustomizationViewMeta):
     def __init__(self):
         super(UserCustomizationView, self).__init__()
         self.vehicle = g_currentVehicle.item
-        self.__outfit = g_oucConfig.getVehicleOutfit(self.vehicle.descriptor, self.getVehicleActiveSeason())
+        self.__outfit = g_ucConfig.getVehicleOutfit(self.vehicle.descriptor, self.getVehicleActiveSeason())
         self.__filterText = ''
         self.__selectedStyleTabs = ['2d', 'user']
         self.__selectedAITab = None
@@ -187,9 +184,10 @@ class UserCustomizationView(UserCustomizationViewMeta):
 
     def __updateStyleTabContentData(self):
         data = []
-
         styleType, styleSource = self.__selectedStyleTabs
-        for styleID, styleInfo in STYLE_SOURCE_ID_TO_CACHE[styleSource]['styles'][styleType].items():
+        stylesStorage = g_ucCache.mod_cache if styleSource == 'user' else g_ucCache.game_cache
+
+        for styleID, styleInfo in stylesStorage['styles'][styleType].items():
 
             if styleSource == 'user':
                 styleID = styleInfo[0]
@@ -200,7 +198,7 @@ class UserCustomizationView(UserCustomizationViewMeta):
             styleInfoDict = {'id': styleID,
                              'intCD': styleInfo.intCD,
                              'name': styleInfo.userName if styleInfo.userName else i18n.makeString('#userCustomization:view/stylesCarousel/styleWithoutName', styleID=styleID), 
-                             'iconPath': styleInfo.icon if styleInfo.icon else '../maps/icons/valberton/ouc_no_style_image.png',
+                             'iconPath': styleInfo.icon if styleInfo.icon else '../maps/icons/valberton/user_customization/uc_no_style_image.png',
                              'isWide': styleInfo.isWide()}
             if self.__filterText:
                 if not self.__filterText in makeSearchableString(styleInfoDict['name']):
@@ -259,9 +257,9 @@ class UserCustomizationView(UserCustomizationViewMeta):
 
     def __updateView(self):
         # Проверям, есть ли танк в конфиге мода.
-        isOutfitInConfig = g_oucConfig.isOutfitInConfig(self.vehicle.descriptor.name)
+        isOutfitInConfig = g_ucConfig.isOutfitInConfig(self.vehicle.descriptor.name)
         styleString = i18n.makeString('#userCustomization:window/styleInstalled', styleName=self.__outfit.style.userString) if isOutfitInConfig else '#userCustomization:window/styleNotInstalled'
-        isStyleWithSerialNumber = self.__outfit.style.isWithSerialNumber
+        isStyleWithSerialNumber = self.__outfit.style.isWithSerialNumber if self.__outfit and self.__outfit.style else False
         
         self.as_setSeasonBarEnabledS(not self.checkVehicleOutfitForAllSeasons())
         self.as_setStyleInstalledS(isOutfitInConfig, styleString)
@@ -318,7 +316,7 @@ class UserCustomizationView(UserCustomizationViewMeta):
     
     def checkVehicleOutfitForAllSeasons(self, isCalledFromWindow=False, isUserCustomVisible=False):
         condition = isUserCustomVisible if isCalledFromWindow else self.__outfit # Не хочу копировать код проверки.
-        outfits = self.__outfit.style.outfits if condition else self.vehicle.outfits
+        outfits = self.__outfit.style.outfits if condition and self.__outfit and self.__outfit.style else self.vehicle.outfits
 
         # Мега-тупая система, но она лучше всего помогает понять, есть ли у стиля разные варианты для сезонов.
         for season, outfit in outfits.items():
@@ -327,6 +325,9 @@ class UserCustomizationView(UserCustomizationViewMeta):
                    return False
         
         return True
+
+    def py_playSound(self, *args):
+        playSound(*args)
     
     def py_getOutfitID(self):
         if self.__outfit:
@@ -334,8 +335,12 @@ class UserCustomizationView(UserCustomizationViewMeta):
         else:
             return None
 
-    def py_selectItem(self, itemID, seasonID):
+    def py_selectItem(self, itemID, seasonID, isUserStyleVisible=True):
         try:
+            if not isUserStyleVisible:
+                self.hangarSpace.updateVehicleOutfit(g_currentVehicle.item.outfits[seasonID])
+                return
+            
             self.__selectedAITab = None
             vehicleCD = self.vehicle.strCD
 
@@ -352,6 +357,7 @@ class UserCustomizationView(UserCustomizationViewMeta):
             
             self.__outfit = outfit
             self.hangarSpace.updateVehicleOutfit(self.__outfit)
+            # playSound('cust_color_apply')
             if getDevModeState():
                 logger.info('Applied styleID: %s' % itemID)
         except:
@@ -373,8 +379,10 @@ class UserCustomizationView(UserCustomizationViewMeta):
                     self.__outfit = self.__outfit.patch(self.__createDecalComponents(0, itemID, self.vehicle.descriptor))
                 elif itemTypeID == GUI_ITEM_TYPE.PERSONAL_NUMBER:
                     self.__outfit = self.__outfit.patch(self.__createPNumberComponents(itemID, self.vehicle.descriptor))
-            else:
-                logger.warning('Unknown alternate item type to replace: itemTypeID')
+                else:
+                    logger.warning('Unknown alternate item type to replace: %s' % itemTypeID)
+                    return
+                # playSound('cust_color_apply')
             
             self.hangarSpace.updateVehicleOutfit(self.__outfit)
         except:

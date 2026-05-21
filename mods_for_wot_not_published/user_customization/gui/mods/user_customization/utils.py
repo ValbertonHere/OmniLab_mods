@@ -5,6 +5,7 @@ import types
 
 import BigWorld
 import ResMgr
+import SoundGroups
 
 from CurrentVehicle import g_currentVehicle
 
@@ -13,28 +14,28 @@ from debug_utils import LOG_CURRENT_EXCEPTION
 from gui.Scaleform.daapi.settings.views import VIEW_ALIAS
 from gui.Scaleform.framework.entities.View import ViewKey
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
-
 from gui.impl.dialogs import dialogs
-from gui.impl.dialogs.builders import InfoDialogBuilder, WarningDialogBuilder
+from gui.impl.dialogs.builders import InfoDialogBuilder
 from gui.impl.gen import R
 from gui.impl.pub.dialog_window import DialogButtons
 
 from helpers import dependency
 
-from items.components.c11n_constants import ApplyArea
+from items.vehicles import g_cache
+from items.components.c11n_constants import ApplyArea, CamouflageTilingType
 
 from serializable_types.customizations import CUSTOMIZATION_CLASSES
 from serialization import parseCompDescr
-
 from skeletons.gui.app_loader import IAppLoader
 from skeletons.gui.customization import ICustomizationService
+from soft_exception import SoftException
 
 from th_async import th_async, th_await
 
 from vehicle_outfit.outfit import Outfit
 from vehicle_systems.tankStructure import TankPartNames
 from vehicle_systems.model_assembler import loadAppearancePrefab
-from vehicle_systems.camouflages import SeasonType
+from vehicle_systems.camouflages import SeasonType, getCamo, processTiling
 
 from ._constants import DEV_MODE_FILE
 
@@ -43,6 +44,7 @@ __all__ = ('byteify', 'override', 'vfs_file_read', 'vfs_dir_list_files', 'getFas
         'getParentWindow', 'awaitGameLoadingComplete')
 
 logger = logging.getLogger(__name__)
+
 
 def override(holder, name, wrapper=None, setter=None):
     if wrapper is None:
@@ -63,6 +65,10 @@ def vfs_file_read(path):
 	if fileInst is not None and ResMgr.isFile(path):
 		return str(fileInst.asBinary)
 	return None
+
+def playSound(*args):
+    for eventName in args:
+        SoundGroups.g_instance.playSound2D(eventName)
 
 def vfs2realfs(vfs_from, realfs_to):
     realfs_directory = os.path.dirname(realfs_to)
@@ -92,7 +98,7 @@ def reader_exception_handler(func):
 
     return wrapper
 
-def loadOUCWindow():
+def loadUCWindow():
     app = dependency.instance(IAppLoader).getApp()
     app.loadView(SFViewLoadParams('UserCustomizationWindowUI'))
 
@@ -120,6 +126,7 @@ def set3DStylePrefabs(vehicleDescriptor, vehicleAppearance, outfit, cache):
         for prefab in tankPartPrefabs:
             loadAppearancePrefab(prefab, vehicleAppearance)
 
+# Для API
 def getVehicleOutfitFromDict(outfitDict, vehicleDescriptor, season):
     c11nService = dependency.instance(ICustomizationService)
 
@@ -163,3 +170,23 @@ def checkCurrentVehicleServerOutfit():
                 break
     
     return camoAffectedOutfits == len(SeasonType.COMMON_SEASONS)
+
+def checkCurrentVehicleCustomizable():
+    # Самая, сука, шизофреническая проверка на возможность применить стиль.
+    try:
+        test_outfit = Outfit(component=g_cache.customization20().styles[31393].outfits[1], vehicleCD=g_currentVehicle.item.strCD)
+        appearance = g_currentVehicle.hangarSpace.getVehicleEntityAppearance()
+
+        # Если нет визуала танка - просто принимает это как факт.
+        if not appearance:
+            return (False, False)
+        
+        # Главная лакмусовая бумажка, там есть обработка тайлинга, которая критуется, если тунк не предназначен для нанесения камуфляжа.
+        getCamo(appearance, test_outfit, 1, g_currentVehicle.item.descriptor, 'hull', False)
+        
+        return (True, True)
+    except SoftException:
+        return (False, True)
+    except Exception:
+        # Остальные ошибки вызывают ложную тревогу.
+        return (False, False)

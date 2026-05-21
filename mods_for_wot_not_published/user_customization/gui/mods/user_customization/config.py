@@ -14,8 +14,8 @@ from skeletons.gui.customization import ICustomizationService
 from vehicle_outfit.outfit import Outfit
 from vehicle_systems.camouflages import getStyleProgressionOutfit
 
-from ._constants import CONFIG_FILE, CONFIG_FOLDER, NOTIFICATION_HEADER, DEV_NOTIFICATION_HEADER, FORBIDDEN_STYLES, OUTFIT_COMPONENT_NAME_TO_OBJECT, USER_START_UNIQUE_ID # <- Чуть позже внедрю.
-from .cache import g_oucCache
+from ._constants import CONFIG_FILE, CONFIG_FOLDER, NOTIFICATION_HEADER, DEV_NOTIFICATION_HEADER, OUTFIT_COMPONENT_NAME_TO_OBJECT, USER_START_UNIQUE_ID
+from .cache import g_ucCache
 from .utils import getDevModeState
 
 logger = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ class UserCustomizationConfig(object):
             outfit = self.__outfit2dict(outfitObj.pack())
         else:
             if outfitObj.style.id >= USER_START_UNIQUE_ID:
-                outfit = g_oucCache.getComponentStrIDFromIntID('styles', outfitObj.style.id)
+                outfit = g_ucCache.getComponentStrIDFromIntID('styles', outfitObj.style.id)
             else:
                 outfit = outfitObj.style.id
         
@@ -92,7 +92,7 @@ class UserCustomizationConfig(object):
             else:
                 if isinstance(outfit, unicode):
                     # Переводим строковый ID в числовой.
-                    outfit = g_oucCache.getComponentIntIDFromStrID('styles', outfit)
+                    outfit = g_ucCache.getComponentIntIDFromStrID('styles', outfit)
 
                 outfitComponent = self.c11nService.getItemByID(32, outfit).getOutfit(season, vehicleDescriptor.makeCompactDescr())
                 
@@ -101,13 +101,12 @@ class UserCustomizationConfig(object):
             logger.exception('Failed to apply outfit! Tank: %s' % vehicleDescriptor.name)
             return
 
-        if outfitComponent.id in FORBIDDEN_STYLES:
+        if outfitComponent.id in g_ucCache.forbiddenContent['styles'] or savedOutfit['outfit'] in g_ucCache.forbiddenContent['styles']:
             pushI18nMessage('#userCustomization:notification/outfitResetByForbiddenStyle', type=SM_TYPE.InformationHeader, messageData=NOTIFICATION_HEADER)
-            del self.config[vehicleDescriptor.name]
-            self.saveConfigToFile()
+            self.removeOutfitFromConfig(vehicleDescriptor.name)
             return None
 
-        outfitItem = outfitComponent.style
+        outfitItem = outfitComponent.style # Проверить
         
         if outfitItem.isProgressive():
             outfitComponent.setProgressionLevel(len(outfitItem.progression.levels))
@@ -129,14 +128,14 @@ class UserCustomizationConfig(object):
                         
                         # Переводим числовой ID в строковый, чтоб не потерялась связка элементов к стилю.
                         if component.id >= USER_START_UNIQUE_ID:
-                            component_dict['id'] = g_oucCache.getComponentStrIDFromIntID(fieldName, component.id)
+                            component_dict['id'] = g_ucCache.getComponentStrIDFromIntID(fieldName, component.id)
 
                         result[fieldName].append(component_dict)
                     else:
                         result[fieldName].append(component)
             
-            elif fieldName == 'styleId':
-                result[fieldName] = g_oucCache.getComponentStrIDFromIntID('styles', fieldData)
+            elif fieldName == 'styleId' and fieldData >= USER_START_UNIQUE_ID:
+                result[fieldName] = g_ucCache.getComponentStrIDFromIntID('styles', fieldData)
             else:
                 result[fieldName] = fieldData
 
@@ -150,18 +149,18 @@ class UserCustomizationConfig(object):
                 for component in fieldData:
                     if isinstance(component, dict):
                         if isinstance(component['id'], unicode):
-                            component['id'] = g_oucCache.getComponentIntIDFromStrID(fieldName, component['id'])
+                            component['id'] = g_ucCache.getComponentIntIDFromStrID(fieldName, component['id'])
 
                         result[fieldName].append(OUTFIT_COMPONENT_NAME_TO_OBJECT[fieldName](**component))
                     else:
                         result[fieldName].append(component)
             
-            elif fieldName == 'styleId':
-                result[fieldName] = g_oucCache.getComponentIntIDFromStrID('styles', fieldData)
+            elif fieldName == 'styleId' and fieldData >= USER_START_UNIQUE_ID:
+                result[fieldName] = g_ucCache.getComponentIntIDFromStrID('styles', fieldData)
             else:
                 result[fieldName] = fieldData
         
         return CustomizationOutfit(**result)
 
 
-g_oucConfig = UserCustomizationConfig()
+g_ucConfig = UserCustomizationConfig()

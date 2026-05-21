@@ -1,6 +1,3 @@
-from time import sleep
-from BigWorld import callback
-from functools import partial
 import GUI
 from debug_utils import LOG_DEBUG
 from gui import g_guiResetters
@@ -64,8 +61,8 @@ class GameLoading(ExternalFlashComponent, GameLoadingMeta):
 
     def _updateStage(self):
         width, height = GUI.screenResolution()
-        scaleLength = len(graphics.getInterfaceScalesList([width, height]))
-        self.as_updateStageS(width, height, scaleLength - 1)
+        scale = graphics.getInterfaceScalesList([width, height])[1]
+        self.as_updateStageS(width, height, scale)
 
     def getChildren(self):
         return (self.flashObject.background, self.flashObject.wotLogo, self.flashObject.copyright, 

@@ -221,9 +221,9 @@ class LegacyLobbyHeader(View, ClanEmblemsHelper, IGlobalListener):
         if self._isDAAPIInited():
             self.flashObject.as_showTutorial(showTutorial)
     
-    def as_guiReplaceS(self, _):
+    def as_guiReplaceS(self, event):
         if self._isDAAPIInited():
-            self.flashObject.as_guiReplace(None)
+            self.flashObject.as_guiReplace(event.ctx)
 
     def onClanEmblem32x32Received(self, _, emblem):
         if self._isDAAPIInited():

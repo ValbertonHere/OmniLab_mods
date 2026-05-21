@@ -1,5 +1,6 @@
 from GUI import screenResolution
 
+from account_helpers.settings_core import settings_constants
 from constants import PREBATTLE_TYPE, QUEUE_TYPE
 from debug_utils import LOG_CURRENT_EXCEPTION
 from helpers import dependency
@@ -16,6 +17,7 @@ from gui.Scaleform.daapi.settings.views import VIEW_ALIAS
 from gui.Scaleform.framework.entities.View import View
 from gui.Scaleform.genConsts.PERSONAL_MISSIONS_ALIASES import PERSONAL_MISSIONS_ALIASES
 
+from skeletons.account_helpers.settings_core import ISettingsCore
 from skeletons.gui.app_loader import IAppLoader
 
 from . import getGUIConfig
@@ -23,16 +25,18 @@ from . import getGUIConfig
 from ..utils import restartOnlyHangar
 
 class LegacyHangar(View, IGlobalListener):
-    appLoader = dependency.instance(IAppLoader)
+    appLoader = dependency.descriptor(IAppLoader)
+    settingsCore  = dependency.descriptor(ISettingsCore)
     
     def __init__(self):
         super(LegacyHangar, self).__init__()
 
     def _populate(self):
         super(LegacyHangar, self)._populate()
-        self.addListener(events.GameEvent.CHANGE_APP_RESOLUTION, self.as_appResizedS, scope=EVENT_BUS_SCOPE.GLOBAL)
-        self.__appWidth = screenResolution()[0]
-        self.__appHeight = screenResolution()[1]
+        scale = self.settingsCore.options.getSetting(settings_constants.GRAPHICS.INTERFACE_SCALE).get()
+        self.addListener(events.GameEvent.CHANGE_APP_RESOLUTION, self.onAppResized, scope=EVENT_BUS_SCOPE.GLOBAL)
+        self.__appWidth = screenResolution()[0]/scale
+        self.__appHeight = screenResolution()[1]/scale
 
         if getGUIConfig()['isLegacyLobbyHeaderEnabled']:
             g_playerEvents.onLoadingMilestoneReached += self.onHangarUIReady
@@ -47,7 +51,10 @@ class LegacyHangar(View, IGlobalListener):
     
     def _getHangarSrc(self):
         app = self.appLoader.getApp()
-        return app.containerManager.getContainer(WindowLayer.VIEW).getChildContainer(5).getView()
+        container = app.containerManager.getContainer(WindowLayer.VIEW).getChildContainer(5)
+        if not container:
+            return self._getHangarSrc()
+        return container.getView()
 
     @property
     def researchPanel(self):
@@ -56,12 +63,13 @@ class LegacyHangar(View, IGlobalListener):
     @property
     def vehicleParams(self):
         return self.getComponent('LegacyVehicleParamsUI')
-    
-    def as_appResizedS(self, _):
-        if self._isDAAPIInited():
-            self.flashObject.as_appResized(None)
 
-    def onAppResized(self, appWidth, appHeight):
+    def onAppResized(self, event):
+        appWidth, appHeight = event.ctx['width']/event.ctx['scale'], event.ctx['height']/event.ctx['scale']
+
+        if self._isDAAPIInited():
+            self.flashObject.as_appResized(appWidth, appHeight)
+
         if getGUIConfig()['isLegacyLobbyHeaderEnabled']:
             self.__appWidth = appWidth
             self.__appHeight = appHeight

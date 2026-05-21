@@ -1,7 +1,7 @@
 import items.components.c11n_components as cc
+import Math
 import json
 import logging
-import BigWorld
 import ResMgr
 
 from gui.shared.gui_items.customization.c11n_items import Style
@@ -21,7 +21,14 @@ from .utils import reader_exception_handler, getDevModeState
 logger = logging.getLogger(__name__)
 
 class JSONReaderError(Exception): pass
+
+def readColor(palette):
+    for color in palette:
+        if not 0 <= color < 256:
+            raise JSONReaderError('Color component is out of range [0, 255].')
     
+    return palette[0] + (palette[1] << 8) + (palette[2] << 16) + (palette[3] << 24)
+
 class BaseJSONReader(object):
     def __init__(self, itemCls, itemTypeName, storage, mod_storage):
         self.itemTypeName = itemTypeName
@@ -68,10 +75,10 @@ class AttachmentsJSONReader(BaseJSONReader):
         for strID, obj in jsonObj.items():
             super(AttachmentsJSONReader, self).readItems()
             self.itemStrID = strID
-            self.item.modelName = obj.get('modelName', '')
+            self.item.modelName = obj.get('modelName')
             self.item.hangarModelName = obj.get('hangarModelName', '')
             self.item.sequenceId = obj.get('sequenceId', None)
-            self.item.attachmentLogic = obj.get('attachmentLogic', None)
+            self.item.attachmentLogic = obj.get('attachmentLogic')
             self.putItemToStorage(strID)
 
 class CamouflagesJSONReader(BaseJSONReader):
@@ -80,7 +87,7 @@ class CamouflagesJSONReader(BaseJSONReader):
     
     def setItemDefaults(self):
         super(CamouflagesJSONReader, self).setItemDefaults()
-        self.item.invisibilityFactor = 0.0
+        self.item.invisibilityFactor = 1
         self.item.palettes = ([4278190335, 4278255360, 4294901760, 4278190080], )
 
     @reader_exception_handler
@@ -91,7 +98,7 @@ class CamouflagesJSONReader(BaseJSONReader):
 
             # Значения из JSON.
             # Сразу отсеиваем конфиги без обязательных параметров.
-            if 'tilingSettings' not in obj and 'scales' not in obj and 'texture' not in obj:
+            if 'tilingSettings' not in obj or 'scales' not in obj or 'texture' not in obj:
                 raise JSONReaderError("One of these necessary parameters not found in [%s] camouflage JSON object: %s." % (strID, ('tilingSettings', 'scales', 'texture')))
             
             # Если всё прошло успешно - продолжаем читать.
@@ -101,8 +108,8 @@ class CamouflagesJSONReader(BaseJSONReader):
             self.item.scales = tuple(obj['scales'])
             self.item.texture = obj['texture']
             self.item.glossMetallicSettings = {'glossMetallicMap': obj.get('glossMetallicMap', ''), 
-                                        'metallic': obj.get('metallic', (0.23, 0.23, 0.23, 0.23)), 
-                                        'gloss': obj.get('gloss', (0.509, 0.509, 0.509, 0.509))}
+                                        'metallic': Math.Vector4(obj.get('metallic', (0.23, 0.23, 0.23, 0.23))), 
+                                        'gloss': Math.Vector4(obj.get('gloss', (0.509, 0.509, 0.509, 0.509)))}
             self.item.emissionSettings = {'emissionMap': obj.get('emissionMap', ''), 
                                     'emissionPatternMap': obj.get('emissionPatternMap', ''),
                                     'emissionAnimationSpeed': obj.get('emissionAnimationSpeed', 1.0), 
@@ -121,14 +128,10 @@ class CamouflagesJSONReader(BaseJSONReader):
                 palettes = []
                 jpalettes = obj['palettes']
                 if len(jpalettes) != 4:
-                    raise JSONReaderError("Need 4 lists of values in palettes. It's RGBA! Example: [[255, 0, 0, 255], [0, 255, 0, 255], [0, 0, 255, 255], [0, 0, 0, 255]]")
+                    raise JSONReaderError("Need 4 lists of values in palettes. It's RGBA! Example: [[255, 0, 0, 255], [0, 255, 0, 255], [0, 0, 255, 255], [0, 0, 0, 255]] | strID=%s" % strID)
             
                 for palette in jpalettes:
-                    for color in palette:
-                        if not 0 <= color < 256:
-                            raise JSONReaderError('Color component is out of range [0, 255].')
-                    
-                    palettes.append(palette[0] + (palette[1] << 8) + (palette[2] << 16) + (palette[3] << 24))
+                    palettes.append(readColor(palette))
 
                 self.item.palettes = (palettes, )
 
@@ -143,6 +146,10 @@ class DecalsJSONReader(BaseJSONReader):
         for strID, obj in jsonObj.items():
             super(DecalsJSONReader, self).readItems()
             self.itemStrID = strID
+
+            if 'texture' not in obj or 'type' not in obj:
+                raise JSONReaderError("One of these necessary parameters not found in [%s] camouflage JSON object: %s." % (strID, ('texture', 'type')))
+            
             self.item.texture = obj['texture']
             self.item.type = getattr(DecalType, obj['type'])
             self.item.canBeMirrored = obj.get('mirror', False)
@@ -159,7 +166,7 @@ class FontsJSONReader(BaseJSONReader):
             super(FontsJSONReader, self).readItems()
             self.itemStrID = strID
 
-            if 'alphabet' not in obj and 'texture' not in obj:
+            if 'alphabet' not in obj or 'texture' not in obj:
                 raise JSONReaderError("One of these necessary parameters not found in [%s] font JSON object: %s." % (strID, ('alphabet', 'texture')))
             
             self.item.texture = obj['texture']
@@ -177,7 +184,7 @@ class InsigniasJSONReader(BaseJSONReader):
             super(InsigniasJSONReader, self).readItems()
             self.itemStrID = strID
 
-            if 'atlas' not in obj and 'alphabet' not in obj and 'texture' not in obj:
+            if 'atlas' not in obj or 'alphabet' not in obj or 'texture' not in obj:
                 raise JSONReaderError("One of these necessary parameters not found in [%s] insignia JSON object: %s." % (strID, ('atlas', 'alphabet', 'texture')))
 
             self.item.atlas = obj['atlas']
@@ -197,16 +204,21 @@ class PaintsJSONReader(BaseJSONReader):
     def __init__(self, mod_storage):
         super(PaintsJSONReader, self).__init__(cc.PaintItem, 'paints', g_cache.customization20().paints, mod_storage)
     
+    def setItemDefaults(self):
+        super(PaintsJSONReader, self).setItemDefaults()
+        self.item.tags.add('styleOnly')
+
     @reader_exception_handler
     def readItems(self, jsonObj):
         for strID, obj in jsonObj.items():
             super(PaintsJSONReader, self).readItems()
             self.itemStrID = strID
 
-            if 'color' not in obj:
-                raise JSONReaderError("Necessary parameter 'color' not found in [%s] paint JSON object." % (strID))
+            if 'color' not in obj or 'texture' not in obj:
+                raise JSONReaderError("One of these necessary parameters not found in [%s] paints JSON object: %s." % (strID, ('color', 'texture')))
             
-            self.item.color = obj['color']
+            self.item.texture = obj['texture']
+            self.item.color = readColor(obj['color'])
             self.item.gloss = obj.get('gloss', 0.0)
             self.item.metallic = obj.get('metallic', 0.0)
             self.putItemToStorage(strID)
@@ -222,9 +234,10 @@ class PersonalNumbersJSONReader(BaseJSONReader):
             super(PersonalNumbersJSONReader, self).readItems()
             self.itemStrID = strID
 
-            if 'fontID' not in obj:
-                raise JSONReaderError("Necessary parameter 'fontID' not found in [%s] personal number JSON object." % (strID))
+            if 'fontID' not in obj or 'texture' not in obj:
+                raise JSONReaderError("One of these necessary parameters not found in [%s] paints JSON object: %s." % (strID, ('fontID', 'texture')))
             
+            self.item.texture = obj['texture']
             self.item.digitsCount = obj.get('digitsCount', 3)
 
             # Так как мы можем использовать шрифты из модов и из игры, лучше проверить, является ли ID шрифта строкой или нет.
@@ -250,7 +263,8 @@ class ProjectionDecalsJSONReader(BaseJSONReader):
             self.item.texture = obj['texture']
             self.item.glossTexture = obj.get('glossTexture', '')
             self.item.scaleFactorId = obj.get('scaleFactorId', 3)
-            self.item.canBeMirroredHorizontally = obj.get('canBeMirroredHorizontally', False)
+
+            self.item.canBeMirroredHorizontally = obj.get('mirror', False)
             self.item.emissionSettings = {'emissionMap': obj.get('emissionMap', ''), 
                                     'emissionPatternMap': obj.get('emissionPatternMap', ''),
                                     'emissionAnimationSpeed': obj.get('emissionAnimationSpeed', 1.0), 
@@ -330,14 +344,18 @@ class StyleJSONReader(BaseJSONReader):
             outfit = CustomizationOutfit()
             outfit.styleId = self.item.id
 
-            for field, pool in jsonOutfit.items():
+            for field, data in jsonOutfit.items():
                 if field in OUTFIT_COMPONENT_NAME_TO_OBJECT:
                     items = []
-                    for item in pool:
-                        item['id'] = self.mod_storage.mod_cache[field][item['id']]
+                    for item in data:
+                        if isinstance(item['id'], unicode):
+                            item['id'] = self.mod_storage.getComponentIntIDFromStrID(field, item['id'])
+
                         items.append(OUTFIT_COMPONENT_NAME_TO_OBJECT[field](**item))
 
                     setattr(outfit, field, items)
+                elif field == 'modification':
+                    outfit.modifications.append(data)
 
             season = getattr(SeasonType, jsonOutfit['season'])
 
@@ -385,15 +403,14 @@ class StyleJSONReader(BaseJSONReader):
             raise JSONReaderError('Style string ID "%s" already in 2D or 3D styles IDs pool!' % strID)
         
         g_cache.customization20().styles[self.item.id] = self.item
-        print self.itemStrID, self.item.id, self.item.compactDescr
         self.mod_storage.mod_cache['styles']['3d' if is3DStyle else '2d'][strID] = (self.item.id, Style(self.item.compactDescr))
 
     @reader_exception_handler
     def readItems(self, strID, jsonObj):
         self.itemStrID = strID
 
-        if not jsonObj.has_key('styleName') and not jsonObj.has_key('styleDescription'):
-            raise JSONReaderError("One of these necessary parameters not found in [%s] style JSON object: %s." % (strID, ('styleName', 'styleDescription')))
+        if 'styleIcon' not in jsonObj or 'styleName' not in jsonObj or 'outfits' not in jsonObj:
+            raise JSONReaderError("One of these necessary parameters not found in [%s] style JSON object: %s." % (strID, ('styleIcon', 'styleName', 'outfits')))
         
         # Это чисто для тултипов стилей.
         group = cc.ItemGroup(self.itemCls)
@@ -401,10 +418,13 @@ class StyleJSONReader(BaseJSONReader):
         self.item = self.itemCls(group)
         self.setItemDefaults()
 
-        self.item.texture = jsonObj.get('styleIcon', '')
-        self.item.i18n = shared_components.I18nExposedComponent(jsonObj['styleName'], jsonObj['styleDescription'], '')
+        self.item.texture = jsonObj['styleIcon']
+        self.item.i18n = shared_components.I18nExposedComponent(jsonObj['styleName'], jsonObj.get('styleDescription', ''), '')
 
         is3DStyle = jsonObj.get('is3D', False)
+
+        if jsonObj.get('isWithSerialNumber', False):
+            self.item.tags.add('styleSerialNumber')
 
         self.item.filter = self.__readVehicleFilter(jsonObj.get('vehicleFilter', None))
         
@@ -424,7 +444,7 @@ class StyleJSONReader(BaseJSONReader):
                 itemsIntList = []
                 c11nType = CustomizationNamesToTypes[itemTypeName.upper()]
                 for itemID in itemsList:
-                    itemsIntList.append(self.mod_storage.getComponentIntIDFromStrID(itemTypeName + 's', itemID))
+                    itemsIntList.append(self.mod_storage.getComponentIntIDFromStrID(itemTypeName + 's', itemID) if isinstance(itemID, unicode) else itemID)
                 alternateItems[c11nType] = tuple(itemsIntList)
             
             self.item.alternateItems = alternateItems

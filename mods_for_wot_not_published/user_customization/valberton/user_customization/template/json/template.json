@@ -1,0 +1,24 @@
+{
+    "styles": {
+        "template": {
+            "styleIcon": "gui/maps/vehicles/styles/template.png",
+            "styleName": "Пример для подражания",
+            "styleDescription": "Стиль-шаблон для мода \"Агрегатор стилей\"",
+            "outfits": [{
+                "season": "ALL",
+                "camouflages": [{"id": "template_camo", "appliedTo": 4368}],
+                "decals": [{"id": "template_emblem", "appliedTo": 13104},
+                           {"id": "template_inscription", "appliedTo": 52416}]
+            }]
+        }
+    },
+    "camouflages": {
+        "template": {
+            "texture": "valberton/user_customization/camouflages/template.dds",
+            "tilingSettings": {"type": "relative", "factor": [2.574355, 2.582175], "offset": [0, 0]},
+            "scales": [1.0, 1.3, 0.5]
+        }
+    },
+    "decals": {"template_emblem": {"type": "EMBLEM", "texture": "valberton/user_customization/decals/template_emblem.dds"},
+               "template_inscription": {"type": "INSCRIPTION", "texture": "valberton/user_customization/decals/template_inscription.dds"}}
+}

@@ -47,7 +47,7 @@ def onOwnVehicleDamaged(self, attackerID, points, effectsIndex, damageFactor, la
 def AC_advCollider(self, onChangeControlMode=None, postmortemMode=False, smartPointCalculator=True):
     self._ArcadeCamera__adCfg['enable'] = False
     base2(self, onChangeControlMode, postmortemMode, smartPointCalculator)
-    self.setCameraDistance(self._cfg['startDist'] - 5)
+    self.setCameraDistance(self._baseCfg['optimalStartDist'] - 5)
 
 g_legacyFlashBangEffect = LegacyFlashBangEffect()
 
