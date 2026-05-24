@@ -29,6 +29,10 @@ from .utils import loadUCWindow, getDevModeState
 
 logger = logging.getLogger(__name__)
 
+class EmptyResponse():
+    def __init__(self):
+        self.responseCode = None
+
 class UserCustomizationCacheCollector():
     c11nService = dependency.descriptor(ICustomizationService)
     itemsCache = dependency.descriptor(IItemsCache)
@@ -36,13 +40,28 @@ class UserCustomizationCacheCollector():
     def __init__(self):
         self.prefabs = {}
         self.allUserStylesPool = {}
-        self.forbiddenContent = json.load(open(FORBIDDEN_CONTENT_FILE, 'r')) if os.path.exists(FORBIDDEN_CONTENT_FILE) else CLIENT_FORBIDDEN_CONTENT
+        self.forbiddenContent = CLIENT_FORBIDDEN_CONTENT
         self.serversFetchAttempts = 0
         self.isGameStylesCollected = False
         self.resetCache()
         self.injectUserCustomization()
-        self.__getForbiddenContent()
+
+        if self.validateforbiddenContentFile():
+            self.__getForbiddenContent()
         logger.info('Data collector initialized!')
+    
+    def validateforbiddenContentFile(self, jsonString=None, usedSecondServer=False):
+        try:
+            self.forbiddenContent = json.loads(jsonString) if jsonString else json.load(open(FORBIDDEN_CONTENT_FILE, 'r'))
+            return True
+        except:
+            if usedSecondServer:
+                logger.warning('Unable to recieve actual forbidden content data. Using client-side data.')
+            else:
+                logger.warning('Current forbidden file not found or corrupted. Trying to get new from second server.')
+                self.__getForbiddenContent(True)
+
+            return False
 
     def onReadyToCollectData(self, milestone):
         if milestone == Milestones.HANGAR_SPACE_VEHICLE and not self.isGameStylesCollected:
@@ -123,13 +142,15 @@ class UserCustomizationCacheCollector():
         Thread(target=self.__reloadCache).start()
 
     @th_async
-    def __getForbiddenContent(self):
+    def __getForbiddenContent(self, useSecondServer=False):
+        response = EmptyResponse()
         if not os.path.exists(USER_CUSTOMIZATION_CACHE):
             os.makedirs(USER_CUSTOMIZATION_CACHE)
         
-        # Заправшиваем данные с файла на github.
-        logger.info('Fetching main forbidden content data server origins for recieving actual data...')
-        response = yield await_callback(BigWorld.fetchURL)(url=SERVER_FORBIDDEN_CONTENT_GIT, method='GET', headers='Content-Type: application/json', timeout=10.0, body='')
+        if not useSecondServer:
+            # Заправшиваем данные с файла на github.
+            logger.info('Fetching main forbidden content data server origins for recieving actual data...')
+            response = yield await_callback(BigWorld.fetchURL)(url=SERVER_FORBIDDEN_CONTENT_GIT, method='GET', headers='Content-Type: application/json', timeout=10.0, body='')
 
         # Если github лежит/забанен/на него упал метеорит - заправшиваем данные с файла на моём сервере.
         if response.responseCode not in SUCCESS_STATUSES:
@@ -138,11 +159,11 @@ class UserCustomizationCacheCollector():
 
         # Условия для обоих ответов серверов.
         if response.responseCode in SUCCESS_STATUSES:
-            self.forbiddenContent = json.loads(response.body)
-            json.dump(self.forbiddenContent, open(FORBIDDEN_CONTENT_FILE, 'wb'))
-            logger.info('Actual forbidden content data recieved successfully.')
+            if self.validateforbiddenContentFile(response.body, useSecondServer):
+                json.dump(self.forbiddenContent, open(FORBIDDEN_CONTENT_FILE, 'wb'))
+                logger.info('Actual forbidden content data recieved successfully.')
         else:
-            logger.warning('Unable to recieve actual forbidden content data. Using client-side data.')
+            logger.error('Unable to recieve actual forbidden content data. Using client-side data.')
 
     def __reloadCache(self):
         if isPlayerAccount():
