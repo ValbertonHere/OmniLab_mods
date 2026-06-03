@@ -12,21 +12,12 @@
     font-display: swap; /* Helps optimize font loading behavior */
 }
 
-@keyframes zoominText {
-    from {
-        font-size: 14px;
-    };
-    to {
-        font-size: 20px;
-    }
-    
-}
-
 body {
     margin: 0;
     font-size: 14rem;
     line-height: 1.2;
     overflow: hidden;
+    background-image: url(./img/bg.png);
 }
 
 .App {
@@ -72,15 +63,11 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    text-align: center; /*Для многострочных названий.*/
-    font-size: 20px;
-    font-family: Warhelios;
-    font-weight: normal;
     width: 226px;
     height: 102px;
     cursor: pointer;
     opacity: .5;
-    transition: opacity 0.25s ease, font-size 0.15s ease;
+    transition: opacity 0.25s ease;
     background-image: url(img:/../img/template.png);
     background-size: 226px 102px;
     background-repeat: no-repeat;
@@ -89,7 +76,13 @@ body {
     text-shadow: black 0 0 10px;
 }
 
+.stylesCarouselItemTitle {
+    text-align: center; /*Для многострочных названий.*/
+    font-size: 20px;
+    font-family: Warhelios;
+    font-weight: normal;
+}
+
 .stylesCarouselItem:hover {
-    font-size: 22px;
     opacity: 1;
 }

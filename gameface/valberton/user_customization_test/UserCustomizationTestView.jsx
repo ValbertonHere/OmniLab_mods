@@ -3,14 +3,21 @@ import cls from "classnames";
 import { createRoot } from "react-dom/client";
 import { animated, useSpring } from "@react-spring/web";
 
+let items = []
 const enterAnim = {
-    from: { x: 535 },
-    to:   { x: 0 },
+    from: { x: 535, opacity: 0 },
+    to:   { x: 0, opacity: 1 },
     config: { duration: 800, easing: t => (t < .5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1) },
 };
 
-function UserCustomizationStylesCarouselItem({styleName=''}) {
-    return (<div className="stylesCarouselItem">{styleName}</div>)
+for (let index = 0; index < 100; index++) {
+    items.push(index);
+}
+
+function UserCustomizationStylesCarouselItem({styleIcon='', styleName=''}) {
+    return (<div className="stylesCarouselItem">
+        <div className="stylesCarouselItemTitle"> {styleName} </div>
+    </div>)
 }
 
 function UserCustomizationView() {
@@ -20,24 +27,7 @@ function UserCustomizationView() {
         <div className="viewLabel">АГРЕГАТОР СТИЛЕЙ ДЛЯ</div>
         <div className="viewLabel">ИС-7</div>
         <div className="carousel">
-            <UserCustomizationStylesCarouselItem styleName="Стиль твоей мамки"/>
-            <UserCustomizationStylesCarouselItem styleName="Стиль мо мамки"/>
-            <UserCustomizationStylesCarouselItem styleName="Стиль мо мамки"/>
-            <UserCustomizationStylesCarouselItem styleName="Стиль мо мамки"/>
-            <UserCustomizationStylesCarouselItem styleName="Стиль мо мамки"/>
-            <UserCustomizationStylesCarouselItem styleName="Стиль мо мамки"/>
-            <UserCustomizationStylesCarouselItem styleName="Стиль твоей мамки"/>
-            <UserCustomizationStylesCarouselItem styleName="Стиль мо мамки"/>
-            <UserCustomizationStylesCarouselItem styleName="Стиль мо мамки"/>
-            <UserCustomizationStylesCarouselItem styleName="Стиль мо мамки"/>
-            <UserCustomizationStylesCarouselItem styleName="Стиль мо мамки"/>
-            <UserCustomizationStylesCarouselItem styleName="Стиль мо мамки"/>
-            <UserCustomizationStylesCarouselItem styleName="Стиль твоей мамки"/>
-            <UserCustomizationStylesCarouselItem styleName="Стиль мо мамки"/>
-            <UserCustomizationStylesCarouselItem styleName="Стиль мо мамки"/>
-            <UserCustomizationStylesCarouselItem styleName="Стиль мо мамки"/>
-            <UserCustomizationStylesCarouselItem styleName="Стиль мо мамки"/>
-            <UserCustomizationStylesCarouselItem styleName="Стиль мо мамки"/>
+            {items.map((item, index) => (<UserCustomizationStylesCarouselItem styleName={`Стиль ${index}`}/>))}
         </div>
     </animated.div>)
 }
